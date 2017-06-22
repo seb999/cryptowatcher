@@ -3,9 +3,10 @@
     $scope.isAutoRefresh = false;
     $scope.isSecondLoad = false;
     $scope.loaderVisibility = false;
+    $scope.showChart = false;
 
     var columnDefUI = [
-        { field: 'name', cellTemplate: '<div ng-binding ng-scope"><img src="{{grid.appScope.getTemplateUI(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>', width: 110 },
+        { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img src="{{grid.appScope.getTemplateUI(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
         { headerName: "Id", field: "id", width: 110 },
         { headerName: "Last", field: "last", width: 110},
         { headerName: "LowestAsk", field: "lowestAsk", width: 110 },
@@ -16,7 +17,8 @@
         { headerName: "IsFrozen", field: "isFrozen" },
         { headerName: "High24hr", field: "high24hr" },
         { headerName: "Low24hr", field: "low24hr" },
-        { headerName: "RSI", field: "rsi" }
+        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
+        { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
     ];
 
     $scope.gridOptionsUI = {
@@ -32,6 +34,14 @@
             //Bind data to Ag-Grid
             //$scope.gridOptionsAG.api.setRowData(response.data);          
         }, function (error) { $log.error(error.message); });
+
+        //Second pass to load the RSI behind the scene as it take 20 second
+        cryptoApiService.getPoloniexData(true).then(function (response) {
+            $scope.loaderVisibility = false;
+            $scope.gridOptionsUI = { data: response.data };
+            //Bind data to Ag-Grid
+            //$scope.gridOptionsAG.api.setRowData(response.data);          
+        }, function (error) { $log.error(error.message); });
     };
 
     $scope.getTemplateUI = function (value) {
@@ -40,6 +50,20 @@
         if (value.substring(0, 3) === 'ETH') { return "images/eth.png" };
         if (value.substring(0, 3) === 'USD') { return "images/usdt.png" };
         return "";
+    }; 
+
+    $scope.getRsiTemplateUI = function (value) {
+        if (value === 'loading RSI') {
+            $scope.isLoadingRsi = true;
+            return "images/loader.gif"
+        };
+        $scope.isLoadingRsi = false;
+        return "";
+    }; 
+
+    $scope.openChart = function (currencyName) {
+        $scope.showChart = true;
+        $scope.loadChartData(currencyName);
     }; 
 
     //command : refresh data
@@ -68,7 +92,7 @@
     //-----------------highchart---------------------
     $scope.chartConfig1 = {
         title: {
-            text: 'BTC_XMR'
+            text: ''
         },
         loading: true,
         options: {
@@ -108,40 +132,33 @@
         series: [],
     }
 
-    $scope.loadChartData = function () {
+    $scope.loadChartData = function (currencyName) {
         
-        cryptoApiService.getPoloniexChartData().then(function (response) {
-            var series1 = [['', 0]];
-            var series2 = [['', 0]];
+        $scope.chartConfig1.loading = true;
+        cryptoApiService.getPoloniexChartData(currencyName).then(function (response) {         
+            series1 = [];
             var allocated;
             var committed;
             var paid;
             for (var i = 0; i < response.data.length; i++) {
 
-                series1.push([response.data[i].date, response.data[i].high])
-                //series2.push([response.data[i].XLabel, response.data[i].YSerieB])
-               
+                series1.push([response.data[i].date, response.data[i].close])
             }
 
+            $scope.chartConfig1.series = [];
             $scope.chartConfig1.series.push({
-                id: 'high',
-                name: 'BTC_XMR',
+                name: currencyName,
                 data: series1,
             });
 
-            //$scope.chartConfig1.loading = false;
+           // $scope.chartConfig1.title.text = currencyName
+
+            $scope.chartConfig1.loading = false;
 
         }, function (error) {
             $log.error(error.message);
         });
     };
-
-
-
-
-
-
-
 
 
 

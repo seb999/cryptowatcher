@@ -1,4 +1,5 @@
-﻿using TicTacTec.TA.Library;
+﻿using System;
+using TicTacTec.TA.Library;
 
 namespace cryptowatcher.Misc
 {
@@ -17,7 +18,7 @@ namespace cryptowatcher.Misc
             {
                 if (outNBElements > 0)
                 {
-                    return rsiValues[outNBElements - 1]; //Take current RSI (last one of the valid values)                      
+                    return  Math.Round(rsiValues[outNBElements - 1],2); //Take current RSI (last one of the valid values)                      
                 }
             }
 

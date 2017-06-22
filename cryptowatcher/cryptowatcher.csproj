@@ -15,6 +15,7 @@
     <Content Include="wwwroot\css\loader.css" />
     <Content Include="wwwroot\images\bitcoin.png" />
     <Content Include="wwwroot\images\eth.png" />
+    <Content Include="wwwroot\images\loader.gif" />
     <Content Include="wwwroot\images\monero.png" />
     <Content Include="wwwroot\images\usdt.png" />
   </ItemGroup>

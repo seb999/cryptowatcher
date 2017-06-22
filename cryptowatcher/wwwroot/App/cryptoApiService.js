@@ -2,16 +2,16 @@
 
     var macroBitApiService = {};
 
-    macroBitApiService.getPoloniexData = function () {
+    macroBitApiService.getPoloniexData = function (isIndicatorAdded) {
         return $http({
-            url: "/api/Poloniex",
+            url: "/api/Poloniex/" + isIndicatorAdded,
             method: "GET",
         })
     }
 
-    macroBitApiService.getPoloniexChartData = function () {
+    macroBitApiService.getPoloniexChartData = function (currencyName) {
         return $http({
-            url: "/api/Poloniex/GetChartData/",
+            url: "/api/Poloniex/GetChartData/" + currencyName,
             method: "GET",
         })
     }

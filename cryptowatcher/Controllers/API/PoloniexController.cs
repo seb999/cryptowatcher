@@ -18,11 +18,12 @@ namespace cryptowatcher.Controllers.API
         /// Example of call to Poloniex API
         /// </summary>
         private Uri uriListOfCurrency = new Uri("https://poloniex.com/public?command=returnTicker");
-        private Uri uriChartBTX_XMR = new Uri("https://poloniex.com/public?command=returnChartData&currencyPair=BTC_XMR&start=1405699200&end=9999999999&period=14400");
+        private Uri uriCurrency = new Uri("https://poloniex.com/public?command=returnChartData&currencyPair=");
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<PoloCurrencyTransfer> Get()
+        [Route("{isIndicatorAdded}")]
+        public IEnumerable<PoloCurrencyTransfer> Get(bool isIndicatorAdded)
         {
             List<PoloCurrencyTransfer> result = new List<PoloCurrencyTransfer>();
             string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
@@ -33,8 +34,19 @@ namespace cryptowatcher.Controllers.API
 
                 foreach (var item in myDico)
                 {
+                    //For ecdc so reduce number of call in proxy
+                    if (item.Key.Substring(0, 3) != "BTC" ) continue;
+
                     item.Value.Name = item.Key;
-                    item.Value.RSI = GetCurrencyRSI(item.Key.ToString()).ToString();
+                    if (isIndicatorAdded)
+                    {
+                        item.Value.RSI = GetCurrencyRSI(item.Key.ToString()).ToString();
+                    }
+                    else
+                    {
+                        item.Value.RSI = "loading RSI";
+                    };
+                            
                     result.Add(item.Value);
                 }
             }
@@ -46,10 +58,14 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("GetChartData")]
-        public string GetChartData()
+        [Route("GetChartData/{currencyName}")]
+        public string GetChartData(string currencyName)
         {
-            return GetPoloniexApiData(uriChartBTX_XMR);
+            Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-365).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
+
+            return GetPoloniexApiData(new Uri(uri));
         }
 
         /// <summary>
@@ -61,7 +77,7 @@ namespace cryptowatcher.Controllers.API
         {
             Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-14).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            string uri = string.Format("https://poloniex.com/public?command=returnChartData&currencyPair={0}&start={1}&end={2}&period=14400", currencyName, startDate, endDate);
+            string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
 
             string poloniexApiData = GetPoloniexApiData(new Uri(uri));
             
