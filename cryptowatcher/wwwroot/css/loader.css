@@ -1,0 +1,76 @@
+﻿loader {
+  position: absolute;
+  left: 50%;
+  top: 350px;
+  z-index: 1;
+  border: 7px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 7px solid #3498db;
+  border-right: 7px solid #3498db;
+  border-bottom: 7px solid #3498db;
+  width: 30px;
+  height: 30px;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+#loaderModernize {
+  position: absolute;
+  left: 50%;
+  top: 350px;
+  z-index: 3;
+  border: 7px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 7px solid #3498db;
+  border-right: 7px solid #3498db;
+  border-bottom: 7px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+  opacity:1 !important;
+}
+
+#loading-img {
+    background: url(http://preloaders.net/preloaders/360/Velocity.gif) center center no-repeat;
+    height: 100%;
+    z-index: 20;
+}
+
+.loaderPopover {
+  position:absolute;
+  left: 45%;
+  /*top: 10px;*/
+  z-index: 1;
+  border-radius: 50%;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #808080;
+  border-right: 5px solid #808080;
+  border-bottom: 5px solid #808080;
+  width: 20px;
+  height: 20px;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.overlay {
+    background: #e9e9e9;
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0.4;
+    z-index:2;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "jquery": "2.2.0",
+    "jquery-validation": "1.14.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "angular": "1.6.4",
+    "angular-bootstrap": "2.5.0",
+    "angular-ui-grid": "4.0.4",
+    "ag-grid": "10.1.0",
+    "highcharts": "5.0.12",
+    "highcharts-ng": "1.1.0"
+  },
+  "resolutions": {
+    "angular": ">=1.4.0"
+  }
+}
