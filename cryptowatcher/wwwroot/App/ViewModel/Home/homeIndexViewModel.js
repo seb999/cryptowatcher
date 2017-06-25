@@ -94,16 +94,24 @@
         title: {
             text: ''
         },
+        series: [],
+        useHighStocks: true,
         loading: true,
         options: {
             chart: {
-                type: 'spline',
+                type: 'line',
                 zoomType: 'x',
                 // spacingTop: 15,
                 // spacingBottom: 15,
                 // spacingLeft: 15,
                 // spacingRight: 15,
                 // backgroundColor: '#f5f5f5'
+            },
+            rangeSelector: {
+                enabled: true
+            },
+            navigator: {
+                enabled: true
             },
             legend: {
                 enabled: true
@@ -129,7 +137,6 @@
         legend: {
             enabled: true
         },
-        series: [],
     }
 
     $scope.loadChartData = function (currencyName) {
@@ -147,6 +154,7 @@
 
             $scope.chartConfig1.series = [];
             $scope.chartConfig1.series.push({
+                id: currencyName,
                 name: currencyName,
                 data: series1,
             });
