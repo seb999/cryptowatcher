@@ -1,11 +1,12 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Exporting module
  *
- * (c) 2010-2016 Torstein Honsi
+ * (c) 2010-2017 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -17,13 +18,12 @@
         /**
          * Exporting module
          *
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
 
         /* eslint indent:0 */
-        'use strict';
 
         // create shortcuts
         var defaultOptions = H.defaultOptions,
@@ -38,13 +38,15 @@
             merge = H.merge,
             pick = H.pick,
             each = H.each,
+            objectEach = H.objectEach,
             extend = H.extend,
-            splat = H.splat,
             isTouchDevice = H.isTouchDevice,
             win = H.win,
-            SVGRenderer = H.SVGRenderer;
-
-        var symbols = H.Renderer.prototype.symbols;
+            userAgent = win.navigator.userAgent,
+            SVGRenderer = H.SVGRenderer,
+            symbols = H.Renderer.prototype.symbols,
+            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent),
+            isFirefoxBrowser = /firefox/i.test(userAgent);
 
         // Add language
         extend(defaultOptions.lang, {
@@ -123,64 +125,47 @@
                     symbol: 'menu',
                     _titleKey: 'contextButtonTitle',
                     menuItems: [{
-                            textKey: 'printChart',
-                            onclick: function() {
-                                this.print();
-                            }
-                        }, {
-                            separator: true
-                        }, {
-                            textKey: 'downloadPNG',
-                            onclick: function() {
-                                this.exportChart();
-                            }
-                        }, {
-                            textKey: 'downloadJPEG',
-                            onclick: function() {
-                                this.exportChart({
-                                    type: 'image/jpeg'
-                                });
-                            }
-                        }, {
-                            textKey: 'downloadPDF',
-                            onclick: function() {
-                                this.exportChart({
-                                    type: 'application/pdf'
-                                });
-                            }
-                        }, {
-                            textKey: 'downloadSVG',
-                            onclick: function() {
-                                this.exportChart({
-                                    type: 'image/svg+xml'
-                                });
-                            }
+                        textKey: 'printChart',
+                        onclick: function() {
+                            this.print();
                         }
-                        // Enable this block to add "View SVG" to the dropdown menu
-                        /*
-                        ,{
-
-                        	text: 'View SVG',
-                        	onclick: function () {
-                        		var svg = this.getSVG()
-                        			.replace(/</g, '\n&lt;')
-                        			.replace(/>/g, '&gt;');
-
-                        		doc.body.innerHTML = '<pre>' + svg + '</pre>';
-                        	}
-                        } // */
-                    ]
+                    }, {
+                        separator: true
+                    }, {
+                        textKey: 'downloadPNG',
+                        onclick: function() {
+                            this.exportChart();
+                        }
+                    }, {
+                        textKey: 'downloadJPEG',
+                        onclick: function() {
+                            this.exportChart({
+                                type: 'image/jpeg'
+                            });
+                        }
+                    }, {
+                        textKey: 'downloadPDF',
+                        onclick: function() {
+                            this.exportChart({
+                                type: 'application/pdf'
+                            });
+                        }
+                    }, {
+                        textKey: 'downloadSVG',
+                        onclick: function() {
+                            this.exportChart({
+                                type: 'image/svg+xml'
+                            });
+                        }
+                    }]
                 }
             }
         };
 
         // Add the H.post utility
         H.post = function(url, data, formAttributes) {
-            var name,
-                form;
-
             // create the form
-            form = createElement('form', merge({
+            var form = createElement('form', merge({
                 method: 'post',
                 action: url,
                 enctype: 'multipart/form-data'
@@ -189,13 +174,13 @@
             }, doc.body);
 
             // add the data
-            for (name in data) {
+            objectEach(data, function(val, name) {
                 createElement('input', {
                     type: 'hidden',
                     name: name,
-                    value: data[name]
+                    value: val
                 }, null, form);
-            }
+            });
 
             // submit
             form.submit();
@@ -204,13 +189,28 @@
             discardElement(form);
         };
 
-        extend(Chart.prototype, {
+        extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
 
             /**
-             * A collection of regex fixes on the produces SVG to account for expando properties,
+             * A collection of fixes on the produced SVG to account for expando properties,
              * browser bugs, VML problems and other. Returns a cleaned SVG.
              */
-            sanitizeSVG: function(svg) {
+            sanitizeSVG: function(svg, options) {
+                // Move HTML into a foreignObject
+                if (options && options.exporting && options.exporting.allowHTML) {
+                    var html = svg.match(/<\/svg>(.*?$)/);
+                    if (html && html[1]) {
+                        html = '<foreignObject x="0" y="0" ' +
+                            'width="' + options.chart.width + '" ' +
+                            'height="' + options.chart.height + '">' +
+                            '<body xmlns="http://www.w3.org/1999/xhtml">' +
+                            html[1] +
+                            '</body>' +
+                            '</foreignObject>';
+                        svg = svg.replace('</svg>', html + '</svg>');
+                    }
+                }
+
                 svg = svg
                     .replace(/zIndex="[^"]+"/g, '')
                     .replace(/isShadow="[^"]+"/g, '')
@@ -230,8 +230,8 @@
                     	return s2 +'.'+ s3[0];
                     })*/
 
-                // Replace HTML entities, issue #347
-                .replace(/&nbsp;/g, '\u00A0') // no-break space
+                    // Replace HTML entities, issue #347
+                    .replace(/&nbsp;/g, '\u00A0') // no-break space
                     .replace(/&shy;/g, '\u00AD'); // soft hyphen
 
 
@@ -263,11 +263,19 @@
             },
 
             /**
-             * Return an SVG representation of the chart
+             * Return an SVG representation of the chart.
              *
-             * @param additionalOptions {Object} Additional chart options for the generated SVG representation
+             * @param  chartOptions {Options}
+             *         Additional chart options for the generated SVG representation.
+             *         For collections like `xAxis`, `yAxis` or `series`, the additional
+             *         options is either merged in to the orininal item of the same
+             *         `id`, or to the first item if a common id is not found.
+             * @return {String}
+             *         The SVG representation of the rendered chart.
+             * @sample highcharts/members/chart-getsvg/
+             *         View the SVG from a button
              */
-            getSVG: function(additionalOptions) {
+            getSVG: function(chartOptions) {
                 var chart = this,
                     chartCopy,
                     sandbox,
@@ -277,9 +285,7 @@
                     sourceHeight,
                     cssWidth,
                     cssHeight,
-                    html,
-                    options = merge(chart.options, additionalOptions), // copy the options and add extra options
-                    allowHTML = options.exporting.allowHTML;
+                    options = merge(chart.options, chartOptions); // copy the options and add extra options
 
 
                 // IE compatibility hack for generating SVG content that it doesn't really understand
@@ -336,59 +342,51 @@
                     }
                 });
 
-                // Axis options must be merged in one by one, since it may be an array or an object (#2022, #3900)
-                if (additionalOptions) {
-                    each(['xAxis', 'yAxis'], function(axisType) {
-                        each(splat(additionalOptions[axisType]), function(axisOptions, i) {
-                            options[axisType][i] = merge(options[axisType][i], axisOptions);
-                        });
-                    });
-                }
+                // Assign an internal key to ensure a one-to-one mapping (#5924)
+                each(chart.axes, function(axis) {
+                    if (!axis.userOptions.internalKey) { // #6444
+                        axis.userOptions.internalKey = H.uniqueKey();
+                    }
+                });
 
                 // generate the chart copy
                 chartCopy = new H.Chart(options, chart.callback);
 
-                // reflect axis extremes in the export
-                each(['xAxis', 'yAxis'], function(axisType) {
-                    each(chart[axisType], function(axis, i) {
-                        var axisCopy = chartCopy[axisType][i],
-                            extremes = axis.getExtremes(),
-                            userMin = extremes.userMin,
-                            userMax = extremes.userMax;
-
-                        if (axisCopy && (userMin !== undefined || userMax !== undefined)) {
-                            axisCopy.setExtremes(userMin, userMax, true, false);
+                // Axis options and series options  (#2022, #3900, #5982)
+                if (chartOptions) {
+                    each(['xAxis', 'yAxis', 'series'], function(coll) {
+                        var collOptions = {};
+                        if (chartOptions[coll]) {
+                            collOptions[coll] = chartOptions[coll];
+                            chartCopy.update(collOptions);
                         }
                     });
+                }
+
+                // Reflect axis extremes in the export (#5924)
+                each(chart.axes, function(axis) {
+                    var axisCopy = H.find(chartCopy.axes, function(copy) {
+                            return copy.options.internalKey ===
+                                axis.userOptions.internalKey;
+                        }),
+                        extremes = axis.getExtremes(),
+                        userMin = extremes.userMin,
+                        userMax = extremes.userMax;
+
+                    if (axisCopy && (userMin !== undefined || userMax !== undefined)) {
+                        axisCopy.setExtremes(userMin, userMax, true, false);
+                    }
                 });
 
-                // get the SVG from the container's innerHTML
+                // Get the SVG from the container's innerHTML
                 svg = chartCopy.getChartHTML();
+
+                svg = chart.sanitizeSVG(svg, options);
 
                 // free up memory
                 options = null;
                 chartCopy.destroy();
                 discardElement(sandbox);
-
-                // Move HTML into a foreignObject
-                if (allowHTML) {
-                    html = svg.match(/<\/svg>(.*?$)/);
-                    if (html) {
-                        html = '<foreignObject x="0" y="0" width="200" height="200">' +
-                            '<body xmlns="http://www.w3.org/1999/xhtml">' +
-                            html[1] +
-                            '</body>' +
-                            '</foreignObject>';
-                        svg = svg.replace('</svg>', html + '</svg>');
-                    }
-                }
-
-                // sanitize
-                svg = this.sanitizeSVG(svg);
-
-                // IE9 beta bugs with innerHTML. Test again with final IE9.
-                svg = svg.replace(/(url\(#highcharts-[0-9]+)&quot;/g, '$1')
-                    .replace(/&quot;/g, '\'');
 
                 return svg;
             },
@@ -412,30 +410,63 @@
             },
 
             /**
-             * Submit the SVG representation of the chart to the server
-             * @param {Object} options Exporting options. Possible members are url, type, width and formAttributes.
-             * @param {Object} chartOptions Additional chart options for the SVG representation of the chart
+             * Exporting module required. Submit an SVG version of the chart to a server
+             * along with some parameters for conversion.
+             * @param  {Object} exportingOptions
+             *         Exporting options in addition to those defined in {@link
+             *         https://api.highcharts.com/highcharts/exporting|exporting}.
+             * @param  {String} exportingOptions.filename
+             *         The file name for the export without extension.
+             * @param  {String} exportingOptions.url
+             *         The URL for the server module to do the conversion.
+             * @param  {Number} exportingOptions.width
+             *         The width of the PNG or JPG image generated on the server.
+             * @param  {String} exportingOptions.type
+             *         The MIME type of the converted image.
+             * @param  {Number} exportingOptions.sourceWidth
+             *         The pixel width of the source (in-page) chart.
+             * @param  {Number} exportingOptions.sourceHeight
+             *         The pixel height of the source (in-page) chart.
+             * @param  {Options} chartOptions
+             *         Additional chart options for the exported chart. For example a
+             *         different background color can be added here, or `dataLabels`
+             *         for export only.
+             *
+             * @sample highcharts/members/chart-exportchart/
+             *         Export with no options
+             * @sample highcharts/members/chart-exportchart-filename/
+             *         PDF type and custom filename
+             * @sample highcharts/members/chart-exportchart-custom-background/
+             *         Different chart background in export
+             * @sample stock/members/chart-exportchart/
+             *         Export with Highstock
              */
-            exportChart: function(options, chartOptions) {
+            exportChart: function(exportingOptions, chartOptions) {
 
-                var svg = this.getSVGForExport(options, chartOptions);
+                var svg = this.getSVGForExport(exportingOptions, chartOptions);
 
                 // merge the options
-                options = merge(this.options.exporting, options);
+                exportingOptions = merge(this.options.exporting, exportingOptions);
 
                 // do the post
-                H.post(options.url, {
-                    filename: options.filename || 'chart',
-                    type: options.type,
-                    width: options.width || 0, // IE8 fails to post undefined correctly, so use 0
-                    scale: options.scale,
+                H.post(exportingOptions.url, {
+                    filename: exportingOptions.filename || 'chart',
+                    type: exportingOptions.type,
+                    width: exportingOptions.width || 0, // IE8 fails to post undefined correctly, so use 0
+                    scale: exportingOptions.scale,
                     svg: svg
-                }, options.formAttributes);
+                }, exportingOptions.formAttributes);
 
             },
 
             /**
-             * Print the chart
+             * Exporting module required. Clears away other elements in the page and
+             * prints the chart as it is displayed. By default, when the exporting
+             * module is enabled, a context button with a drop down menu in the upper
+             * right corner accesses this function.
+             *
+             * @sample highcharts/members/chart-print/
+             *         Print from a HTML button
              */
             print: function() {
 
@@ -526,13 +557,7 @@
                     menuPadding = Math.max(width, height), // for mouse leave detection
                     innerMenu,
                     hide,
-                    hideTimer,
-                    menuStyle,
-                    docMouseUpHandler = function(e) {
-                        if (!chart.pointer.inClass(e.target, className)) {
-                            hide();
-                        }
-                    };
+                    menuStyle;
 
                 // create the menu only the first time
                 if (!menu) {
@@ -571,20 +596,22 @@
                     };
 
                     // Hide the menu some time after mouse leave (#1357)
-                    addEvent(menu, 'mouseleave', function() {
-                        hideTimer = setTimeout(hide, 500);
-                    });
-                    addEvent(menu, 'mouseenter', function() {
-                        clearTimeout(hideTimer);
-                    });
+                    chart.exportEvents.push(
+                        addEvent(menu, 'mouseleave', function() {
+                            menu.hideTimer = setTimeout(hide, 500);
+                        }),
+                        addEvent(menu, 'mouseenter', function() {
+                            clearTimeout(menu.hideTimer);
+                        }),
 
-
-                    // Hide it on clicking or touching outside the menu (#2258, #2335, #2407)
-                    addEvent(doc, 'mouseup', docMouseUpHandler);
-                    addEvent(chart, 'destroy', function() {
-                        removeEvent(doc, 'mouseup', docMouseUpHandler);
-                    });
-
+                        // Hide it on clicking or touching outside the menu (#2258, #2335,
+                        // #2407)
+                        addEvent(doc, 'mouseup', function(e) {
+                            if (!chart.pointer.inClass(e.target, className)) {
+                                hide();
+                            }
+                        })
+                    );
 
                     // create the items
                     each(items, function(item) {
@@ -774,7 +801,9 @@
             destroyExport: function(e) {
                 var chart = e ? e.target : this,
                     exportSVGElements = chart.exportSVGElements,
-                    exportDivElements = chart.exportDivElements;
+                    exportDivElements = chart.exportDivElements,
+                    exportEvents = chart.exportEvents,
+                    cacheName;
 
                 // Destroy the extra buttons added
                 if (exportSVGElements) {
@@ -783,6 +812,12 @@
                         // Destroy and null the svg/vml elements
                         if (elem) { // #1822
                             elem.onclick = elem.ontouchstart = null;
+                            cacheName = 'cache-' + elem.menuClassName;
+
+                            if (chart[cacheName]) {
+                                delete chart[cacheName];
+                            }
+
                             chart.exportSVGElements[i] = elem.destroy();
                         }
                     });
@@ -794,6 +829,7 @@
                     each(exportDivElements, function(elem, i) {
 
                         // Remove the event handler
+                        clearTimeout(elem.hideTimer); // #5427
                         removeEvent(elem, 'mouseleave');
 
                         // Remove inline events
@@ -803,6 +839,13 @@
                         discardElement(elem);
                     });
                     exportDivElements.length = 0;
+                }
+
+                if (exportEvents) {
+                    each(exportEvents, function(unbind) {
+                        unbind();
+                    });
+                    exportEvents.length = 0;
                 }
             }
         });
@@ -824,27 +867,28 @@
 
         // Add the buttons on chart load
         Chart.prototype.renderExporting = function() {
-            var n,
-                exportingOptions = this.options.exporting,
+            var chart = this,
+                exportingOptions = chart.options.exporting,
                 buttons = exportingOptions.buttons,
-                isDirty = this.isDirtyExporting || !this.exportSVGElements;
+                isDirty = chart.isDirtyExporting || !chart.exportSVGElements;
 
-            this.buttonOffset = 0;
-            if (this.isDirtyExporting) {
-                this.destroyExport();
+            chart.buttonOffset = 0;
+            if (chart.isDirtyExporting) {
+                chart.destroyExport();
             }
 
             if (isDirty && exportingOptions.enabled !== false) {
+                chart.exportEvents = [];
 
-                for (n in buttons) {
-                    this.addButton(buttons[n]);
-                }
+                objectEach(buttons, function(button) {
+                    chart.addButton(button);
+                });
 
-                this.isDirtyExporting = false;
+                chart.isDirtyExporting = false;
             }
 
             // Destroy the export elements at chart destroy
-            addEvent(this, 'destroy', this.destroyExport);
+            addEvent(chart, 'destroy', chart.destroyExport);
         };
 
         Chart.prototype.callbacks.push(function(chart) {
@@ -871,6 +915,36 @@
                     }
                 };
             });
+
+            // Uncomment this to see a button directly below the chart, for quick
+            // testing of export
+            /*
+            if (!chart.renderer.forExport) {
+            	var button;
+
+            	// View SVG Image
+            	button = doc.createElement('button');
+            	button.innerHTML = 'View SVG Image';
+            	chart.renderTo.parentNode.appendChild(button);
+            	button.onclick = function () {
+            		var div = doc.createElement('div');
+            		div.innerHTML = chart.getSVGForExport();
+            		chart.renderTo.parentNode.appendChild(div);
+            	};
+
+            	// View SVG Source
+            	button = doc.createElement('button');
+            	button.innerHTML = 'View SVG Source';
+            	chart.renderTo.parentNode.appendChild(button);
+            	button.onclick = function () {
+            		var pre = doc.createElement('pre');
+            		pre.innerHTML = chart.getSVGForExport()
+            			.replace(/</g, '\n&lt;')
+            			.replace(/>/g, '&gt;');
+            		chart.renderTo.parentNode.appendChild(pre);
+            	};
+            }
+            // */
         });
 
     }(Highcharts));

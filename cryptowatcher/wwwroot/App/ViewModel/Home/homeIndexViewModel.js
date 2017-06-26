@@ -24,6 +24,8 @@
         columnDefs: columnDefUI
     };
 
+    //https://www.highcharts.com/plugin-registry/single/24/Indicators
+
     $scope.getTemplateUI = function (value) {
         if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
         if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };

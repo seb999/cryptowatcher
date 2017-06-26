@@ -1,11 +1,12 @@
 /**
- * @license  Highcharts JS v5.0.0 (2016-09-29)
+ * @license  Highcharts JS v5.0.12 (2017-05-24)
  * Solid angular gauge module
  *
- * (c) 2010-2016 Torstein Honsi
+ * (c) 2010-2017 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -17,17 +18,51 @@
         /**
          * Solid angular gauge module
          *
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
 
-        'use strict';
+
         var pInt = H.pInt,
             pick = H.pick,
             each = H.each,
             isNumber = H.isNumber,
+            wrap = H.wrap,
+            Renderer = H.Renderer,
             colorAxisMethods;
+
+        /**
+         * Symbol definition of an arc with round edges.
+         * 
+         * @param  {Number} x - The X coordinate for the top left position.
+         * @param  {Number} y - The Y coordinate for the top left position.
+         * @param  {Number} w - The pixel width.
+         * @param  {Number} h - The pixel height.
+         * @param  {Object} [options] - Additional options, depending on the actual
+         *    symbol drawn.
+         * @param {boolean} [options.rounded] - Whether to draw rounded edges.
+         * @return {Array} Path of the created arc. 
+         */
+        wrap(Renderer.prototype.symbols, 'arc', function(proceed, x, y, w, h, options) {
+            var arc = proceed,
+                path = arc(x, y, w, h, options);
+            if (options.rounded) {
+                var r = options.r || w,
+                    smallR = (r - options.innerR) / 2,
+                    x1 = path[1],
+                    y1 = path[2],
+                    x2 = path[12],
+                    y2 = path[13],
+                    roundStart = ['A', smallR, smallR, 0, 1, 1, x1, y1],
+                    roundEnd = ['A', smallR, smallR, 0, 1, 1, x2, y2];
+                // Insert rounded edge on end, and remove line.
+                path.splice.apply(path, [path.length - 1, 0].concat(roundStart));
+                // Insert rounded edge on end, and remove line.
+                path.splice.apply(path, [11, 3].concat(roundEnd));
+            }
+            return path;
+        });
 
         // These methods are defined in the ColorAxis object, and copied here.
         // If we implement an AMD system we should make ColorAxis a dependency.
@@ -35,8 +70,7 @@
 
 
             initDataClasses: function(userOptions) {
-                var axis = this,
-                    chart = this.chart,
+                var chart = this.chart,
                     dataClasses,
                     colorCounter = 0,
                     options = this.options;
@@ -56,7 +90,10 @@
                                 colorCounter = 0;
                             }
                         } else {
-                            dataClass.color = axis.tweenColors(H.color(options.minColor), H.color(options.maxColor), i / (userOptions.dataClasses.length - 1));
+                            dataClass.color = H.color(options.minColor).tweenTo(
+                                H.color(options.maxColor),
+                                i / (userOptions.dataClasses.length - 1)
+                            );
                         }
                     }
                 });
@@ -117,69 +154,37 @@
                     // The position within the gradient
                     pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
 
-                    color = this.tweenColors(
-                        from.color,
+                    color = from.color.tweenTo(
                         to.color,
                         pos
                     );
                 }
                 return color;
-            },
-            /*
-             * Return an intermediate color between two colors, according to pos where 0
-             * is the from color and 1 is the to color.
-             */
-            tweenColors: function(from, to, pos) {
-                // Check for has alpha, because rgba colors perform worse due to lack of
-                // support in WebKit.
-                var hasAlpha,
-                    ret;
-
-                // Unsupported color, return to-color (#3920)
-                if (!to.rgba.length || !from.rgba.length) {
-                    ret = to.input || 'none';
-
-                    // Interpolate
-                } else {
-                    from = from.rgba;
-                    to = to.rgba;
-                    hasAlpha = (to[3] !== 1 || from[3] !== 1);
-                    ret = (hasAlpha ? 'rgba(' : 'rgb(') +
-                        Math.round(to[0] + (from[0] - to[0]) * (1 - pos)) + ',' +
-                        Math.round(to[1] + (from[1] - to[1]) * (1 - pos)) + ',' +
-                        Math.round(to[2] + (from[2] - to[2]) * (1 - pos)) +
-                        (hasAlpha ? (',' + (to[3] + (from[3] - to[3]) * (1 - pos))) : '') + ')';
-                }
-                return ret;
             }
         };
-
-        /**
-         * Handle animation of the color attributes directly
-         */
-        each(['fill', 'stroke'], function(prop) {
-            H.Fx.prototype[prop + 'Setter'] = function() {
-                this.elem.attr(prop, colorAxisMethods.tweenColors(H.color(this.start), H.color(this.end), this.pos));
-            };
-        });
 
         // The solidgauge series type
         H.seriesType('solidgauge', 'gauge', {
             colorByPoint: true
 
         }, {
-            bindAxes: function() {
-                var axis;
-                H.seriesTypes.gauge.prototype.bindAxes.call(this);
 
-                axis = this.yAxis;
+            /**
+             * Extend the translate function to extend the Y axis with the necessary
+             * decoration (#5895).
+             */
+            translate: function() {
+                var axis = this.yAxis;
                 H.extend(axis, colorAxisMethods);
 
                 // Prepare data classes
-                if (axis.options.dataClasses) {
+                if (!axis.dataClasses && axis.options.dataClasses) {
                     axis.initDataClasses(axis.options);
                 }
                 axis.initStops(axis.options);
+
+                // Generate points and inherit data label position
+                H.seriesTypes.gauge.prototype.translate.call(this);
             },
 
             /**
@@ -192,7 +197,21 @@
                     options = series.options,
                     renderer = series.chart.renderer,
                     overshoot = options.overshoot,
-                    overshootVal = isNumber(overshoot) ? overshoot / 180 * Math.PI : 0;
+                    overshootVal = isNumber(overshoot) ? overshoot / 180 * Math.PI : 0,
+                    thresholdAngleRad;
+
+                // Handle the threshold option
+                if (isNumber(options.threshold)) {
+                    thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(
+                        options.threshold,
+                        null,
+                        null,
+                        null,
+                        true
+                    );
+                }
+                this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
+
 
                 each(series.points, function(point) {
                     var graphic = point.graphic,
@@ -222,8 +241,8 @@
                         rotation = Math.max(axisMinAngle, Math.min(axisMaxAngle, rotation));
                     }
 
-                    minAngle = Math.min(rotation, yAxis.startAngleRad);
-                    maxAngle = Math.max(rotation, yAxis.startAngleRad);
+                    minAngle = Math.min(rotation, series.thresholdAngleRad);
+                    maxAngle = Math.max(rotation, series.thresholdAngleRad);
 
                     if (maxAngle - minAngle > 2 * Math.PI) {
                         maxAngle = minAngle + 2 * Math.PI;
@@ -236,19 +255,21 @@
                         innerR: innerRadius,
                         start: minAngle,
                         end: maxAngle,
-                        fill: toColor
+                        rounded: options.rounded
                     };
                     point.startR = radius; // For PieSeries.animate
 
                     if (graphic) {
                         d = shapeArgs.d;
-                        graphic.animate(shapeArgs);
+                        graphic.animate(H.extend({
+                            fill: toColor
+                        }, shapeArgs));
                         if (d) {
                             shapeArgs.d = d; // animate alters it
                         }
                     } else {
                         point.graphic = renderer.arc(shapeArgs)
-                            .addClass('highcharts-point')
+                            .addClass(point.getClassName(), true)
                             .attr({
                                 fill: toColor,
                                 'sweep-flag': 0
@@ -266,7 +287,7 @@
             animate: function(init) {
 
                 if (!init) {
-                    this.startAngleRad = this.yAxis.startAngleRad;
+                    this.startAngleRad = this.thresholdAngleRad;
                     H.seriesTypes.pie.prototype.animate.call(this, init);
                 }
             }
