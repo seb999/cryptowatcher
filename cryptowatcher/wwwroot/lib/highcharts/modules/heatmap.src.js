@@ -1,11 +1,10 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.0 (2016-09-29)
  *
- * (c) 2009-2017 Torstein Honsi
+ * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -15,10 +14,11 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * (c) 2010-2017 Torstein Honsi
+         * (c) 2010-2016 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
+        'use strict';
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -60,27 +60,13 @@
 
                 },
                 labels: {
-                    overflow: 'justify',
-                    rotation: 0
+                    overflow: 'justify'
                 },
                 minColor: '#e6ebf5',
                 maxColor: '#003399',
                 tickLength: 5,
                 showInLegend: true
             },
-
-            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
-            keepProps: [
-                'legendGroup',
-                'legendItemHeight',
-                'legendItemWidth',
-                'legendItem',
-                'legendSymbol'
-            ].concat(Axis.prototype.keepProps),
-
-            /**
-             * Initialize the color axis
-             */
             init: function(chart, userOptions) {
                 var horiz = chart.options.legend.layout !== 'vertical',
                     options;
@@ -106,7 +92,7 @@
                 if (userOptions.dataClasses) {
                     this.initDataClasses(userOptions);
                 }
-                this.initStops();
+                this.initStops(userOptions);
 
                 // Override original axis properties
                 this.horiz = horiz;
@@ -116,8 +102,39 @@
                 this.defaultLegendLength = 200;
             },
 
+            /*
+             * Return an intermediate color between two colors, according to pos where 0
+             * is the from color and 1 is the to color.
+             * NOTE: Changes here should be copied
+             * to the same function in drilldown.src.js and solid-gauge-src.js.
+             */
+            tweenColors: function(from, to, pos) {
+                // Check for has alpha, because rgba colors perform worse due to lack of
+                // support in WebKit.
+                var hasAlpha,
+                    ret;
+
+                // Unsupported color, return to-color (#3920)
+                if (!to.rgba.length || !from.rgba.length) {
+                    ret = to.input || 'none';
+
+                    // Interpolate
+                } else {
+                    from = from.rgba;
+                    to = to.rgba;
+                    hasAlpha = (to[3] !== 1 || from[3] !== 1);
+                    ret = (hasAlpha ? 'rgba(' : 'rgb(') +
+                        Math.round(to[0] + (from[0] - to[0]) * (1 - pos)) + ',' +
+                        Math.round(to[1] + (from[1] - to[1]) * (1 - pos)) + ',' +
+                        Math.round(to[2] + (from[2] - to[2]) * (1 - pos)) +
+                        (hasAlpha ? (',' + (to[3] + (from[3] - to[3]) * (1 - pos))) : '') + ')';
+                }
+                return ret;
+            },
+
             initDataClasses: function(userOptions) {
-                var chart = this.chart,
+                var axis = this,
+                    chart = this.chart,
                     dataClasses,
                     colorCounter = 0,
                     colorCount = chart.options.chart.colorCount,
@@ -146,7 +163,8 @@
                                 colorCounter = 0;
                             }
                         } else {
-                            dataClass.color = color(options.minColor).tweenTo(
+                            dataClass.color = axis.tweenColors(
+                                color(options.minColor),
                                 color(options.maxColor),
                                 len < 2 ? 0.5 : i / (len - 1) // #3219
                             );
@@ -155,8 +173,8 @@
                 });
             },
 
-            initStops: function() {
-                this.stops = this.options.stops || [
+            initStops: function(userOptions) {
+                this.stops = userOptions.stops || [
                     [0, this.options.minColor],
                     [1, this.options.maxColor]
                 ];
@@ -200,13 +218,6 @@
                 }
             },
 
-            normalizedValue: function(value) {
-                if (this.isLog) {
-                    value = this.val2lin(value);
-                }
-                return 1 - ((this.max - value) / ((this.max - this.min) || 1));
-            },
-
             /**
              * Translate from a value to a color
              */
@@ -238,7 +249,10 @@
 
                 } else {
 
-                    pos = this.normalizedValue(value);
+                    if (this.isLog) {
+                        value = this.val2lin(value);
+                    }
+                    pos = 1 - ((this.max - value) / ((this.max - this.min) || 1));
                     i = stops.length;
                     while (i--) {
                         if (pos > stops[i][0]) {
@@ -251,7 +265,8 @@
                     // The position within the gradient
                     pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
 
-                    color = from.color.tweenTo(
+                    color = this.tweenColors(
+                        from.color,
                         to.color,
                         pos
                     );
@@ -293,6 +308,7 @@
             setLegendColor: function() {
                 var grad,
                     horiz = this.horiz,
+                    options = this.options,
                     reversed = this.reversed,
                     one = reversed ? 1 : 0,
                     zero = reversed ? 0 : 1;
@@ -305,7 +321,10 @@
                         x2: grad[2],
                         y2: grad[3]
                     },
-                    stops: this.stops
+                    stops: options.stops || [
+                        [0, options.minColor],
+                        [1, options.maxColor]
+                    ]
                 };
             },
 
@@ -344,15 +363,11 @@
             visible: true,
             setVisible: noop,
             getSeriesExtremes: function() {
-                var series = this.series,
-                    i = series.length;
-                this.dataMin = Infinity;
-                this.dataMax = -Infinity;
-                while (i--) {
-                    if (series[i].valueMin !== undefined) {
-                        this.dataMin = Math.min(this.dataMin, series[i].valueMin);
-                        this.dataMax = Math.max(this.dataMax, series[i].valueMax);
-                    }
+                var series;
+                if (this.series.length) {
+                    series = this.series[0];
+                    this.dataMin = series.valueMin;
+                    this.dataMax = series.valueMax;
                 }
             },
             drawCrosshair: function(e, point) {
@@ -407,7 +422,7 @@
                 // When updating data classes, destroy old items and make sure new ones are created (#3207)
                 if (newOptions.dataClasses && legend.allItems) {
                     each(legend.allItems, function(item) {
-                        if (item.isDataClass && item.legendGroup) {
+                        if (item.isDataClass) {
                             item.legendGroup.destroy();
                         }
                     });
@@ -423,16 +438,6 @@
                     this.setLegendColor();
                     legend.colorizeItem(this, true);
                 }
-            },
-
-            /**
-             * Extend basic axis remove by also removing the legend item.
-             */
-            remove: function() {
-                if (this.legendItem) {
-                    this.chart.legend.destroyItem(this);
-                }
-                Axis.prototype.remove.call(this);
             },
 
             /**
@@ -503,15 +508,7 @@
          */
         each(['fill', 'stroke'], function(prop) {
             H.Fx.prototype[prop + 'Setter'] = function() {
-                this.elem.attr(
-                    prop,
-                    color(this.start).tweenTo(
-                        color(this.end),
-                        this.pos
-                    ),
-                    null,
-                    true
-                );
+                this.elem.attr(prop, ColorAxis.prototype.tweenColors(color(this.start), color(this.end), this.pos));
             };
         });
 
@@ -573,10 +570,11 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2017 Torstein Honsi
+         * (c) 2010-2016 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
+        'use strict';
         var defined = H.defined,
             each = H.each,
             noop = H.noop,
@@ -586,13 +584,6 @@
          * Mixin for maps and heatmaps
          */
         H.colorPointMixin = {
-            /**
-             * Color points have a value option that determines whether or not it is a null point
-             */
-            isValid: function() {
-                return this.value !== null;
-            },
-
             /**
              * Set the visibility of a single point
              */
@@ -606,14 +597,6 @@
                         point[key][method]();
                     }
                 });
-            },
-            setState: function(state) {
-                H.Point.prototype.setState.call(this, state);
-                if (this.graphic) {
-                    this.graphic.attr({
-                        zIndex: state === 'hover' ? 1 : 0
-                    });
-                }
             }
         };
 
@@ -644,7 +627,7 @@
                         color;
 
                     color = point.options.color ||
-                        (point.isNull ? nullColor : (colorAxis && value !== undefined) ? colorAxis.toColor(value, point) : point.color || series.color);
+                        (value === null ? nullColor : (colorAxis && value !== undefined) ? colorAxis.toColor(value, point) : point.color || series.color);
 
                     if (color) {
                         point.color = color;
@@ -667,10 +650,11 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2017 Torstein Honsi
+         * (c) 2010-2016 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
+        'use strict';
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             each = H.each,
@@ -769,9 +753,7 @@
                 seriesTypes.column.prototype.drawPoints.call(this);
 
                 each(this.points, function(point) {
-
-                    point.graphic.attr(this.colorAttribs(point));
-
+                    point.graphic.attr(this.colorAttribs(point, point.state));
                 }, this);
             },
             animate: noop,

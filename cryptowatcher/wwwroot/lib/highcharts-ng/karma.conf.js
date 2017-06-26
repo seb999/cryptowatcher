@@ -16,7 +16,6 @@ module.exports = function(config) {
       'node_modules/angular/angular.js',
       'node_modules/jquery/dist/jquery.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      'test/highcharts-mock.js',
       'src/*.js',
       'test/spec/*.js'
     ],
@@ -69,7 +68,6 @@ module.exports = function(config) {
       require('karma-jasmine'),
       require('karma-coverage'),
       require('karma-phantomjs-launcher'),
-      require('karma-chrome-launcher'),
     ]
 
   });

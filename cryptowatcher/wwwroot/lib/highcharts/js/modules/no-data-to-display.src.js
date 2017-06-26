@@ -1,13 +1,12 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.0 (2016-09-29)
  * Plugin for displaying a message when there is no data visible in chart.
  *
- * (c) 2010-2017 Highsoft AS
+ * (c) 2010-2016 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -19,11 +18,12 @@
         /**
          * Plugin for displaying a message when there is no data visible in chart.
          *
-         * (c) 2010-2017 Highsoft AS
+         * (c) 2010-2016 Highsoft AS
          * Author: Oystein Moseng
          *
          * License: www.highcharts.com/license
          */
+        'use strict';
 
         var seriesTypes = H.seriesTypes,
             chartPrototype = H.Chart.prototype,
@@ -49,28 +49,19 @@
 
 
 
+        /**
+         * Define hasData functions for series. These return true if there are data points on this series within the plot area
+         */
+        function hasDataPie() {
+            return !!this.points.length; /* != 0 */
+        }
 
-        // Define hasData function for non-cartesian seris. Returns true if the series
-        // has points at all.
-        each([
-            'bubble',
-            'gauge',
-            'heatmap',
-            'pie',
-            'treemap',
-            'waterfall'
-        ], function(type) {
+        each(['pie', 'gauge', 'waterfall', 'bubble', 'treemap'], function(type) {
             if (seriesTypes[type]) {
-                seriesTypes[type].prototype.hasData = function() {
-                    return !!this.points.length; /* != 0 */
-                };
+                seriesTypes[type].prototype.hasData = hasDataPie;
             }
         });
 
-        /**
-         * Define hasData functions for series. These return true if there are data
-         * points on this series within the plot area.
-         */
         H.Series.prototype.hasData = function() {
             return this.visible && this.dataMax !== undefined && this.dataMin !== undefined; // #3703
         };
@@ -132,7 +123,7 @@
                 }
             }
 
-            return chart.loadingShown; // #4588
+            return false;
         };
 
         /**

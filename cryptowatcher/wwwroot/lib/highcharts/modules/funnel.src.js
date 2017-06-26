@@ -1,12 +1,11 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.0 (2016-09-29)
  * Highcharts funnel module
  *
- * (c) 2010-2017 Torstein Honsi
+ * (c) 2010-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,17 +17,17 @@
         /**
          * Highcharts funnel module
          *
-         * (c) 2010-2017 Torstein Honsi
+         * (c) 2010-2016 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
         /* eslint indent:0 */
+        'use strict';
 
         // create shortcuts
         var seriesType = Highcharts.seriesType,
             seriesTypes = Highcharts.seriesTypes,
             noop = Highcharts.noop,
-            pick = Highcharts.pick,
             each = Highcharts.each;
 
 
@@ -47,7 +46,7 @@
                 dataLabels: {
                     //position: 'right',
                     connectorWidth: 1
-                    //connectorColor: null
+                        //connectorColor: null
                 },
                 states: {
                     select: {
@@ -69,7 +68,7 @@
                 translate: function() {
 
                     var
-                        // Get positions - either an integer or a percentage string must be given
+                    // Get positions - either an integer or a percentage string must be given
                         getLength = function(length, relativeTo) {
                             return (/%$/).test(length) ?
                                 relativeTo * parseInt(length, 10) / 100 :
@@ -116,8 +115,8 @@
                             neckWidth :
                             neckWidth + (width - neckWidth) * (1 - (y - top) / (height - neckHeight));
                     };
-                    series.getX = function(y, half, point) {
-                        return centerX + (half ? -1 : 1) * ((getWidthAt(reversed ? 2 * centerY - y : y) / 2) + point.labelDistance);
+                    series.getX = function(y, half) {
+                        return centerX + (half ? -1 : 1) * ((getWidthAt(reversed ? 2 * centerY - y : y) / 2) + options.dataLabels.distance);
                     };
 
                     // Expose
@@ -230,6 +229,13 @@
                         }
                     });
                 },
+                /**
+                 * Draw a single point (wedge)
+                 * @param {Object} point The point object
+                 * @param {Object} color The color of the point
+                 * @param {Number} brightness The brightness relative to the color
+                 */
+                drawPoints: seriesTypes.column.prototype.drawPoints,
 
                 /**
                  * Funnel items don't have angles (#2289)
@@ -244,9 +250,8 @@
                  * Extend the pie data label method
                  */
                 drawDataLabels: function() {
-                    var series = this,
-                        data = series.data,
-                        labelDistance = series.options.dataLabels.distance,
+                    var data = this.data,
+                        labelDistance = this.options.dataLabels.distance,
                         leftSide,
                         sign,
                         point,
@@ -257,7 +262,7 @@
                     // In the original pie label anticollision logic, the slots are distributed
                     // from one labelDistance above to one labelDistance below the pie. In funnels
                     // we don't want this.
-                    series.center[2] -= 2 * labelDistance;
+                    this.center[2] -= 2 * labelDistance;
 
                     // Set the label position array for each point.
                     while (i--) {
@@ -265,21 +270,15 @@
                         leftSide = point.half;
                         sign = leftSide ? 1 : -1;
                         y = point.plotY;
-                        point.labelDistance = pick(
-                            point.options.dataLabels && point.options.dataLabels.distance,
-                            labelDistance
-                        );
-
-                        series.maxLabelDistance = Math.max(point.labelDistance, series.maxLabelDistance || 0);
-                        x = series.getX(y, leftSide, point);
+                        x = this.getX(y, leftSide);
 
                         // set the anchor point for data labels
                         point.labelPos = [
                             0, // first break of connector
                             y, // a/a
-                            x + (point.labelDistance - 5) * sign, // second break, right outside point shape
+                            x + (labelDistance - 5) * sign, // second break, right outside point shape
                             y, // a/a
-                            x + point.labelDistance * sign, // landing point for connector
+                            x + labelDistance * sign, // landing point for connector
                             y, // a/a
                             leftSide ? 'right' : 'left', // alignment
                             0 // center angle

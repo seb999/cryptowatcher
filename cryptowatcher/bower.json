@@ -11,7 +11,7 @@
     "angular-ui-grid": "4.0.4",
     "ag-grid": "10.1.0",
     "highcharts": "5.0.12",
-    "highcharts-ng": "1.1.0"
+    "highcharts-ng": "0.0.14"
   },
   "resolutions": {
     "angular": ">=1.4.0"

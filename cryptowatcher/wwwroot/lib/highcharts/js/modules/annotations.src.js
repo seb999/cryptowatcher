@@ -1,11 +1,10 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.0 (2016-09-29)
  *
- * (c) 2009-2017 Torstein Honsi
+ * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -15,10 +14,11 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * (c) 2009-2017 Torstein Honsi
+         * (c) 2009-2016 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
+        'use strict';
 
         var defined = H.defined,
             isNumber = H.isNumber,
@@ -172,6 +172,7 @@
                     shapeParams,
                     linkType,
                     series,
+                    param,
                     bbox,
                     x,
                     y;
@@ -214,13 +215,13 @@
                     shapeParams = extend({}, options.shape.params);
 
                     if (options.units === 'values') {
-                        H.objectEach(shapeParams, function(val, param) {
+                        for (param in shapeParams) {
                             if (inArray(param, ['width', 'x']) > -1) {
                                 shapeParams[param] = xAxis.translate(shapeParams[param]);
                             } else if (inArray(param, ['height', 'y']) > -1) {
                                 shapeParams[param] = yAxis.translate(shapeParams[param]);
                             }
-                        });
+                        }
 
                         if (shapeParams.width) {
                             shapeParams.width -= xAxis.toPixels(0) - xAxis.left;

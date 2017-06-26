@@ -35,7 +35,7 @@ namespace cryptowatcher.Controllers.API
                 foreach (var item in myDico)
                 {
                     //For ecdc so reduce number of call in proxy
-                    if (item.Key.Substring(0, 3) != "BTC" ) continue;
+                    if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS") continue;
 
                     item.Value.Name = item.Key;
                     if (isIndicatorAdded)
