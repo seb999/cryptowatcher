@@ -24,6 +24,23 @@
         columnDefs: columnDefUI
     };
 
+    $scope.getTemplateUI = function (value) {
+        if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
+        if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };
+        if (value.substring(0, 3) === 'ETH') { return "/images/eth.png" };
+        if (value.substring(0, 3) === 'USD') { return "/images/usdt.png" };
+        return "";
+    };
+
+    $scope.getRsiTemplateUI = function (valueRsi) {
+        if (valueRsi === 'loading RSI') {
+            $scope.isLoadingRsi = true;
+            return "images/loader.gif"
+        };
+        $scope.isLoadingRsi = false;
+        return "";
+    }; 
+
     $scope.loadData = function () {
         $scope.loaderVisibility = true;
         cryptoApiService.getPoloniexData().then(function (response) {
@@ -42,41 +59,26 @@
         }, function (error) { $log.error(error.message); });
     };
 
-    $scope.getTemplateUI = function (value) {
-        if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
-        if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };
-        if (value.substring(0, 3) === 'ETH') { return "/images/eth.png" };
-        if (value.substring(0, 3) === 'USD') { return "/images/usdt.png" };
-        return "";
-    }; 
+    $scope.loadData();
 
-    $scope.getRsiTemplateUI = function (valueRsi) {
-        if (valueRsi === 'loading RSI') {
-            $scope.isLoadingRsi = true;
-            return "images/loader.gif"
-        };
-        $scope.isLoadingRsi = false;
-        return "";
-    }; 
-
+    //Command : open chart
     $scope.openChart = function (currencyName) {
         $scope.showChart = true;
-        $scope.loadChartData(currencyName);
+        $scope.currencyName = currencyName;
+        $scope.chartType = 'line';
+        $scope.loadChartData();
     }; 
+
+    //Command : change chart type
+    $scope.changeChartType = function (chartType) {
+        $scope.chartType = chartType;
+        $scope.displayChart();
+    };
 
     //command : refresh data
     $scope.refreshData = function () {
         $scope.loadData();
     };
-
-    $scope.changeChartType = function (chartType) {
-        console.log(chartType);
-    };
-
-    $scope.loadData();
-
-
-   
 
     //-----------------highchart---------------------
     groupingUnits = [[
@@ -144,27 +146,35 @@
         },
     }
 
-    $scope.loadChartData = function (currencyName) {
+    $scope.loadChartData = function () {
 
         $scope.chartConfig1.loading = true;
-        cryptoApiService.getPoloniexChartData(currencyName).then(function (response) {    
+        cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {    
+           
+            $scope.chartVolume = [];
+            $scope.chartData = [];
             
-            lineData = [];
-            volume = [];
-            candelData = [];
             for (var i = 0; i < response.data.length; i++) {
-
-                lineData.push([response.data[i].date * 1000, response.data[i].close]);
-                volume.push([response.data[i].date * 1000, response.data[i].volume]);
-                candelData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
+                $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
+                $scope.chartData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
             }
 
+            $scope.displayChart();
+
+        }, function (error) {
+            $log.error(error.message);
+        });
+    };
+
+    $scope.displayChart = function (currencyName) {
+        $scope.chartConfig1.loading = false;
+        
             $scope.chartConfig1.series = [];
             $scope.chartConfig1.series.push({
-                id: currencyName,
-                name: currencyName,
-                data: candelData,
-                type: 'candlestick',
+                id: $scope.currencyName,
+                name: $scope.currencyName,
+                data: $scope.chartData,
+                type: $scope.chartType,
                 dataGrouping: {
                     units: groupingUnits
                 }
@@ -172,20 +182,26 @@
 
             $scope.chartConfig1.series.push({
                 name: 'volume',
-                data: volume,
+                data: $scope.chartVolume,
                 type: 'column',
                 yAxis: 1,
                 dataGrouping: {
                     units: groupingUnits
                 }
             });
-
-            $scope.chartConfig1.loading = false;
-
-        }, function (error) {
-            $log.error(error.message);
-        });
     };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -24,7 +24,7 @@
     </div>
     <div>
             <div class="row" ng-if="showChart" style="float:right; margin-right:2px">
-                <select ng-model="chartType" ng-click="changeChartType(chartType);">
+                <select ng-model="chartType" ng-change="changeChartType(chartType);">
                     <option value="line">Line</option>
                     <option value="candlestick">candlestick</option>
                 </select>
