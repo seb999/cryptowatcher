@@ -1,4 +1,4 @@
-﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, cryptoApiService) {
+﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
 
     $scope.isSecondLoad = false;
     $scope.loaderVisibility = false;
@@ -23,8 +23,6 @@
         data: null,
         columnDefs: columnDefUI
     };
-
-    //https://www.highcharts.com/plugin-registry/single/24/Indicators
 
     $scope.getTemplateUI = function (value) {
         if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
@@ -65,10 +63,27 @@
 
     //Command : open chart
     $scope.openChart = function (currencyName) {
-        $scope.showChart = true;
+        //$scope.showChart = true;
         $scope.currencyName = currencyName;
         $scope.chartType = 'line';
-        $scope.loadChartData();
+        //$scope.loadChartData();
+
+
+        var modalInstance = $uibModal.open({
+            templateUrl: '../../App/View/home/homeChartView.html',
+            controller: 'homeChartViewModel',
+            backdrop: 'static',
+            size: 'lg',
+            cache: false,
+            resolve: {
+                currencyName: function () {
+                    return $scope.currencyName;
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+            loadActivityList(activityIndex);
+        });
     }; 
 
     //Command : change chart type
@@ -88,7 +103,11 @@
         [1]                             // allowed multiples
     ]],
 
-    $scope.chartConfig1 = {
+        $scope.chartConfig = {
+        chart: {
+            zoomType: 'x'
+        },
+        chartType: 'stock',
         title: {
             text: ''
         },
@@ -96,10 +115,6 @@
         useHighStocks: true,
         loading: true,
         options: {
-            chart: {
-                type: 'line',
-                zoomType: 'x',
-            },
             rangeSelector: {
                 enabled: true
             },
@@ -120,13 +135,14 @@
             minTickInterval: 5,
             minorTickInterval: 1
         },
+        
         yAxis: [{
             labels: {
                 align: 'right',
                 x: -3
             },
             title: {
-                text: ''
+                text: '',
             },
             height: '65%',
             lineWidth: 2
@@ -150,7 +166,7 @@
 
     $scope.loadChartData = function () {
 
-        $scope.chartConfig1.loading = true;
+        $scope.chartConfig.loading = true;
         cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {    
            
             $scope.chartVolume = [];
@@ -169,28 +185,28 @@
     };
 
     $scope.displayChart = function (currencyName) {
-        $scope.chartConfig1.loading = false;
+        $scope.chartConfig.loading = false;
         
-            $scope.chartConfig1.series = [];
-            $scope.chartConfig1.series.push({
-                id: $scope.currencyName,
-                name: $scope.currencyName,
-                data: $scope.chartData,
-                type: $scope.chartType,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
+        $scope.chartConfig.series = [];
+        $scope.chartConfig.series.push({
+            name: $scope.currencyName,
+            data: $scope.chartData,
+            type: $scope.chartType,
+            yAxis: 0,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
 
-            $scope.chartConfig1.series.push({
-                name: 'volume',
-                data: $scope.chartVolume,
-                type: 'column',
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
+        $scope.chartConfig.series.push({
+            name: 'volume',
+            data: $scope.chartVolume,
+            type: 'column',
+            yAxis: 1,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
     };
 
 

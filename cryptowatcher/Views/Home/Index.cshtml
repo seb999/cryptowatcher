@@ -17,9 +17,9 @@
             <button type="button" class="btn btn-labeled btn-default btn-sm" ng-click="refreshData();" style="color:dodgerblue;">
                 <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span> Refresh
             </button>
-            <button ng-click="showChart = !showChart" uib-tooltip="Chart" class="btn btn-labeled btn-default btn-sm">
+            @*<button ng-click="showChart = !showChart" uib-tooltip="Chart" class="btn btn-labeled btn-default btn-sm">
                 <span class="btn-label"><i class="glyphicon glyphicon-stats" style="color:dodgerblue;"></i>&nbsp;</span>
-            </button>
+            </button>*@
         </div>
     </div>
     <div>
@@ -31,8 +31,7 @@
             </div>
             <div class="row" ng-if="showChart">
                 <div class="col-md-12" style="padding:5px">
-                    
-                    <highchart config="chartConfig1" style="width:100%;height:350px" ng-cloak></highchart>
+                    <highchart config="chartConfig" style="width:100%;height:500px" ng-cloak></highchart>
                 </div>
             </div>
         </div>
@@ -46,6 +45,7 @@
     <script src="~/App/app.js" asp-append-version="true"></script>
     <script src="~/App/cryptoApiService.js" asp-append-version="true"></script>
     <script src="~/App/ViewModel/Home/homeIndexViewModel.js" asp-append-version="true"></script>
+    <script src="~/App/ViewModel/Home/homeChartViewModel.js" asp-append-version="true"></script>
     <link href="~/css/loader.css" rel="stylesheet" />
     <script language="javascript">
         $(".overlay").show();
