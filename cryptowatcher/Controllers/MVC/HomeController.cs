@@ -31,5 +31,10 @@ namespace cryptowatcher.Controllers
         {
             return View();
         }
+
+        public IActionResult TestHighchart()
+        {
+            return View();
+        }
     }
 }
