@@ -1,0 +1,53 @@
+﻿<div class="modal-header">
+    <div class="row">
+        <div class="col-md-1">
+            <button ng-disabled="previousButtonDisabled" class="btn btn-default btn" ng-click="previousActivity()"><i style="color:#00A1E2" tooltip-placement="right" uib-tooltip="Previous" class="glyphicon glyphicon-backward"></i> </button>
+        </div>
+
+        <div class="col-md-10 text-center">
+            <h3 style="display: inline">{{currencyName}}</h3>
+        </div>
+
+        <div class="col-md-1">
+            <button ng-disabled="nextButtonDisabled" class="btn btn-default btn" ng-click="nextActivity()" style="margin-left:5px"><i style="color:#00A1E2" tooltip-placement="left" uib-tooltip="Next" class="glyphicon glyphicon-forward"></i> </button>
+        </div>
+    </div>
+    <!--Loader-->
+    <div ng-show="loaderVisibility" class="overlay"></div>
+    <div ng-show="loaderVisibility" id="loaderModernize" style="top:60px !important"></div>
+</div>
+
+<div class="modal-body" style="padding-top:0px;background-color: #f5f5f5">
+    <!--<select class="mySelect form-control input-sm" ng-model="selectedStrategy" ng-options="p as p.Text for p in strategyList" />-->
+    <uib-tabset active="0" ng-cloak>
+        <uib-tab index="0" ng-click="tabActivitySelected()">
+            <uib-tab-heading>
+                Chart
+            </uib-tab-heading>
+
+            <div class="row" style="padding-top:7px; padding-right:0px;padding-left:0px; padding-bottom:7px; background-color:#72bedd !important">
+                <select ng-model="chartType" ng-change="changeChartType(chartType);" style="margin-left:20px">
+                    <option value="area">area</option>
+                    <option value="line">line</option>
+                    <option value="candlestick">candlestick</option>
+                </select>
+            </div>
+            <div class="row">
+                <highchart config="chartConfig1" style="width:100%;height:500px" ng-cloak></highchart>
+            </div>
+        </uib-tab>
+
+        <uib-tab index="1" ng-click="tabExpenseSelected()" disable="isAdd">
+            <uib-tab-heading>
+                Other (we can add additional info in this tab or remove it)
+            </uib-tab-heading>
+        </uib-tab>
+
+    </uib-tabset>
+</div>
+
+<div style="clear:both; margin-bottom:20px"></div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-labeled btn-default btn-sm" ng-click="close()" style="color:dodgerblue;"><i class="glyphicon glyphicon-remove-circle"></i> Close</button>
+</div>

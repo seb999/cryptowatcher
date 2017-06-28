@@ -1,11 +1,12 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Data module
  *
- * (c) 2012-2016 Torstein Honsi
+ * (c) 2012-2017 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -17,18 +18,18 @@
         /**
          * Data module
          *
-         * (c) 2012-2016 Torstein Honsi
+         * (c) 2012-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
 
         /* global jQuery */
-        'use strict';
 
         // Utilities
         var win = Highcharts.win,
             doc = win.document,
             each = Highcharts.each,
+            objectEach = Highcharts.objectEach,
             pick = Highcharts.pick,
             inArray = Highcharts.inArray,
             isNumber = Highcharts.isNumber,
@@ -118,7 +119,6 @@
                 // the mapping options.
                 each((options && options.seriesMapping) || [], function(mapping) {
                     var builder = new SeriesBuilder(),
-                        name,
                         numberOfValueColumnsNeeded = individualCounts[seriesIndex] || getValueCount(globalType),
                         seriesArr = (chartOptions && chartOptions.series) || [],
                         series = seriesArr[seriesIndex] || {},
@@ -129,11 +129,11 @@
                     builder.addColumnReader(mapping.x, 'x');
 
                     // Add all column mappings
-                    for (name in mapping) {
-                        if (mapping.hasOwnProperty(name) && name !== 'x') {
-                            builder.addColumnReader(mapping[name], name);
+                    objectEach(mapping, function(val, name) {
+                        if (name !== 'x') {
+                            builder.addColumnReader(val, name);
                         }
-                    }
+                    });
 
                     // Add missing columns
                     for (i = 0; i < numberOfValueColumnsNeeded; i++) {
@@ -776,7 +776,7 @@
                             type: type
                         };
                         if (type === 'category') {
-                            chartOptions.xAxis.nameToX = false;
+                            chartOptions.xAxis.uniqueNames = false;
                         }
                     }
 

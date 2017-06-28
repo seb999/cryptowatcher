@@ -1,11 +1,12 @@
 /**
- * @license Highmaps JS v5.0.0 (2016-09-29)
+ * @license Highmaps JS v5.0.12 (2017-05-24)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
- * (c) 2011-2016 Torstein Honsi
+ * (c) 2011-2017 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -15,11 +16,10 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             each = H.each,
             pick = H.pick,
@@ -133,11 +133,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -179,13 +178,27 @@
 
                 },
                 labels: {
-                    overflow: 'justify'
+                    overflow: 'justify',
+                    rotation: 0
                 },
                 minColor: '#e6ebf5',
                 maxColor: '#003399',
                 tickLength: 5,
                 showInLegend: true
             },
+
+            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
+            keepProps: [
+                'legendGroup',
+                'legendItemHeight',
+                'legendItemWidth',
+                'legendItem',
+                'legendSymbol'
+            ].concat(Axis.prototype.keepProps),
+
+            /**
+             * Initialize the color axis
+             */
             init: function(chart, userOptions) {
                 var horiz = chart.options.legend.layout !== 'vertical',
                     options;
@@ -211,7 +224,7 @@
                 if (userOptions.dataClasses) {
                     this.initDataClasses(userOptions);
                 }
-                this.initStops(userOptions);
+                this.initStops();
 
                 // Override original axis properties
                 this.horiz = horiz;
@@ -221,39 +234,8 @@
                 this.defaultLegendLength = 200;
             },
 
-            /*
-             * Return an intermediate color between two colors, according to pos where 0
-             * is the from color and 1 is the to color.
-             * NOTE: Changes here should be copied
-             * to the same function in drilldown.src.js and solid-gauge-src.js.
-             */
-            tweenColors: function(from, to, pos) {
-                // Check for has alpha, because rgba colors perform worse due to lack of
-                // support in WebKit.
-                var hasAlpha,
-                    ret;
-
-                // Unsupported color, return to-color (#3920)
-                if (!to.rgba.length || !from.rgba.length) {
-                    ret = to.input || 'none';
-
-                    // Interpolate
-                } else {
-                    from = from.rgba;
-                    to = to.rgba;
-                    hasAlpha = (to[3] !== 1 || from[3] !== 1);
-                    ret = (hasAlpha ? 'rgba(' : 'rgb(') +
-                        Math.round(to[0] + (from[0] - to[0]) * (1 - pos)) + ',' +
-                        Math.round(to[1] + (from[1] - to[1]) * (1 - pos)) + ',' +
-                        Math.round(to[2] + (from[2] - to[2]) * (1 - pos)) +
-                        (hasAlpha ? (',' + (to[3] + (from[3] - to[3]) * (1 - pos))) : '') + ')';
-                }
-                return ret;
-            },
-
             initDataClasses: function(userOptions) {
-                var axis = this,
-                    chart = this.chart,
+                var chart = this.chart,
                     dataClasses,
                     colorCounter = 0,
                     colorCount = chart.options.chart.colorCount,
@@ -282,8 +264,7 @@
                                 colorCounter = 0;
                             }
                         } else {
-                            dataClass.color = axis.tweenColors(
-                                color(options.minColor),
+                            dataClass.color = color(options.minColor).tweenTo(
                                 color(options.maxColor),
                                 len < 2 ? 0.5 : i / (len - 1) // #3219
                             );
@@ -292,8 +273,8 @@
                 });
             },
 
-            initStops: function(userOptions) {
-                this.stops = userOptions.stops || [
+            initStops: function() {
+                this.stops = this.options.stops || [
                     [0, this.options.minColor],
                     [1, this.options.maxColor]
                 ];
@@ -337,6 +318,13 @@
                 }
             },
 
+            normalizedValue: function(value) {
+                if (this.isLog) {
+                    value = this.val2lin(value);
+                }
+                return 1 - ((this.max - value) / ((this.max - this.min) || 1));
+            },
+
             /**
              * Translate from a value to a color
              */
@@ -368,10 +356,7 @@
 
                 } else {
 
-                    if (this.isLog) {
-                        value = this.val2lin(value);
-                    }
-                    pos = 1 - ((this.max - value) / ((this.max - this.min) || 1));
+                    pos = this.normalizedValue(value);
                     i = stops.length;
                     while (i--) {
                         if (pos > stops[i][0]) {
@@ -384,8 +369,7 @@
                     // The position within the gradient
                     pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
 
-                    color = this.tweenColors(
-                        from.color,
+                    color = from.color.tweenTo(
                         to.color,
                         pos
                     );
@@ -427,7 +411,6 @@
             setLegendColor: function() {
                 var grad,
                     horiz = this.horiz,
-                    options = this.options,
                     reversed = this.reversed,
                     one = reversed ? 1 : 0,
                     zero = reversed ? 0 : 1;
@@ -440,10 +423,7 @@
                         x2: grad[2],
                         y2: grad[3]
                     },
-                    stops: options.stops || [
-                        [0, options.minColor],
-                        [1, options.maxColor]
-                    ]
+                    stops: this.stops
                 };
             },
 
@@ -482,11 +462,15 @@
             visible: true,
             setVisible: noop,
             getSeriesExtremes: function() {
-                var series;
-                if (this.series.length) {
-                    series = this.series[0];
-                    this.dataMin = series.valueMin;
-                    this.dataMax = series.valueMax;
+                var series = this.series,
+                    i = series.length;
+                this.dataMin = Infinity;
+                this.dataMax = -Infinity;
+                while (i--) {
+                    if (series[i].valueMin !== undefined) {
+                        this.dataMin = Math.min(this.dataMin, series[i].valueMin);
+                        this.dataMax = Math.max(this.dataMax, series[i].valueMax);
+                    }
                 }
             },
             drawCrosshair: function(e, point) {
@@ -541,7 +525,7 @@
                 // When updating data classes, destroy old items and make sure new ones are created (#3207)
                 if (newOptions.dataClasses && legend.allItems) {
                     each(legend.allItems, function(item) {
-                        if (item.isDataClass) {
+                        if (item.isDataClass && item.legendGroup) {
                             item.legendGroup.destroy();
                         }
                     });
@@ -557,6 +541,16 @@
                     this.setLegendColor();
                     legend.colorizeItem(this, true);
                 }
+            },
+
+            /**
+             * Extend basic axis remove by also removing the legend item.
+             */
+            remove: function() {
+                if (this.legendItem) {
+                    this.chart.legend.destroyItem(this);
+                }
+                Axis.prototype.remove.call(this);
             },
 
             /**
@@ -627,7 +621,15 @@
          */
         each(['fill', 'stroke'], function(prop) {
             H.Fx.prototype[prop + 'Setter'] = function() {
-                this.elem.attr(prop, ColorAxis.prototype.tweenColors(color(this.start), color(this.end), this.pos));
+                this.elem.attr(
+                    prop,
+                    color(this.start).tweenTo(
+                        color(this.end),
+                        this.pos
+                    ),
+                    null,
+                    true
+                );
             };
         });
 
@@ -689,11 +691,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var defined = H.defined,
             each = H.each,
             noop = H.noop,
@@ -703,6 +704,13 @@
          * Mixin for maps and heatmaps
          */
         H.colorPointMixin = {
+            /**
+             * Color points have a value option that determines whether or not it is a null point
+             */
+            isValid: function() {
+                return this.value !== null;
+            },
+
             /**
              * Set the visibility of a single point
              */
@@ -716,6 +724,14 @@
                         point[key][method]();
                     }
                 });
+            },
+            setState: function(state) {
+                H.Point.prototype.setState.call(this, state);
+                if (this.graphic) {
+                    this.graphic.attr({
+                        zIndex: state === 'hover' ? 1 : 0
+                    });
+                }
             }
         };
 
@@ -746,7 +762,7 @@
                         color;
 
                     color = point.options.color ||
-                        (value === null ? nullColor : (colorAxis && value !== undefined) ? colorAxis.toColor(value, point) : point.color || series.color);
+                        (point.isNull ? nullColor : (colorAxis && value !== undefined) ? colorAxis.toColor(value, point) : point.color || series.color);
 
                     if (color) {
                         point.color = color;
@@ -769,11 +785,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             Chart = H.Chart,
             doc = H.doc,
@@ -795,70 +810,159 @@
             }
         }
 
-        // Add events to the Chart object itself
-        extend(Chart.prototype, {
-            renderMapNavigation: function() {
-                var chart = this,
-                    options = this.options.mapNavigation,
-                    buttons = options.buttons,
-                    n,
-                    button,
-                    buttonOptions,
-                    attr,
-                    states,
-                    hoverStates,
-                    selectStates,
-                    outerHandler = function(e) {
-                        this.handler.call(chart, e);
-                        stopEvent(e); // Stop default click event (#4444)
-                    };
+        /**
+         * The MapNavigation handles buttons for navigation in addition to mousewheel
+         * and doubleclick handlers for chart zooming.
+         * @param {Chart} chart The Chart instance.
+         */
+        function MapNavigation(chart) {
+            this.init(chart);
+        }
 
-                if (pick(options.enableButtons, options.enabled) && !chart.renderer.forExport) {
-                    chart.mapNavButtons = [];
-                    for (n in buttons) {
-                        if (buttons.hasOwnProperty(n)) {
-                            buttonOptions = merge(options.buttonOptions, buttons[n]);
+        /**
+         * Initiator function.
+         * @param  {Chart} chart The Chart instance.
+         */
+        MapNavigation.prototype.init = function(chart) {
+            this.chart = chart;
+            chart.mapNavButtons = [];
+        };
+
+        /**
+         * Update the map navigation with new options. Calling this is the same as 
+         * calling `chart.update({ mapNavigation: {} })`. 
+         * @param  {Object} options New options for the map navigation.
+         */
+        MapNavigation.prototype.update = function(options) {
+            var chart = this.chart,
+                o = chart.options.mapNavigation,
+                buttonOptions,
+                attr,
+                states,
+                hoverStates,
+                selectStates,
+                outerHandler = function(e) {
+                    this.handler.call(chart, e);
+                    stopEvent(e); // Stop default click event (#4444)
+                },
+                mapNavButtons = chart.mapNavButtons;
+
+            // Merge in new options in case of update, and register back to chart
+            // options.
+            if (options) {
+                o = chart.options.mapNavigation =
+                    merge(chart.options.mapNavigation, options);
+            }
+
+            // Destroy buttons in case of dynamic update
+            while (mapNavButtons.length) {
+                mapNavButtons.pop().destroy();
+            }
+
+            if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
+
+                H.objectEach(o.buttons, function(button, n) {
+                    buttonOptions = merge(o.buttonOptions, button);
 
 
-                            // Presentational
-                            attr = buttonOptions.theme;
-                            attr.style = merge(buttonOptions.theme.style, buttonOptions.style); // #3203
-                            states = attr.states;
-                            hoverStates = states && states.hover;
-                            selectStates = states && states.select;
+                    // Presentational
+                    attr = buttonOptions.theme;
+                    attr.style = merge(
+                        buttonOptions.theme.style,
+                        buttonOptions.style // #3203
+                    );
+                    states = attr.states;
+                    hoverStates = states && states.hover;
+                    selectStates = states && states.select;
 
 
-                            button = chart.renderer.button(
-                                    buttonOptions.text,
-                                    0,
-                                    0,
-                                    outerHandler,
-                                    attr,
-                                    hoverStates,
-                                    selectStates,
-                                    0,
-                                    n === 'zoomIn' ? 'topbutton' : 'bottombutton'
-                                )
-                                .addClass('highcharts-map-navigation')
-                                .attr({
-                                    width: buttonOptions.width,
-                                    height: buttonOptions.height,
-                                    title: chart.options.lang[n],
-                                    padding: buttonOptions.padding,
-                                    zIndex: 5
-                                })
-                                .add();
-                            button.handler = buttonOptions.onclick;
-                            button.align(extend(buttonOptions, {
-                                width: button.width,
-                                height: 2 * button.height
-                            }), null, buttonOptions.alignTo);
-                            addEvent(button.element, 'dblclick', stopEvent); // Stop double click event (#4444)
-                            chart.mapNavButtons.push(button);
-                        }
+                    button = chart.renderer.button(
+                            buttonOptions.text,
+                            0,
+                            0,
+                            outerHandler,
+                            attr,
+                            hoverStates,
+                            selectStates,
+                            0,
+                            n === 'zoomIn' ? 'topbutton' : 'bottombutton'
+                        )
+                        .addClass('highcharts-map-navigation')
+                        .attr({
+                            width: buttonOptions.width,
+                            height: buttonOptions.height,
+                            title: chart.options.lang[n],
+                            padding: buttonOptions.padding,
+                            zIndex: 5
+                        })
+                        .add();
+                    button.handler = buttonOptions.onclick;
+                    button.align(
+                        extend(buttonOptions, {
+                            width: button.width,
+                            height: 2 * button.height
+                        }),
+                        null,
+                        buttonOptions.alignTo
+                    );
+                    // Stop double click event (#4444)
+                    addEvent(button.element, 'dblclick', stopEvent);
+
+                    mapNavButtons.push(button);
+
+                });
+            }
+
+            this.updateEvents(o);
+        };
+
+        /**
+         * Update events, called internally from the update function. Add new event
+         * handlers, or unbinds events if disabled.
+         * @param  {Object} options Options for map navigation.
+         */
+        MapNavigation.prototype.updateEvents = function(options) {
+            var chart = this.chart;
+
+            // Add the double click event
+            if (
+                pick(options.enableDoubleClickZoom, options.enabled) ||
+                options.enableDoubleClickZoomTo
+            ) {
+                this.unbindDblClick = this.unbindDblClick || addEvent(
+                    chart.container,
+                    'dblclick',
+                    function(e) {
+                        chart.pointer.onContainerDblClick(e);
                     }
-                }
-            },
+                );
+            } else if (this.unbindDblClick) {
+                // Unbind and set unbinder to undefined
+                this.unbindDblClick = this.unbindDblClick();
+            }
+
+            // Add the mousewheel event
+            if (pick(options.enableMouseWheelZoom, options.enabled)) {
+                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(
+                    chart.container,
+                    doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel',
+                    function(e) {
+                        chart.pointer.onContainerMouseWheel(e);
+                        // Issue #5011, returning false from non-jQuery event does
+                        // not prevent default
+                        stopEvent(e);
+                        return false;
+                    }
+                );
+            } else if (this.unbindMouseWheel) {
+                // Unbind and set unbinder to undefined
+                this.unbindMouseWheel = this.unbindMouseWheel();
+            }
+
+        };
+
+        // Add events to the Chart object itself
+        extend(Chart.prototype, /** @lends Chart.prototype */ {
 
             /**
              * Fit an inner box to an outer. If the inner box overflows left or right, align it to the sides of the
@@ -894,7 +998,24 @@
             },
 
             /**
-             * Zoom the map in or out by a certain amount. Less than 1 zooms in, greater than 1 zooms out.
+             * Highmaps only. Zoom in or out of the map. See also {@link Point#zoomTo}.
+             * See {@link Chart#fromLatLonToPoint} for how to get the `centerX` and
+             * `centerY` parameters for a geographic location.
+             *
+             * @param  {Number} [howMuch]
+             *         How much to zoom the map. Values less than 1 zooms in. 0.5 zooms
+             *         in to half the current view. 2 zooms to twice the current view.
+             *         If omitted, the zoom is reset.
+             * @param  {Number} [centerX]
+             *         The X axis position to center around if available space.
+             * @param  {Number} [centerY]
+             *         The Y axis position to center around if available space.
+             * @param  {Number} [mouseX]
+             *         Fix the zoom to this position if possible. This is used for
+             *         example in mousewheel events, where the area under the mouse
+             *         should be fixed as we zoom in.
+             * @param  {Number} [mouseY]
+             *         Fix the zoom to this position if possible.
              */
             mapZoom: function(howMuch, centerXArg, centerYArg, mouseX, mouseY) {
                 /*if (this.isMapZooming) {
@@ -975,39 +1096,20 @@
          * Extend the Chart.render method to add zooming and panning
          */
         wrap(Chart.prototype, 'render', function(proceed) {
-            var chart = this,
-                mapNavigation = chart.options.mapNavigation;
-
             // Render the plus and minus buttons. Doing this before the shapes makes getBBox much quicker, at least in Chrome.
-            chart.renderMapNavigation();
+            this.mapNavigation = new MapNavigation(this);
+            this.mapNavigation.update();
 
-            proceed.call(chart);
-
-            // Add the double click event
-            if (pick(mapNavigation.enableDoubleClickZoom, mapNavigation.enabled) || mapNavigation.enableDoubleClickZoomTo) {
-                addEvent(chart.container, 'dblclick', function(e) {
-                    chart.pointer.onContainerDblClick(e);
-                });
-            }
-
-            // Add the mousewheel event
-            if (pick(mapNavigation.enableMouseWheelZoom, mapNavigation.enabled)) {
-                addEvent(chart.container, doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel', function(e) {
-                    chart.pointer.onContainerMouseWheel(e);
-                    stopEvent(e); // Issue #5011, returning false from non-jQuery event does not prevent default
-                    return false;
-                });
-            }
+            proceed.call(this);
         });
 
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var extend = H.extend,
             pick = H.pick,
             Pointer = H.Pointer,
@@ -1062,17 +1164,19 @@
             }
         });
 
-        // Implement the pinchType option
+        // The pinchType is inferred from mapNavigation options.
         wrap(Pointer.prototype, 'zoomOption', function(proceed) {
+
 
             var mapNavigation = this.chart.options.mapNavigation;
 
-            proceed.apply(this, [].slice.call(arguments, 1));
-
             // Pinch status
             if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-                this.pinchX = this.pinchHor = this.pinchY = this.pinchVert = this.hasZoom = true;
+                this.chart.options.chart.pinchType = 'xy';
             }
+
+            proceed.apply(this, [].slice.call(arguments, 1));
+
         });
 
         // Extend the pinchTranslate method to preserve fixed ratio when zooming
@@ -1098,13 +1202,11 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var color = H.color,
-            ColorAxis = H.ColorAxis,
             colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             doc = H.doc,
@@ -1338,7 +1440,6 @@
                     dataUsed = [],
                     mapMap = {},
                     mapPoint,
-                    transform,
                     mapTransforms = this.chart.mapTransforms,
                     props,
                     i;
@@ -1392,12 +1493,12 @@
 
                 // Cache cos/sin of transform rotation angle
                 if (mapTransforms) {
-                    for (transform in mapTransforms) {
-                        if (mapTransforms.hasOwnProperty(transform) && transform.rotation) {
+                    H.objectEach(mapTransforms, function(transform) {
+                        if (transform.rotation) {
                             transform.cosAngle = Math.cos(transform.rotation);
                             transform.sinAngle = Math.sin(transform.rotation);
                         }
-                    }
+                    });
                 }
 
                 if (mapData) {
@@ -1513,10 +1614,17 @@
             },
 
             /**
-             * Get presentational attributes
+             * Get presentational attributes. In the maps series this runs in both 
+             * styled and non-styled mode, because colors hold data when a colorAxis
+             * is used.
              */
             pointAttribs: function(point, state) {
-                var attr = seriesTypes.column.prototype.pointAttribs.call(this, point, state);
+                var attr;
+
+                attr = seriesTypes.column.prototype.pointAttribs.call(
+                    this, point, state
+                );
+
 
                 // Prevent flickering whan called from setState
                 if (point.isFading) {
@@ -1550,7 +1658,12 @@
                     scaleY,
                     translateX,
                     translateY,
-                    baseTrans = this.baseTrans;
+                    baseTrans = this.baseTrans,
+                    transformGroup,
+                    startTranslateX,
+                    startTranslateY,
+                    startScaleX,
+                    startScaleY;
 
                 // Set a group that handles transform during zooming and panning in order to preserve clipping
                 // on series.group
@@ -1589,11 +1702,13 @@
                     each(series.points, function(point) {
                         if (point.graphic) {
                             if (point.name) {
-                                point.graphic.addClass('highcharts-name-' + point.name.replace(' ', '-').toLowerCase());
+                                point.graphic.addClass('highcharts-name-' + point.name.replace(/ /g, '-').toLowerCase());
                             }
                             if (point.properties && point.properties['hc-key']) {
                                 point.graphic.addClass('highcharts-key-' + point.properties['hc-key'].toLowerCase());
                             }
+
+
                         }
                     });
 
@@ -1629,12 +1744,53 @@
                         translateY = Math.round(translateY);
                     }
 
-                    this.transformGroup.animate({
-                        translateX: translateX,
-                        translateY: translateY,
-                        scaleX: scaleX,
-                        scaleY: scaleY
-                    });
+                    // Animate or move to the new zoom level. In order to prevent
+                    // flickering as the different transform components are set out of 
+                    // sync (#5991), we run a fake animator attribute and set scale and
+                    // translation synchronously in the same step.
+                    // A possible improvement to the API would be to handle this in the
+                    // renderer or animation engine itself, to ensure that when we are 
+                    // animating multiple properties, we make sure that each step for
+                    // each property is performed in the same step. Also, for symbols
+                    // and for transform properties, it should induce a single 
+                    // updateTransform and symbolAttr call.
+                    transformGroup = this.transformGroup;
+                    if (chart.renderer.globalAnimation) {
+                        startTranslateX = transformGroup.attr('translateX');
+                        startTranslateY = transformGroup.attr('translateY');
+                        startScaleX = transformGroup.attr('scaleX');
+                        startScaleY = transformGroup.attr('scaleY');
+                        transformGroup
+                            .attr({
+                                animator: 0
+                            })
+                            .animate({
+                                animator: 1
+                            }, {
+                                step: function(now, fx) {
+                                    transformGroup.attr({
+                                        translateX: startTranslateX +
+                                            (translateX - startTranslateX) * fx.pos,
+                                        translateY: startTranslateY +
+                                            (translateY - startTranslateY) * fx.pos,
+                                        scaleX: startScaleX +
+                                            (scaleX - startScaleX) * fx.pos,
+                                        scaleY: startScaleY +
+                                            (scaleY - startScaleY) * fx.pos
+                                    });
+
+                                }
+                            });
+
+                        // When dragging, animation is off.
+                    } else {
+                        transformGroup.attr({
+                            translateX: translateX,
+                            translateY: translateY,
+                            scaleX: scaleX,
+                            scaleY: scaleY
+                        });
+                    }
 
                 }
 
@@ -1823,7 +1979,7 @@
              */
             onMouseOver: function(e) {
                 clearTimeout(this.colorInterval);
-                if (this.value !== null) {
+                if (this.value !== null || this.series.options.nullInteraction) {
                     Point.prototype.onMouseOver.call(this, e);
                 } else { //#3401 Tooltip doesn't hide when hovering over null points
                     this.series.onMouseOut(e);
@@ -1854,21 +2010,29 @@
                             pos = 1;
                         }
                         if (graphic) {
-                            graphic.attr('fill', ColorAxis.prototype.tweenColors.call(0, hoverColor, normalColor, pos));
+                            graphic.attr(
+                                'fill',
+                                hoverColor.tweenTo(normalColor, pos)
+                            );
                         }
                         if (pos >= 1) {
                             clearTimeout(point.colorInterval);
                         }
                     }, 13);
+                    point.isFading = true;
                 }
-                point.isFading = true;
                 Point.prototype.onMouseOut.call(point);
                 point.isFading = null;
             },
 
 
             /**
-             * Zoom the chart to view a specific area point
+             * Highmaps only. Zoom in on the point using the global animation.
+             *
+             * @function #zoomTo
+             * @memberOf Point
+             * @sample maps/members/point-zoomto/
+             *         Zoom to points from butons
              */
             zoomTo: function() {
                 var point = this,
@@ -1891,11 +2055,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
@@ -1931,11 +2094,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType;
@@ -1971,12 +2133,355 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
-        var extend = H.extend,
+        var arrayMax = H.arrayMax,
+            arrayMin = H.arrayMin,
+            Axis = H.Axis,
+            color = H.color,
+            each = H.each,
+            isNumber = H.isNumber,
+            noop = H.noop,
+            pick = H.pick,
+            pInt = H.pInt,
+            Point = H.Point,
+            Series = H.Series,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes;
+
+        /* ****************************************************************************
+         * Start Bubble series code											          *
+         *****************************************************************************/
+
+        seriesType('bubble', 'scatter', {
+            dataLabels: {
+                formatter: function() { // #2945
+                    return this.point.z;
+                },
+                inside: true,
+                verticalAlign: 'middle'
+            },
+            // displayNegative: true,
+            marker: {
+
+                // fillOpacity: 0.5,
+                lineColor: null, // inherit from series.color
+                lineWidth: 1,
+
+                // Avoid offset in Point.setState
+                radius: null,
+                states: {
+                    hover: {
+                        radiusPlus: 0
+                    }
+                },
+                symbol: 'circle'
+            },
+            minSize: 8,
+            maxSize: '20%',
+            // negativeColor: null,
+            // sizeBy: 'area'
+            softThreshold: false,
+            states: {
+                hover: {
+                    halo: {
+                        size: 5
+                    }
+                }
+            },
+            tooltip: {
+                pointFormat: '({point.x}, {point.y}), Size: {point.z}'
+            },
+            turboThreshold: 0,
+            zThreshold: 0,
+            zoneAxis: 'z'
+
+            // Prototype members
+        }, {
+            pointArrayMap: ['y', 'z'],
+            parallelArrays: ['x', 'y', 'z'],
+            trackerGroups: ['group', 'dataLabelsGroup'],
+            specialGroup: 'group', // To allow clipping (#6296)
+            bubblePadding: true,
+            zoneAxis: 'z',
+            directTouch: true,
+
+
+            pointAttribs: function(point, state) {
+                var markerOptions = this.options.marker,
+                    fillOpacity = pick(markerOptions.fillOpacity, 0.5),
+                    attr = Series.prototype.pointAttribs.call(this, point, state);
+
+                if (fillOpacity !== 1) {
+                    attr.fill = color(attr.fill).setOpacity(fillOpacity).get('rgba');
+                }
+
+                return attr;
+            },
+
+
+            /**
+             * Get the radius for each point based on the minSize, maxSize and each point's Z value. This
+             * must be done prior to Series.translate because the axis needs to add padding in
+             * accordance with the point sizes.
+             */
+            getRadii: function(zMin, zMax, minSize, maxSize) {
+                var len,
+                    i,
+                    pos,
+                    zData = this.zData,
+                    radii = [],
+                    options = this.options,
+                    sizeByArea = options.sizeBy !== 'width',
+                    zThreshold = options.zThreshold,
+                    zRange = zMax - zMin,
+                    value,
+                    radius;
+
+                // Set the shape type and arguments to be picked up in drawPoints
+                for (i = 0, len = zData.length; i < len; i++) {
+
+                    value = zData[i];
+
+                    // When sizing by threshold, the absolute value of z determines the size
+                    // of the bubble.
+                    if (options.sizeByAbsoluteValue && value !== null) {
+                        value = Math.abs(value - zThreshold);
+                        zMax = Math.max(zMax - zThreshold, Math.abs(zMin - zThreshold));
+                        zMin = 0;
+                    }
+
+                    if (value === null) {
+                        radius = null;
+                        // Issue #4419 - if value is less than zMin, push a radius that's always smaller than the minimum size
+                    } else if (value < zMin) {
+                        radius = minSize / 2 - 1;
+                    } else {
+                        // Relative size, a number between 0 and 1
+                        pos = zRange > 0 ? (value - zMin) / zRange : 0.5;
+
+                        if (sizeByArea && pos >= 0) {
+                            pos = Math.sqrt(pos);
+                        }
+                        radius = Math.ceil(minSize + pos * (maxSize - minSize)) / 2;
+                    }
+                    radii.push(radius);
+                }
+                this.radii = radii;
+            },
+
+            /**
+             * Perform animation on the bubbles
+             */
+            animate: function(init) {
+                var animation = this.options.animation;
+
+                if (!init) { // run the animation
+                    each(this.points, function(point) {
+                        var graphic = point.graphic,
+                            animationTarget;
+
+                        if (graphic && graphic.width) { // URL symbols don't have width
+                            animationTarget = {
+                                x: graphic.x,
+                                y: graphic.y,
+                                width: graphic.width,
+                                height: graphic.height
+                            };
+
+                            // Start values
+                            graphic.attr({
+                                x: point.plotX,
+                                y: point.plotY,
+                                width: 1,
+                                height: 1
+                            });
+
+                            // Run animation
+                            graphic.animate(animationTarget, animation);
+                        }
+                    });
+
+                    // delete this function to allow it only once
+                    this.animate = null;
+                }
+            },
+
+            /**
+             * Extend the base translate method to handle bubble size
+             */
+            translate: function() {
+
+                var i,
+                    data = this.data,
+                    point,
+                    radius,
+                    radii = this.radii;
+
+                // Run the parent method
+                seriesTypes.scatter.prototype.translate.call(this);
+
+                // Set the shape type and arguments to be picked up in drawPoints
+                i = data.length;
+
+                while (i--) {
+                    point = data[i];
+                    radius = radii ? radii[i] : 0; // #1737
+
+                    if (isNumber(radius) && radius >= this.minPxSize / 2) {
+                        // Shape arguments
+                        point.marker = H.extend(point.marker, {
+                            radius: radius,
+                            width: 2 * radius,
+                            height: 2 * radius
+                        });
+
+                        // Alignment box for the data label
+                        point.dlBox = {
+                            x: point.plotX - radius,
+                            y: point.plotY - radius,
+                            width: 2 * radius,
+                            height: 2 * radius
+                        };
+                    } else { // below zThreshold
+                        point.shapeArgs = point.plotY = point.dlBox = undefined; // #1691
+                    }
+                }
+            },
+
+            alignDataLabel: seriesTypes.column.prototype.alignDataLabel,
+            buildKDTree: noop,
+            applyZones: noop
+
+            // Point class
+        }, {
+            haloPath: function(size) {
+                return Point.prototype.haloPath.call(
+                    this,
+                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size // #6067
+                );
+            },
+            ttBelow: false
+        });
+
+        /**
+         * Add logic to pad each axis with the amount of pixels
+         * necessary to avoid the bubbles to overflow.
+         */
+        Axis.prototype.beforePadding = function() {
+            var axis = this,
+                axisLength = this.len,
+                chart = this.chart,
+                pxMin = 0,
+                pxMax = axisLength,
+                isXAxis = this.isXAxis,
+                dataKey = isXAxis ? 'xData' : 'yData',
+                min = this.min,
+                extremes = {},
+                smallestSize = Math.min(chart.plotWidth, chart.plotHeight),
+                zMin = Number.MAX_VALUE,
+                zMax = -Number.MAX_VALUE,
+                range = this.max - min,
+                transA = axisLength / range,
+                activeSeries = [];
+
+            // Handle padding on the second pass, or on redraw
+            each(this.series, function(series) {
+
+                var seriesOptions = series.options,
+                    zData;
+
+                if (series.bubblePadding && (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+
+                    // Correction for #1673
+                    axis.allowZoomOutside = true;
+
+                    // Cache it
+                    activeSeries.push(series);
+
+                    if (isXAxis) { // because X axis is evaluated first
+
+                        // For each series, translate the size extremes to pixel values
+                        each(['minSize', 'maxSize'], function(prop) {
+                            var length = seriesOptions[prop],
+                                isPercent = /%$/.test(length);
+
+                            length = pInt(length);
+                            extremes[prop] = isPercent ?
+                                smallestSize * length / 100 :
+                                length;
+
+                        });
+                        series.minPxSize = extremes.minSize;
+                        // Prioritize min size if conflict to make sure bubbles are
+                        // always visible. #5873
+                        series.maxPxSize = Math.max(extremes.maxSize, extremes.minSize);
+
+                        // Find the min and max Z
+                        zData = series.zData;
+                        if (zData.length) { // #1735
+                            zMin = pick(seriesOptions.zMin, Math.min(
+                                zMin,
+                                Math.max(
+                                    arrayMin(zData),
+                                    seriesOptions.displayNegative === false ? seriesOptions.zThreshold : -Number.MAX_VALUE
+                                )
+                            ));
+                            zMax = pick(seriesOptions.zMax, Math.max(zMax, arrayMax(zData)));
+                        }
+                    }
+                }
+            });
+
+            each(activeSeries, function(series) {
+
+                var data = series[dataKey],
+                    i = data.length,
+                    radius;
+
+                if (isXAxis) {
+                    series.getRadii(zMin, zMax, series.minPxSize, series.maxPxSize);
+                }
+
+                if (range > 0) {
+                    while (i--) {
+                        if (isNumber(data[i]) && axis.dataMin <= data[i] && data[i] <= axis.dataMax) {
+                            radius = series.radii[i];
+                            pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
+                            pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                        }
+                    }
+                }
+            });
+
+            if (activeSeries.length && range > 0 && !this.isLog) {
+                pxMax -= axisLength;
+                transA *= (axisLength + pxMin - pxMax) / axisLength;
+                each([
+                    ['min', 'userMin', pxMin],
+                    ['max', 'userMax', pxMax]
+                ], function(keys) {
+                    if (pick(axis.options[keys[0]], axis[keys[1]]) === undefined) {
+                        axis[keys[0]] += keys[2] / transA;
+                    }
+                });
+            }
+        };
+
+        /* ****************************************************************************
+         * End Bubble series code                                                     *
+         *****************************************************************************/
+
+    }(Highcharts));
+    (function(H) {
+        /**
+         * (c) 2010-2017 Torstein Honsi
+         *
+         * License: www.highcharts.com/license
+         */
+        var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
@@ -2007,8 +2512,11 @@
                 applyOptions: function(options, x) {
                     var point;
                     if (options && options.lat !== undefined && options.lon !== undefined) {
-                        point = Point.prototype.applyOptions.call(this, options, x);
-                        point = extend(point, this.series.chart.fromLatLonToPoint(point));
+                        point = Point.prototype.applyOptions.call(
+                            this,
+                            merge(options, this.series.chart.fromLatLonToPoint(options)),
+                            x
+                        );
                     } else {
                         point = seriesTypes.map.prototype.pointClass.prototype.applyOptions.call(this, options, x);
                     }
@@ -2021,11 +2529,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             each = H.each,
@@ -2124,7 +2631,9 @@
                 seriesTypes.column.prototype.drawPoints.call(this);
 
                 each(this.points, function(point) {
-                    point.graphic.attr(this.colorAttribs(point, point.state));
+
+                    point.graphic.attr(this.colorAttribs(point));
+
                 }, this);
             },
             animate: noop,
@@ -2146,15 +2655,13 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             each = H.each,
             extend = H.extend,
-            error = H.error,
             format = H.format,
             merge = H.merge,
             win = H.win,
@@ -2183,11 +2690,31 @@
         }
 
         /**
-         * Get point from latLon using specified transform definition
+         * Highmaps only. Get point from latitude and longitude using specified
+         * transform definition.
+         *
+         * @function transformFromLatLon
+         * @memberOf Chart.prototype
+         *
+         * @param  {Object} latLon
+         *         A latitude/longitude object.
+         * @param  {Number} latLon.lat
+         *         The latitude.
+         * @param  {Number} latLon.lon
+         *         The longitude.
+         * @param  {Object} transform
+         *         The transform definition to use as explained in the {@link
+         *         https://www.highcharts.com/docs/maps/latlon|documentation}.
+         *
+         * @return {Object}
+         *         An object with `x` and `y` properties.
+         *
+         * @sample maps/series/latlon-transform/
+         *         Use specific transformation for lat/lon
          */
         Chart.prototype.transformFromLatLon = function(latLon, transform) {
             if (win.proj4 === undefined) {
-                error(21);
+                H.error(21);
                 return {
                     x: 0,
                     y: null
@@ -2206,11 +2733,29 @@
         };
 
         /**
-         * Get latLon from point using specified transform definition
+         * Highmaps only. Get latLon from point using specified transform definition.
+         * The method returns an object with the numeric properties `lat` and `lon`.
+         *
+         * @function transformToLatLon
+         * @memberOf Chart.prototype
+         *
+         * @param  {Point|Object} point
+         *         A `Point` instance, or or any object containing the properties `x`
+         *         and `y` with numeric values.
+         * @param  {Object} transform
+         *         The transform definition to use as explained in the {@link
+         *         https://www.highcharts.com/docs/maps/latlon|documentation}.
+         *
+         * @return {Object}
+         *         An object with `lat` and `lon` properties.
+         *
+         * @sample maps/series/latlon-transform/
+         *         Use specific transformation for lat/lon
+         *                         
          */
         Chart.prototype.transformToLatLon = function(point, transform) {
             if (win.proj4 === undefined) {
-                error(21);
+                H.error(21);
                 return;
             }
 
@@ -2232,12 +2777,28 @@
             };
         };
 
+        /**
+         * Highmaps only. Calculate latitude/longitude values for a point. Returns an
+         * object with the numeric properties `lat` and `lon`.
+         *
+         * @function fromPointToLatLon
+         * @memberOf Chart.prototype
+         * 
+         * @param  {Point|Object} point
+         *         A `Point` instance or anything containing `x` and `y` properties
+         *         with numeric values
+         * @return {Object}
+         *         An object with `lat` and `lon` properties.
+         *
+         * @sample maps/demo/latlon-advanced/
+         *         Advanced lat/lon demo
+         */
         Chart.prototype.fromPointToLatLon = function(point) {
             var transforms = this.mapTransforms,
                 transform;
 
             if (!transforms) {
-                error(22);
+                H.error(22);
                 return;
             }
 
@@ -2254,13 +2815,33 @@
             return this.transformToLatLon(point, transforms['default']); // eslint-disable-line dot-notation
         };
 
+        /**
+         * Highmaps only. Get chart coordinates from latitude/longitude. Returns an
+         * object with x and y values corresponding to the `xAxis` and `yAxis`.
+         *
+         * @function fromLatLonToPoint
+         * @memberOf Chart.prototype
+         * 
+         * @param  {Object} latLon
+         *         Coordinates.
+         * @param  {Number} latLon.lat
+         *         The latitude.
+         * @param  {Number} latLon.lon
+         *         The longitude.
+         *
+         * @sample maps/series/latlon-to-point/
+         *         Find a point from lat/lon
+         *         
+         * @return {Object}
+         *         X and Y coordinates in terms of chart axis values.
+         */
         Chart.prototype.fromLatLonToPoint = function(latLon) {
             var transforms = this.mapTransforms,
                 transform,
                 coords;
 
             if (!transforms) {
-                error(22);
+                H.error(22);
                 return {
                     x: 0,
                     y: null
@@ -2283,7 +2864,34 @@
         };
 
         /**
-         * Convert a geojson object to map data of a given Highcharts type (map, mappoint or mapline).
+         * Highmaps only. Restructure a GeoJSON object in preparation to be read
+         * directly by the {@link
+         * https://api.highcharts.com/highmaps/plotOptions.series.mapData|
+         * series.mapData} option. The GeoJSON will be broken down to fit a specific
+         * Highcharts type, either `map`, `mapline` or `mappoint`. Meta data in
+         * GeoJSON's properties object will be copied directly over to 
+         * {@link Point.properties} in Highmaps.
+         *
+         * @function #geojson
+         * @memberOf Highcharts
+         *
+         * @param  {Object} geojson
+         *         The GeoJSON structure to parse, represented as a JavaScript object
+         *         rather than a JSON string.
+         * @param  {String} [hType=map]
+         *         The Highmaps series type to prepare for. Setting "map" will return
+         *         GeoJSON polygons and multipolygons. Setting "mapline" will return
+         *         GeoJSON linestrings and multilinestrings. Setting "mappoint" will
+         *         return GeoJSON points and multipoints.
+         *
+         * @return {Object}
+         *         An object ready for the `mapData` option.
+         *
+         * @sample samples/maps/demo/geojson/
+         *         Simple areas
+         * @sample maps/demo/geojson-multiple-types/
+         *         Multiple types
+         *         
          */
         H.geojson = function(geojson, hType, series) {
             var mapData = [],
@@ -2354,6 +2962,15 @@
                 if (point) {
                     mapData.push(extend(point, {
                         name: properties.name || properties.NAME,
+
+                        /**
+                         * In Highmaps, when data is loaded from GeoJSON, the GeoJSON
+                         * item's properies are copied over here.
+                         *
+                         * @name #properties
+                         * @memberOf Point
+                         * @type {Object}
+                         */
                         properties: properties
                     }));
                 }
@@ -2398,11 +3015,10 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             defaultOptions = H.defaultOptions,
             each = H.each,
@@ -2459,12 +3075,12 @@
                 }
             },
             mouseWheelSensitivity: 1.1
-                // enabled: false,
-                // enableButtons: null, // inherit from enabled
-                // enableTouchZoom: null, // inherit from enabled
-                // enableDoubleClickZoom: null, // inherit from enabled
-                // enableDoubleClickZoomTo: false
-                // enableMouseWheelZoom: null, // inherit from enabled
+            // enabled: false,
+            // enableButtons: null, // inherit from enabled
+            // enableTouchZoom: null, // inherit from enabled
+            // enableDoubleClickZoom: null, // inherit from enabled
+            // enableDoubleClickZoomTo: false
+            // enableMouseWheelZoom: null, // inherit from enabled
         };
 
         /**
@@ -2499,23 +3115,32 @@
 
         // Create symbols for the zoom buttons
         function selectiveRoundedRect(x, y, w, h, rTopLeft, rTopRight, rBottomRight, rBottomLeft) {
-            return ['M', x + rTopLeft, y,
+            return [
+                'M', x + rTopLeft, y,
                 // top side
                 'L', x + w - rTopRight, y,
                 // top right corner
-                'C', x + w - rTopRight / 2, y, x + w, y + rTopRight / 2, x + w, y + rTopRight,
+                'C', x + w - rTopRight / 2,
+                y, x + w,
+                y + rTopRight / 2, x + w, y + rTopRight,
                 // right side
                 'L', x + w, y + h - rBottomRight,
                 // bottom right corner
-                'C', x + w, y + h - rBottomRight / 2, x + w - rBottomRight / 2, y + h, x + w - rBottomRight, y + h,
+                'C', x + w, y + h - rBottomRight / 2,
+                x + w - rBottomRight / 2, y + h,
+                x + w - rBottomRight, y + h,
                 // bottom side
                 'L', x + rBottomLeft, y + h,
                 // bottom left corner
-                'C', x + rBottomLeft / 2, y + h, x, y + h - rBottomLeft / 2, x, y + h - rBottomLeft,
+                'C', x + rBottomLeft / 2, y + h,
+                x, y + h - rBottomLeft / 2,
+                x, y + h - rBottomLeft,
                 // left side
                 'L', x, y + rTopLeft,
                 // top left corner
-                'C', x, y + rTopLeft / 2, x + rTopLeft / 2, y, x + rTopLeft, y,
+                'C', x, y + rTopLeft / 2,
+                x + rTopLeft / 2, y,
+                x + rTopLeft, y,
                 'Z'
             ];
         }
@@ -2536,7 +3161,29 @@
 
 
         /**
-         * A wrapper for Chart with all the default values for a Map
+         * The factory function for creating new map charts. Creates a new {@link
+         * Chart|Chart} object with different default options than the basic Chart.
+         * 
+         * @function #mapChart
+         * @memberOf Highcharts
+         *
+         * @param  {String|HTMLDOMElement} renderTo
+         *         The DOM element to render to, or its id.
+         * @param  {Options} options
+         *         The chart options structure as described in the {@link
+         *         https://api.highcharts.com/highstock|options reference}.
+         * @param  {Function} callback
+         *         A function to execute when the chart object is finished loading and
+         *         rendering. In most cases the chart is built in one thread, but in
+         *         Internet Explorer version 8 or less the chart is sometimes initiated
+         *         before the document is ready, and in these cases the chart object
+         *         will not be finished synchronously. As a consequence, code that
+         *         relies on the newly built Chart object should always run in the
+         *         callback. Defining a {@link https://api.highcharts.com/highstock/chart.events.load|
+         *         chart.event.load} handler is equivalent.
+         *
+         * @return {Chart}
+         *         The chart object.
          */
         H.Map = H.mapChart = function(a, b, c) {
 
@@ -2570,6 +3217,9 @@
                     credits: {
                         mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">{geojson.copyrightShort}</a>'),
                         mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                    },
+                    tooltip: {
+                        followTouchMove: false
                     },
                     xAxis: hiddenAxis,
                     yAxis: merge(hiddenAxis, {

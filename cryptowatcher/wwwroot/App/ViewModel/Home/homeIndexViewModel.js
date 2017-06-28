@@ -1,4 +1,4 @@
-﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, cryptoApiService) {
+﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
 
     $scope.isSecondLoad = false;
     $scope.loaderVisibility = false;
@@ -15,7 +15,7 @@
         { headerName: "QuoteVolume", field: "quoteVolume" },
         { headerName: "High24hr", field: "high24hr" },
         { headerName: "Low24hr", field: "low24hr" },
-        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{$scope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="$scope.isLoadingRsi"/></div>' },
+        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
     ];
 
@@ -23,6 +23,24 @@
         data: null,
         columnDefs: columnDefUI
     };
+
+    $scope.getTemplateUI = function (value) {
+        if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
+        if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };
+        if (value.substring(0, 3) === 'ETH') { return "/images/eth.png" };
+        if (value.substring(0, 3) === 'USD') { return "/images/usdt.png" };
+        return "";
+    };
+
+    $scope.getRsiTemplateUI = function (valueRsi) {
+        debugger;
+        if (valueRsi === 'loading RSI') {
+            $scope.isLoadingRsi = true;
+            return "/images/loader.gif"
+        };
+        $scope.isLoadingRsi = false;
+        return "";
+    }; 
 
     $scope.loadData = function () {
         $scope.loaderVisibility = true;
@@ -42,41 +60,43 @@
         }, function (error) { $log.error(error.message); });
     };
 
-    $scope.getTemplateUI = function (value) {
-        if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
-        if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };
-        if (value.substring(0, 3) === 'ETH') { return "/images/eth.png" };
-        if (value.substring(0, 3) === 'USD') { return "/images/usdt.png" };
-        return "";
-    }; 
+    $scope.loadData();
 
-    $scope.getRsiTemplateUI = function (valueRsi) {
-        if (valueRsi === 'loading RSI') {
-            $scope.isLoadingRsi = true;
-            return "images/loader.gif"
-        };
-        $scope.isLoadingRsi = false;
-        return "";
-    }; 
-
+    //Command : open chart
     $scope.openChart = function (currencyName) {
-        $scope.showChart = true;
-        $scope.loadChartData(currencyName);
+        //$scope.showChart = true;
+        $scope.currencyName = currencyName;
+        $scope.chartType = 'line';
+        //$scope.loadChartData();
+
+
+        var modalInstance = $uibModal.open({
+            templateUrl: '../../App/View/home/homeChartView.html',
+            controller: 'homeChartViewModel',
+            //backdrop: 'static',
+            size: 'lg',
+            cache: false,
+            resolve: {
+                currencyName: function () {
+                    return $scope.currencyName;
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+            loadActivityList(activityIndex);
+        });
     }; 
+
+    //Command : change chart type
+    $scope.changeChartType = function (chartType) {
+        $scope.chartType = chartType;
+        $scope.displayChart();
+    };
 
     //command : refresh data
     $scope.refreshData = function () {
         $scope.loadData();
     };
-
-    $scope.changeChartType = function (chartType) {
-        console.log(chartType);
-    };
-
-    $scope.loadData();
-
-
-   
 
     //-----------------highchart---------------------
     groupingUnits = [[
@@ -84,7 +104,11 @@
         [1]                             // allowed multiples
     ]],
 
-    $scope.chartConfig1 = {
+        $scope.chartConfig = {
+        chart: {
+            zoomType: 'x'
+        },
+        chartType: 'stock',
         title: {
             text: ''
         },
@@ -92,10 +116,6 @@
         useHighStocks: true,
         loading: true,
         options: {
-            chart: {
-                type: 'line',
-                zoomType: 'x',
-            },
             rangeSelector: {
                 enabled: true
             },
@@ -116,13 +136,14 @@
             minTickInterval: 5,
             minorTickInterval: 1
         },
+        
         yAxis: [{
             labels: {
                 align: 'right',
                 x: -3
             },
             title: {
-                text: ''
+                text: '',
             },
             height: '65%',
             lineWidth: 2
@@ -144,48 +165,62 @@
         },
     }
 
-    $scope.loadChartData = function (currencyName) {
+    $scope.loadChartData = function () {
 
-        $scope.chartConfig1.loading = true;
-        cryptoApiService.getPoloniexChartData(currencyName).then(function (response) {    
+        $scope.chartConfig.loading = true;
+        cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {    
+           
+            $scope.chartVolume = [];
+            $scope.chartData = [];
             
-            lineData = [];
-            volume = [];
-            candelData = [];
             for (var i = 0; i < response.data.length; i++) {
-
-                lineData.push([response.data[i].date * 1000, response.data[i].close]);
-                volume.push([response.data[i].date * 1000, response.data[i].volume]);
-                candelData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
+                $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
+                $scope.chartData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
             }
 
-            $scope.chartConfig1.series = [];
-            $scope.chartConfig1.series.push({
-                id: currencyName,
-                name: currencyName,
-                data: candelData,
-                type: 'candlestick',
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
-
-            $scope.chartConfig1.series.push({
-                name: 'volume',
-                data: volume,
-                type: 'column',
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
-
-            $scope.chartConfig1.loading = false;
+            $scope.displayChart();
 
         }, function (error) {
             $log.error(error.message);
         });
     };
+
+    $scope.displayChart = function (currencyName) {
+        $scope.chartConfig.loading = false;
+        
+        $scope.chartConfig.series = [];
+        $scope.chartConfig.series.push({
+            name: $scope.currencyName,
+            data: $scope.chartData,
+            type: $scope.chartType,
+            yAxis: 0,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
+
+        $scope.chartConfig.series.push({
+            name: 'volume',
+            data: $scope.chartVolume,
+            type: 'column',
+            yAxis: 1,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
+    };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

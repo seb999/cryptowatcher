@@ -10,8 +10,13 @@
 
   <ItemGroup>
     <Content Include="wwwroot\App\app.js" />
+    <Content Include="wwwroot\App\chartDirective.js" />
     <Content Include="wwwroot\App\cryptoApiService.js" />
+    <Content Include="wwwroot\App\datePickerDirective.js" />
+    <Content Include="wwwroot\App\ViewModel\Home\homeChartViewModel.js" />
     <Content Include="wwwroot\App\ViewModel\Home\homeIndexViewModel.js" />
+    <Content Include="wwwroot\App\ViewModel\Home\testHighchartViewModel.js" />
+    <Content Include="wwwroot\App\View\Home\homeChartView.html" />
     <Content Include="wwwroot\css\loader.css" />
     <Content Include="wwwroot\images\bitcoin.png" />
     <Content Include="wwwroot\images\eth.png" />
@@ -31,9 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\App\View\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="MyDLLTest.dll">

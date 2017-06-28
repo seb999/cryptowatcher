@@ -15,7 +15,7 @@
     "example",
     ".travis.yml"
   ],
-  "version": "0.0.11",
+  "version": "1.1.0",
   "main": "dist/highcharts-ng.js",
   "license": "MIT",
   "authors": [
@@ -26,13 +26,13 @@
   "dependencies": {},
   "devDependencies": {},
   "homepage": "https://github.com/pablojim/highcharts-ng",
-  "_release": "0.0.11",
+  "_release": "1.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "0.0.11",
-    "commit": "9d4b382dc5e4fe96a935b993e9b7622b9630a82d"
+    "tag": "1.1.0",
+    "commit": "477b05cb1963553c644a7c4121118b662cd3d224"
   },
   "_source": "https://github.com/pablojim/highcharts-ng.git",
-  "_target": "0.0.11",
+  "_target": "1.1.0",
   "_originalSource": "highcharts-ng"
 }
