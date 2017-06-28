@@ -3,114 +3,83 @@
     $scope.isSecondLoad = false;
     $scope.loaderVisibility = false;
     $scope.showChart = false;
-    $scope.chartType = 'line';
 
     $scope.currencyName = "BTC_BTS";
-    $scope.chartType = 'line';
+    $scope.chartType = 'candlestick';
 
     //-----------------highchart---------------------
-    groupingUnits = [[
-        'day',                         // unit name
-        [1]                             // allowed multiples
-    ]],
 
-    $scope.chartConfig = {
-        chart: {
-            zoomType: 'x'
-        },
-        chartType: 'stock',
-        title: {
-            text: ''
-        },
-        series: [{
-            cropThreshold: 0,
-            id: 'abc',
-            name: 'abc',
-            data: [],
-            tooltip: {
-                valueDecimals: 2
-            }
-        }],
-        useHighStocks: true,
-        loading: true,
-        options: {
+        $scope.chartConfig = {
+            title: {
+                useHTML: true,
+                x: -10,
+                y: 8,
+                text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'
+            },
+            indicators: [ {
+                id: 'AAPL',
+                type: 'atr',
+                params: {
+                    period: 14
+                },
+                styles: {
+                    strokeWidth: 2,
+                    stroke: 'orange',
+                    dashstyle: 'solid'
+                },
+                yAxis: {
+                    lineWidth: 2,
+                    title: {
+                        text: 'ATR'
+                    }
+                }
+            }, {
+                id: 'AAPL',
+                type: 'rsi',
+                params: {
+                    period: 14,
+                    overbought: 70,
+                    oversold: 30
+                },
+                styles: {
+                    strokeWidth: 2,
+                    stroke: 'black',
+                    dashstyle: 'solid'
+                },
+                yAxis: {
+                    lineWidth: 2,
+                    title: {
+                        text: 'RSI'
+                    }
+                }
+            }],
+            yAxis: {
+                opposite: false,
+                title: {
+                    text: 'DATA SMA EMA',
+                    x: -4
+                },
+                lineWidth: 2,
+                labels: {
+                    x: 22
+                }
+            },
             rangeSelector: {
-                enabled: true
+                selected: 0
             },
-            navigator: {
-                enabled: true
-            },
-           
-            colors: ['#00A1E2', '#6769B5', '#3BC3A3', '#93959B', '#2D8F78', '#C3842F', '#005EA4'],
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.y}</b>'
+                enabledIndicators: true
             },
-        },
-        xAxis: {
-            type: 'datetime',
-            title: {
-                text: 'Date'
-            },
-            minTickInterval: 5,
-            minorTickInterval: 1
-        },
-        //indicators: [{
-        //    id: 'abc',
-        //    type: 'rsi',
-        //    params: {
-        //        period: 14,
-        //        overbought: 70,
-        //        oversold: 30
-        //    },
-        //    styles: {
-        //        strokeWidth: 2,
-        //        stroke: 'black',
-        //        dashstyle: 'solid'
-        //    },
-        //    yAxis: {
-        //        lineWidth: 2,
-        //        title: {
-        //            text: 'RSI'
-        //        }
-        //    }
-        //}],
-        yAxis: {
-            opposite: false,
-            title: {
-                text: 'DATA SMA EMA',
-                x: -4
-            },
-            lineWidth: 2,
-            labels: {
-                x: 22
-            }
-        },
+            series: [{
+                cropThreshold: 0,
+                id: 'AAPL',
+                name: 'AAPL',
+                data: [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            }]
     }
-
-
-
-    $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.json&callback=?', function (data123) {
-
-
-        $scope.chartConfig.series[0].type = 'candlestick';
-        $scope.chartConfig.series[0].data = data123;
-
-        console.log($scope.chartConfig.series[0]);
-   
-
-        //$scope.chartConfig.series = [];
-        //$scope.chartConfig.series[0] = ({
-        //    id: 'abc',
-        //    data: data,
-        //    type: 'candlestick',
-        //    yAxis: 0,
-        //    dataGrouping: {
-        //        units: groupingUnits
-        //    }
-        //});
-
-    });
-
 
 
     $scope.loadChartData = function () {
@@ -133,42 +102,64 @@
         });
     };
 
+   
+    $scope.myTitle = 'sebie';
     $scope.displayChart = function (currencyName) {
-        $scope.chartConfig.loading = false;
+        $scope.loading = ;    
 
-        console.log($scope.chartConfig.series[0]);
+        $scope.chartTitle = $scope.currencyName;
 
-        $scope.chartConfig.series[0].type = 'candlestick';
-        $scope.chartConfig.series[0].data = $scope.chartData;
+        $scope.myData = [];
+        $scope.myData.push({
+            id: 'abc',
+            data: $scope.chartData,
+            type: $scope.chartType,
+            yAxis: 0,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
 
-        //$scope.chartConfig.series.push({
-        //    id: 'abc',
-        //    data: $scope.chartData,
-        //    type: $scope.chartType,
-        //    yAxis: 0,
-        //    dataGrouping: {
-        //        units: groupingUnits
-        //    }
-        //});
+        $scope.myData.push({
+            name: 'volume',
+            data: $scope.chartVolume,
+            type: 'column',
+            yAxis: 1,
+            dataGrouping: {
+                units: groupingUnits
+            }
+        });
 
-        //$scope.chartConfig.series.push({
-        //    name: 'volume',
-        //    data: $scope.chartVolume,
-        //    type: 'column',
-        //    yAxis: 1,
-        //    dataGrouping: {
-        //        units: groupingUnits
-        //    }
-        //});
+        $timeout(function () {
+            $scope.myIndicators = [{
+                id: 'abc',
+                type: 'sma',
+                params: {
+                    period: 14
+                }
+            }, {
+                id: 'abc',
+                type: 'ema',
+                params: {
+                    period: 14,
+                    index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
+                },
+                styles: {
+                    strokeWidth: 2,
+                    stroke: 'green',
+                    dashstyle: 'solid'
+                }
+                }];
+
+        }, 100);
+        
     };
 
 
+    groupingUnits = [[
+        'day',                         // unit name
+        [1]                             // allowed multiples
+    ]];
 
-
-
-
-
-   $scope.loadChartData();
-
-
+    $scope.loadChartData();
 });

@@ -15,7 +15,7 @@
         { headerName: "QuoteVolume", field: "quoteVolume" },
         { headerName: "High24hr", field: "high24hr" },
         { headerName: "Low24hr", field: "low24hr" },
-        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{$scope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="$scope.isLoadingRsi"/></div>' },
+        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
     ];
 
@@ -33,9 +33,10 @@
     };
 
     $scope.getRsiTemplateUI = function (valueRsi) {
+        debugger;
         if (valueRsi === 'loading RSI') {
             $scope.isLoadingRsi = true;
-            return "images/loader.gif"
+            return "/images/loader.gif"
         };
         $scope.isLoadingRsi = false;
         return "";

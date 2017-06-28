@@ -10,11 +10,10 @@
 
   <ItemGroup>
     <Content Include="wwwroot\App\app.js" />
+    <Content Include="wwwroot\App\chartDirective.js" />
     <Content Include="wwwroot\App\cryptoApiService.js" />
+    <Content Include="wwwroot\App\datePickerDirective.js" />
     <Content Include="wwwroot\App\ViewModel\Home\homeChartViewModel.js" />
-    <Content Include="wwwroot\App\ViewModel\Home\homeIndexViewModel - Copy.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="wwwroot\App\ViewModel\Home\homeIndexViewModel.js" />
     <Content Include="wwwroot\App\ViewModel\Home\testHighchartViewModel.js" />
     <Content Include="wwwroot\App\View\Home\homeChartView.html" />

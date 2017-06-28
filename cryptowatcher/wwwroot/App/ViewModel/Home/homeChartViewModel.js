@@ -74,26 +74,6 @@
             title: {
                 text: ''
             },
-            //indicators: [{
-            //    id: 'AAPL',
-            //    type: 'rsi',
-            //    params: {
-            //        period: 14,
-            //        overbought: 70,
-            //        oversold: 30
-            //    },
-            //    styles: {
-            //        strokeWidth: 2,
-            //        stroke: 'black',
-            //        dashstyle: 'solid'
-            //    },
-            //    yAxis: {
-            //        lineWidth: 2,
-            //        title: {
-            //            text: 'RSI'
-            //        }
-            //    }
-            //}],
             series: [],
             useHighStocks: true,
             loading: true,
