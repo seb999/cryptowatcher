@@ -70,7 +70,7 @@
 
         var modalInstance = $uibModal.open({
           
-            templateUrl: '../../App/View/home/homeChartView.html',
+            templateUrl: '/../../App/View/home/homeChartView.html',
             controller: 'homeChartViewModel',
             backdrop: 'static',
             size: 'lg',

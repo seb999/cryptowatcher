@@ -4,21 +4,21 @@
 
     cryptoApiService.getPoloniexData = function (isIndicatorAdded) {
         return $http({
-            url: "/api/Poloniex/" + isIndicatorAdded,
+            url: "api/Poloniex/" + isIndicatorAdded,
             method: "GET",
         })
     };
 
     cryptoApiService.getPoloniexChartData = function (currencyName) {
         return $http({
-            url: "/api/Poloniex/GetChartData/" + currencyName,
+            url: "api/Poloniex/GetChartData/" + currencyName,
             method: "GET",
         })
     };
 
     cryptoApiService.getPoloniexOrderData = function (currencyName) {
         return $http({
-            url: "/api/Poloniex/GetOrderData/" + currencyName,
+            url: "api/Poloniex/GetOrderData/" + currencyName,
             method: "GET",
         })
     };

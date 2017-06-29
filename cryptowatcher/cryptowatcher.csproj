@@ -9,19 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\App\app.js" />
-    <Content Include="wwwroot\App\chartDirective.js" />
-    <Content Include="wwwroot\App\cryptoApiService.js" />
-    <Content Include="wwwroot\App\ViewModel\Home\homeChartViewModel.js" />
-    <Content Include="wwwroot\App\ViewModel\Home\homeIndexViewModel.js" />
-    <Content Include="wwwroot\App\ViewModel\Home\testHighchartViewModel.js" />
-    <Content Include="wwwroot\App\View\Home\homeChartView.html" />
-    <Content Include="wwwroot\css\loader.css" />
-    <Content Include="wwwroot\images\bitcoin.png" />
-    <Content Include="wwwroot\images\eth.png" />
-    <Content Include="wwwroot\images\loader.gif" />
-    <Content Include="wwwroot\images\monero.png" />
-    <Content Include="wwwroot\images\usdt.png" />
+  
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
