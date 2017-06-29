@@ -15,7 +15,7 @@
         { headerName: "QuoteVolume", field: "quoteVolume" },
         { headerName: "High24hr", field: "high24hr" },
         { headerName: "Low24hr", field: "low24hr" },
-        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px">{{ COL_FIELD }}<img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
+        { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span ng-show="!grid.appScope.isLoadingRsi">{{ COL_FIELD }}</span><img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
     ];
 
@@ -25,18 +25,17 @@
     };
 
     $scope.getTemplateUI = function (value) {
-        if (value.substring(0, 3) === 'BTC') { return "/images/bitcoin.png" };
-        if (value.substring(0, 3) === 'XMR') { return "/images/monero.png" };
-        if (value.substring(0, 3) === 'ETH') { return "/images/eth.png" };
-        if (value.substring(0, 3) === 'USD') { return "/images/usdt.png" };
+        if (value.substring(0, 3) === 'BTC') { return "images/bitcoin.png" };
+        if (value.substring(0, 3) === 'XMR') { return "images/monero.png" };
+        if (value.substring(0, 3) === 'ETH') { return "images/eth.png" };
+        if (value.substring(0, 3) === 'USD') { return "images/usdt.png" };
         return "";
     };
 
     $scope.getRsiTemplateUI = function (valueRsi) {
-        debugger;
-        if (valueRsi === 'loading RSI') {
+        if (valueRsi === 0) {
             $scope.isLoadingRsi = true;
-            return "/images/loader.gif"
+            return "images/loader.gif"
         };
         $scope.isLoadingRsi = false;
         return "";
@@ -69,11 +68,11 @@
         $scope.chartType = 'line';
         //$scope.loadChartData();
 
-
         var modalInstance = $uibModal.open({
+          
             templateUrl: '../../App/View/home/homeChartView.html',
             controller: 'homeChartViewModel',
-            //backdrop: 'static',
+            backdrop: 'static',
             size: 'lg',
             cache: false,
             resolve: {

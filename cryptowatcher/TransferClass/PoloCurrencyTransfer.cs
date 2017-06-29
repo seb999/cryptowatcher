@@ -13,6 +13,6 @@
         public string IsFrozen { get; set; }
         public string High24hr { get; set; }
         public string Low24hr { get; set; }
-        public string RSI { get; set; }
+        public double RSI { get; set; }
     }
 }

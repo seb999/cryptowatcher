@@ -13,6 +13,7 @@ namespace cryptowatcher
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls("http://*:5456/cryptowatcher")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

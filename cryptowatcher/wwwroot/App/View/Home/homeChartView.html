@@ -39,8 +39,11 @@
 
         <uib-tab index="1" ng-click="tabExpenseSelected()" disable="isAdd">
             <uib-tab-heading>
-                Other (we can add additional info in this tab or remove it)
+                Orders
             </uib-tab-heading>
+
+            <div ng-if="gridOptionsUI.data !=null" ui-grid="gridOptionsUI" style="width:100%;height:450px"></div>
+
         </uib-tab>
 
     </uib-tabset>

@@ -8,6 +8,7 @@ using cryptowatcher.TransferClass;
 using TicTacTec.TA.Library;
 using cryptowatcher.Misc;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace cryptowatcher.Controllers.API
 {
@@ -19,6 +20,7 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         private Uri uriListOfCurrency = new Uri("https://poloniex.com/public?command=returnTicker");
         private Uri uriCurrency = new Uri("https://poloniex.com/public?command=returnChartData&currencyPair=");
+        private Uri uriOrder = new Uri("https://poloniex.com/public?command=returnOrderBook&currencyPair=");
 
         // GET: api/values
         [HttpGet]
@@ -41,16 +43,17 @@ namespace cryptowatcher.Controllers.API
                     item.Value.Name = item.Key;
                     if (isIndicatorAdded)
                     {
-                        item.Value.RSI = GetCurrencyRSI(item.Key.ToString()).ToString();
+                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
                     }
                     else
                     {
-                        item.Value.RSI = "loading RSI";
+                        item.Value.RSI = 0.0;
                     };
                             
                     result.Add(item.Value);
                 }
             }
+
             return result;
         }
 
@@ -66,8 +69,59 @@ namespace cryptowatcher.Controllers.API
             Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-365).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
 
+           
             return GetPoloniexApiData(new Uri(uri));
         }
+
+        /// <summary>
+        /// Get data for order table
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetOrderData/{currencyName}")]
+        public List<PoloOrderTransfer> GetOrderData(string currencyName)
+        {
+            List<PoloOrderTransfer> result = new List<PoloOrderTransfer>();
+
+            string uri = string.Format("{0}{1}&depth=10", uriOrder, currencyName);
+            var poloData = GetPoloniexApiData(new Uri(uri));
+
+            if (poloData != "")
+            {
+                Dictionary<string, object> myDico = JsonConvert.DeserializeObject<Dictionary<string, object>>(poloData);
+
+                foreach (var item in myDico)
+                {
+                    if (item.Key == "asks")
+                    {
+                        JArray orderList = (JArray)item.Value;
+
+                        foreach (var order in orderList)
+                        {
+                            result.Add(new PoloOrderTransfer() { AskPrice = order.ToObject<object[]>()[0].ToString(), AskQuantity = order.ToObject<object[]>()[1].ToString() });
+                        }
+                    }
+
+                    if (item.Key == "bids")
+                    {
+                        JArray orderList = (JArray)item.Value;
+
+                        for (var i = 0; i <orderList.Count(); i++)
+                        {
+                            {
+                                result[i].BidPrice = orderList[i].ToObject<object[]>()[0].ToString();
+                                result[i].BidQuantity = orderList[i].ToObject<object[]>()[1].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+
+        }
+
+        #region helper
 
         /// <summary>
         /// Calculate the RSI for a currency
@@ -92,6 +146,8 @@ namespace cryptowatcher.Controllers.API
             return 0;
         }
 
+        #endregion
+
         #region Get data from Poloniex API
 
         private string GetPoloniexApiData(Uri ApiUri)
@@ -113,6 +169,5 @@ namespace cryptowatcher.Controllers.API
         }
 
         #endregion
-
     }
 }
