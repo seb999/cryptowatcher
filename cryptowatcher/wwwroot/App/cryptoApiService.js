@@ -1,20 +1,27 @@
 ﻿myApp.factory('cryptoApiService', function ($http) {
 
-    var macroBitApiService = {};
+    var cryptoApiService = {};
 
-    macroBitApiService.getPoloniexData = function (isIndicatorAdded) {
+    cryptoApiService.getPoloniexData = function (isIndicatorAdded) {
         return $http({
             url: "/api/Poloniex/" + isIndicatorAdded,
             method: "GET",
         })
-    }
+    };
 
-    macroBitApiService.getPoloniexChartData = function (currencyName) {
+    cryptoApiService.getPoloniexChartData = function (currencyName) {
         return $http({
             url: "/api/Poloniex/GetChartData/" + currencyName,
             method: "GET",
         })
-    }
+    };
 
-    return macroBitApiService;
+    cryptoApiService.getPoloniexOrderData = function (currencyName) {
+        return $http({
+            url: "/api/Poloniex/GetOrderData/" + currencyName,
+            method: "GET",
+        })
+    };
+
+    return cryptoApiService;
 });
