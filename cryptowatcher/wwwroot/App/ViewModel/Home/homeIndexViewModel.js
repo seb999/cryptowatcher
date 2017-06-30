@@ -53,6 +53,7 @@
         //Second pass to load the RSI behind the scene as it take 20 second
         cryptoApiService.getPoloniexData(true).then(function (response) {
             $scope.loaderVisibility = false;
+            $scope.currencyList = response.data;
             $scope.gridOptionsUI = { data: response.data };
             //Bind data to Ag-Grid
             //$scope.gridOptionsAG.api.setRowData(response.data);          
@@ -78,6 +79,9 @@
             resolve: {
                 currencyName: function () {
                     return $scope.currencyName;
+                },
+                currencyList: function () {
+                    return $scope.currencyList;
                 }
             }
         });

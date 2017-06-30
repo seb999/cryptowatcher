@@ -1,4 +1,11 @@
-﻿myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, cryptoApiService, $uibModal) {
+﻿myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, currencyList, cryptoApiService, $uibModal) {
+
+    for (var i = 0; i < currencyList.length; i++) {
+        debugger;
+        if (currencyList[i].name === currencyName) {
+            $scope.selectedIndexLine = i;
+        };
+    };
 
 	$scope.currencyName = currencyName; 
 	$scope.chartVolume = [];
@@ -6,35 +13,41 @@
     $scope.chartType = 'area';
     $scope.isAutoRefrsh = true;
 
-    var columnDefUI = [
-        { headerName: "Ask Quantity", field: "askQuantity" },
-        { headerName: "Ask Price", field: "askPrice"},
-        { headerName: "Bid Price", field: "bidPrice"},
-        { headerName: "Bid Quantity", field: "bidQuantity"},
-    ];
+    //var columnDefUI = [
+    //    { headerName: "Ask Quantity", field: "askQuantity" },
+    //    { headerName: "Ask Price", field: "askPrice"},
+    //    { headerName: "Bid Price", field: "bidPrice"},
+    //    { headerName: "Bid Quantity", field: "bidQuantity"},
+    //];
 
-    $scope.gridOptionsUI = {
-        data: null,
-        columnDefs: columnDefUI
-    };
+    //$scope.gridOptionsUI = {
+    //    data: null,
+    //    columnDefs: columnDefUI
+    //};
 
 	//Life start here : we load from API the data to display
-	cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {
-		for (var i = 0; i < response.data.length; i++) {
-			$scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
-			$scope.chartData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
-		}
-		//$scope.chartConfig1.loading = false;
-		$scope.displayChart();
-	}, function (error) {
-		$log.error(error.message);
-		});
+    $scope.getPoloniexChartData = function () {
+        cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {
+            $scope.chartVolume = [];
+            $scope.chartData = [];
+            for (var i = 0; i < response.data.length; i++) {
+                $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
+                $scope.chartData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
+            }
+            //$scope.chartConfig1.loading = false;
+            $scope.displayChart();
+        }, function (error) {
+            $log.error(error.message);
+        });
+    };
+    $scope.getPoloniexChartData();
 
     $scope.getPoloniexOrder = function () {
         cryptoApiService.getPoloniexOrderData($scope.currencyName).then(function (response) {
 
-            debugger;
-            $scope.gridOptionsUI = { data: response.data };
+            $scope.orderList = response.data;
+            //debugger;
+            //$scope.gridOptionsUI = { data: response.data };
 
         }, function (error) {
             $log.error(error.message);
@@ -163,4 +176,38 @@
 		}
 	$scope.chartConfig1.loading = true;
 
+
+    //------------------Navigation----------------------------------
+    $scope.previousActivity = function () {
+
+        if ($scope.selectedIndexLine - 1 >= 0) {
+            $scope.selectedIndexLine--;
+        };
+        $scope.currencyName = currencyList[$scope.selectedIndexLine].name;
+        $scope.getPoloniexChartData();
+        $scope.getPoloniexOrder();
+        checkNavigationButton();
+    };
+
+    $scope.nextActivity = function () {
+        if ($scope.selectedIndexLine + 1 < currencyList.length) {
+            $scope.selectedIndexLine++;
+        };
+        $scope.currencyName = currencyList[$scope.selectedIndexLine].name;
+        $scope.getPoloniexChartData();
+        $scope.getPoloniexOrder();
+        checkNavigationButton();
+        };
+
+    checkNavigationButton = function () {
+
+        $scope.previousButtonDisabled = false;
+        $scope.nextButtonDisabled = false;
+
+        if ($scope.selectedIndexLine === 0)
+            $scope.previousButtonDisabled = true;
+
+        if ($scope.selectedIndexLine === currencyList.length - 1)
+            $scope.nextButtonDisabled = true;
+    };
 });
