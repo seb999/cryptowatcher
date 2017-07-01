@@ -45,6 +45,7 @@
         $scope.loaderVisibility = true;
         cryptoApiService.getPoloniexData().then(function (response) {
             $scope.loaderVisibility = false;
+            $scope.currencyList = response.data;
             $scope.gridOptionsUI = { data: response.data };
             //Bind data to Ag-Grid
             //$scope.gridOptionsAG.api.setRowData(response.data);          
@@ -69,9 +70,11 @@
         $scope.chartType = 'line';
         //$scope.loadChartData();
 
+        debugger;
+
         var modalInstance = $uibModal.open({
           
-            templateUrl: '/../../App/View/home/homeChartView.html',
+            templateUrl: 'App/View/Home/homeChartView.html',
             controller: 'homeChartViewModel',
             backdrop: 'static',
             size: 'lg',

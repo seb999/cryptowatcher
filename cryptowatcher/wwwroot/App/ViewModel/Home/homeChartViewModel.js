@@ -1,5 +1,5 @@
 ﻿myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, currencyList, cryptoApiService, $uibModal) {
-
+debugger;
     for (var i = 0; i < currencyList.length; i++) {
         debugger;
         if (currencyList[i].name === currencyName) {
