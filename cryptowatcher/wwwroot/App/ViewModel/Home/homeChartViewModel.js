@@ -1,7 +1,5 @@
 ﻿myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, currencyList, cryptoApiService, $uibModal) {
-debugger;
     for (var i = 0; i < currencyList.length; i++) {
-        debugger;
         if (currencyList[i].name === currencyName) {
             $scope.selectedIndexLine = i;
         };
@@ -12,6 +10,7 @@ debugger;
 	$scope.chartData = [];
     $scope.chartType = 'area';
     $scope.isAutoRefrsh = true;
+	$scope.loaderVisibility = true;
 
     //var columnDefUI = [
     //    { headerName: "Ask Quantity", field: "askQuantity" },
@@ -27,8 +26,10 @@ debugger;
 
 	//Life start here : we load from API the data to display
     $scope.getPoloniexChartData = function () {
+		$scope.loaderVisibility = true;
         cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {
-            $scope.chartVolume = [];
+            $scope.loaderVisibility = false;
+			$scope.chartVolume = [];
             $scope.chartData = [];
             for (var i = 0; i < response.data.length; i++) {
                 $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);

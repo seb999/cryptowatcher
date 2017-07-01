@@ -12,12 +12,13 @@
             <button ng-disabled="nextButtonDisabled" class="btn btn-default btn" ng-click="nextActivity()" style="margin-left:5px"><i style="color:#00A1E2" tooltip-placement="left" uib-tooltip="Next" class="glyphicon glyphicon-forward"></i> </button>
         </div>
     </div>
-    <!--Loader-->
-    <div ng-show="loaderVisibility" class="overlay"></div>
-    <div ng-show="loaderVisibility" id="loaderModernize" style="top:60px !important"></div>
 </div>
 
 <div class="modal-body" style="padding-top:0px;background-color: #f5f5f5">
+    <!--Loader-->
+    <div ng-show="loaderVisibility" class="overlay"></div>
+    <div ng-show="loaderVisibility" id="spinner2"></div>
+
     <!--<select class="mySelect form-control input-sm" ng-model="selectedStrategy" ng-options="p as p.Text for p in strategyList" />-->
     <uib-tabset active="0" ng-cloak>
         <uib-tab index="0" ng-click="tabActivitySelected()">
@@ -96,3 +97,9 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-labeled btn-default btn-sm" ng-click="close()" style="color:dodgerblue;"><i class="glyphicon glyphicon-remove-circle"></i> Close</button>
 </div>
+
+<script lang="javascript">
+    $(".overlay").show();
+    var target = document.getElementById('spinner2')
+    var spinner = new Spinner(opts).spin(target);
+</script>

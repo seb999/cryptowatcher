@@ -70,11 +70,9 @@
         $scope.chartType = 'line';
         //$scope.loadChartData();
 
-        debugger;
-
         var modalInstance = $uibModal.open({
           
-            templateUrl: 'App/View/Home/homeChartView.html',
+            templateUrl: 'App/View/Home/homeChartView.html?bust=' + Math.random().toString(36).slice(2),
             controller: 'homeChartViewModel',
             backdrop: 'static',
             size: 'lg',
