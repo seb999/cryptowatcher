@@ -6,93 +6,19 @@
 
     $scope.currencyName = "BTC_BTS";
     $scope.chartType = 'candlestick';
+    $scope.showRsi = false;
 
     //-----------------highchart---------------------
 
-        $scope.chartConfig = {
-            title: {
-                useHTML: true,
-                x: -10,
-                y: 8,
-                text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'
-            },
-            indicators: [ {
-                id: 'AAPL',
-                type: 'atr',
-                params: {
-                    period: 14
-                },
-                styles: {
-                    strokeWidth: 2,
-                    stroke: 'orange',
-                    dashstyle: 'solid'
-                },
-                yAxis: {
-                    lineWidth: 2,
-                    title: {
-                        text: 'ATR'
-                    }
-                }
-            }, {
-                id: 'AAPL',
-                type: 'rsi',
-                params: {
-                    period: 14,
-                    overbought: 70,
-                    oversold: 30
-                },
-                styles: {
-                    strokeWidth: 2,
-                    stroke: 'black',
-                    dashstyle: 'solid'
-                },
-                yAxis: {
-                    lineWidth: 2,
-                    title: {
-                        text: 'RSI'
-                    }
-                }
-            }],
-            yAxis: {
-                opposite: false,
-                title: {
-                    text: 'DATA SMA EMA',
-                    x: -4
-                },
-                lineWidth: 2,
-                labels: {
-                    x: 22
-                }
-            },
-            rangeSelector: {
-                selected: 0
-            },
-            tooltip: {
-                enabledIndicators: true
-            },
-            series: [{
-                cropThreshold: 0,
-                id: 'AAPL',
-                name: 'AAPL',
-                data: [],
-                tooltip: {
-                    valueDecimals: 2
-                }
-            }]
-    }
-
-
     $scope.loadChartData = function () {
-
-        $scope.chartConfig.loading = true;
         cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {    
            
             $scope.chartVolume = [];
-            $scope.chartData = [];
+            $scope.chartValue = [];
             
             for (var i = 0; i < response.data.length; i++) {
                 $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
-                $scope.chartData.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close, response.data[i].volume]);
+                $scope.chartValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close, response.data[i].volume]);
             }
 
             $scope.displayChart();
@@ -102,25 +28,29 @@
         });
     };
 
-   
-    $scope.myTitle = 'sebie';
-    $scope.displayChart = function (currencyName) {
-        $scope.loading = ;    
+    $scope.showIndicator = function () {
+        alert();
+        $scope.showRsi = true;
+        $scope.displayChart();
+    };
+
+    $scope.displayChart = function () {
+        //$scope.chartLoading = true;
 
         $scope.chartTitle = $scope.currencyName;
 
-        $scope.myData = [];
-        $scope.myData.push({
+        $scope.chartData = [];
+        $scope.chartData.push({
             id: 'abc',
-            data: $scope.chartData,
+            name: $scope.currencyName,
+            data: $scope.chartValue,
             type: $scope.chartType,
             yAxis: 0,
             dataGrouping: {
                 units: groupingUnits
             }
         });
-
-        $scope.myData.push({
+        $scope.chartData.push({
             name: 'volume',
             data: $scope.chartVolume,
             type: 'column',
@@ -130,30 +60,76 @@
             }
         });
 
-        $timeout(function () {
-            $scope.myIndicators = [{
-                id: 'abc',
-                type: 'sma',
-                params: {
-                    period: 14
-                }
-            }, {
-                id: 'abc',
-                type: 'ema',
-                params: {
-                    period: 14,
-                    index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
+        if ($scope.showRsi)
+            {
+        $scope.chartIndicators = [{
+            id: 'abc',
+            type: 'sma',
+            params: {
+                period: 14
+            }
+        }, {
+            id: 'abc',
+            type: 'ema',
+            params: {
+                period: 14,
+                index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
+            },
+            styles: {
+                strokeWidth: 1,
+                stroke: '#93959B',
+                dashstyle: 'solid',
+            }
+        }
+            , {
+            id: 'abc',
+            type: 'rsi',
+            lineWidth: 1,
+            params: {
+                period: 14,
+                overbought: 70,
+                oversold: 30
+            },
+            styles: {
+                lineWidth: 1,
+                stroke: '#005EA4',
+                dashstyle: 'solid'
+            },
+            yAxis: {
+                lineWidth: 2,
+                title: {
+                    text: 'RSI',
                 },
-                styles: {
-                    strokeWidth: 2,
-                    stroke: 'green',
-                    dashstyle: 'solid'
-                }
-                }];
+                labels: {
+                    align: 'right',
+                    x: -3
+                },
+            }
+        }
+            , {
+                id: 'abc',
+                    type: 'atr',
+                    params: {
+                        period: 14
+                    },
+                    styles: {
+                        strokeWidth: 2,
+                        stroke: 'orange',
+                        dashstyle: 'solid'
+                    },
+                    yAxis: {
+                        lineWidth: 2,
+                        title: {
+                            text: 'ATR'
+                        }
+                    }
+                },
+            ];
+        }
 
-        }, 100);
-        
+        //$scope.chartLoading = true;
     };
+
 
 
     groupingUnits = [[

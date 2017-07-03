@@ -11,7 +11,7 @@
 
     cryptoApiService.getPoloniexChartData = function (currencyName) {
         return $http({
-            url: "api/Poloniex/GetChartData/" + currencyName,
+            url: "/api/Poloniex/GetChartData/" + currencyName,
             method: "GET",
         })
     };

@@ -6,7 +6,8 @@
         scope: {
             title: '@',
             data: '=',
-            indicators: '='
+            indicators: '=',
+            loading: '='
         },
         link: function (scope, element, attrs) {
             var char;
@@ -33,7 +34,6 @@
                         navigator: {
                             enabled: true
                         },
-
                         colors: ['#00A1E2', '#6769B5', '#3BC3A3', '#93959B', '#2D8F78', '#C3842F', '#005EA4'],
                         tooltip: {
                             pointFormat: '{series.name}: <b>{point.y}</b>'
@@ -76,7 +76,6 @@
                     },
                     series: scope.data
                 };
-
 
                 var config = angular.merge(defaultOptions, chartOption);
                 char = new Highcharts.StockChart(config);

@@ -11,7 +11,16 @@
     <div ng-show="loaderVisibility" class="overlay"></div>
     <div ng-show="loaderVisibility" id="loaderModernize"></div>
 
-    <chart title="{{chartTitle}}" data="myData" indicators="myIndicators"></chart>
+    <div class="row" style="padding-top:7px; padding-right:0px;padding-left:0px; padding-bottom:7px; background-color:#72bedd !important">
+        <select ng-model="chartType" ng-change="changeChartType(chartType);" style="margin-left:20px">
+            <option value="area">area</option>
+            <option value="line">line</option>
+            <option value="candlestick">candlestick</option>
+        </select>
+        <input type="checkbox" ng-change="showIndicator()" ng-model="toto" />
+    </div>
+
+    <chart title="{{chartTitle}}" data="chartData" indicators="chartIndicators" loading="chartLoading" style="width:100%;height:700px"></chart>
 
     @*<div id="chart-advanced"></div>*@
 
@@ -29,106 +38,7 @@
     <link href="~/css/loader.css" rel="stylesheet" />
 
     <script language="javascript">
-        //$(function () {
-
-        //    var adv_options = {
-        //        title: {
-        //            useHTML: true,
-        //            x: -10,
-        //            y: 8,
-        //            text: '<span class="chart-title">SMA, EMA, ATR, RSI indicators <span class="chart-href"> <a href="http://www.blacklabel.pl/highcharts" target="_blank"> Black Label </a> </span> <span class="chart-subtitle">plugin by </span></span>'
-        //        },
-        //        indicators: [{
-        //            id: 'AAPL',
-        //            type: 'sma',
-        //            params: {
-        //                period: 14
-        //            }
-        //        }, {
-        //            id: 'AAPL',
-        //            type: 'ema',
-        //            params: {
-        //                period: 14,
-        //                index: 0 //optional parameter for ohlc / candlestick / arearange - index of value
-        //            },
-        //            styles: {
-        //                strokeWidth: 2,
-        //                stroke: 'green',
-        //                dashstyle: 'solid'
-        //            }
-        //        }, {
-        //            id: 'AAPL',
-        //            type: 'atr',
-        //            params: {
-        //                period: 14
-        //            },
-        //            styles: {
-        //                strokeWidth: 2,
-        //                stroke: 'orange',
-        //                dashstyle: 'solid'
-        //            },
-        //            yAxis: {
-        //                lineWidth: 2,
-        //                title: {
-        //                    text: 'ATR'
-        //                }
-        //            }
-        //        }, {
-        //            id: 'AAPL',
-        //            type: 'rsi',
-        //            params: {
-        //                period: 14,
-        //                overbought: 70,
-        //                oversold: 30
-        //            },
-        //            styles: {
-        //                strokeWidth: 2,
-        //                stroke: 'black',
-        //                dashstyle: 'solid'
-        //            },
-        //            yAxis: {
-        //                lineWidth: 2,
-        //                title: {
-        //                    text: 'RSI'
-        //                }
-        //            }
-        //        }],
-        //        yAxis: {
-        //            opposite: false,
-        //            title: {
-        //                text: 'DATA SMA EMA',
-        //                x: -4
-        //            },
-        //            lineWidth: 2,
-        //            labels: {
-        //                x: 22
-        //            }
-        //        },
-        //        rangeSelector: {
-        //            selected: 0
-        //        },
-        //        tooltip: {
-        //            enabledIndicators: true
-        //        },
-        //        series: [{
-        //            cropThreshold: 0,
-        //            id: 'AAPL',
-        //            name: 'AAPL',
-        //            data: [],
-        //            tooltip: {
-        //                valueDecimals: 2
-        //            }
-        //        }]
-        //    };
-
-        //    $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-ohlcv.json&callback=?', function (data) {
-
-        //        adv_options.series[0].type = 'candlestick';
-        //        adv_options.series[0].data = data;
-
-        //        $('#chart-advanced').highcharts('StockChart', adv_options);
-        //    });
-        //});
+     
     </script>
 
 
