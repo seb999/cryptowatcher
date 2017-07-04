@@ -17,7 +17,10 @@
             <option value="line">line</option>
             <option value="candlestick">candlestick</option>
         </select>
-        <input type="checkbox" ng-change="showIndicator()" ng-model="toto" />
+        <input type="checkbox" ng-change="showIndicator();" ng-model="showRsi" />Rsi
+        <input type="checkbox" ng-change="showIndicator();" ng-model="showAtr" />Atr
+        <input type="checkbox" ng-change="showIndicator();" ng-model="showSma" />Sma
+        <input type="checkbox" ng-change="showIndicator();" ng-model="showEma" />Ema
     </div>
 
     <chart title="{{chartTitle}}" data="chartData" indicators="chartIndicators" loading="chartLoading" style="width:100%;height:700px"></chart>
