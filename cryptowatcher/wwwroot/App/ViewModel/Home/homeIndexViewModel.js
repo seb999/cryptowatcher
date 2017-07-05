@@ -23,7 +23,7 @@
             $scope.gridETH.core.handleWindowResize();
             $scope.gridXMR.core.handleWindowResize();
             $scope.gridUSD.core.handleWindowResize();
-        }, 10);
+        }, 0);
     }
 
     $scope.gridOptionsBTC = {
@@ -50,7 +50,7 @@
         }
     };
 
-    $scope.gridOptions = {
+    $scope.gridOptionsUSD = {
         data: null,
         columnDefs: gridColumn,
         onRegisterApi: function (gridUSD) {

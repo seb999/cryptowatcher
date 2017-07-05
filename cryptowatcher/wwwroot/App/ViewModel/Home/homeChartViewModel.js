@@ -179,7 +179,7 @@
             $scope.selectedIndexLine--;
         };
         $scope.currencyName = currencyList[$scope.selectedIndexLine].name;
-        $scope.getPoloniexChartData();
+        $scope.loadChartData();
         $scope.getPoloniexOrder();
         checkNavigationButton();
     };
@@ -189,7 +189,7 @@
             $scope.selectedIndexLine++;
         };
         $scope.currencyName = currencyList[$scope.selectedIndexLine].name;
-        $scope.getPoloniexChartData();
+        $scope.loadChartData();
         $scope.getPoloniexOrder();
         checkNavigationButton();
         };

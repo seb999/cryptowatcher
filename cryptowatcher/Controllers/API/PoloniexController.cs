@@ -39,7 +39,7 @@ namespace cryptowatcher.Controllers.API
                     //For ecdc so reduce number of call in proxy
                     // if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS") continue;
                     //if (item.Key.Substring(0,3) != "BTC") continue;
-                    if (item.Key.Substring(0, 3) != "ETH") continue;
+                    //if (item.Key.Substring(0, 3) != "ETH") continue;
                     item.Value.Name = item.Key;
                     if (isIndicatorAdded)
                     {

@@ -22,7 +22,7 @@
     <div ng-cloak ng-show="currencyList.length>0">
         <br />
         <uib-tabset active="0" ng-cloak>
-            <uib-tab index="0" ng-cloak>
+            <uib-tab index="0" ng-click="tabSelected()">
                 <uib-tab-heading ng-cloak>
                     <img src="~/images/bitcoin.png" /> BTC
                 </uib-tab-heading>
@@ -34,13 +34,13 @@
                 </uib-tab-heading>
                 <div ui-grid="gridOptionsETH" style="width:100%;height:500px;margin-top:12px"></div>
             </uib-tab>
-            <uib-tab index="2">
+            <uib-tab index="2" ng-click="tabSelected()">
                 <uib-tab-heading>
                     <img src="~/images/monero.png" /> MONERO
                 </uib-tab-heading>
                 <div ui-grid="gridOptionsXMR" style="width:100%;height:500px;margin-top:12px"></div>
             </uib-tab>
-            <uib-tab index="3">
+            <uib-tab index="3" ng-click="tabSelected()">
                 <uib-tab-heading>
                     <img src="~/images/usdt.png" /> USDT
                 </uib-tab-heading>
