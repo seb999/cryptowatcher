@@ -17,29 +17,37 @@
             <button type="button" class="btn btn-labeled btn-default btn-sm" ng-click="refreshData();" style="color:dodgerblue;">
                 <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span> Refresh
             </button>
-            @*<button ng-click="showChart = !showChart" uib-tooltip="Chart" class="btn btn-labeled btn-default btn-sm">
-                <span class="btn-label"><i class="glyphicon glyphicon-stats" style="color:dodgerblue;"></i>&nbsp;</span>
-            </button>*@
         </div>
     </div>
-    <div>
-            <!--<div class="row" ng-if="showChart" style="float:right; margin-right:2px">
-                <select ng-model="chartType" ng-change="changeChartType(chartType);">
-                    <option value="line">Line</option>
-                    <option value="candlestick">candlestick</option>
-                </select>
-            </div>
-            <div class="row" ng-if="showChart">
-                <div class="col-md-12" style="padding:5px">
-                    <highchart config="chartConfig" style="width:100%;height:500px" ng-cloak></highchart>
-                </div>
-            </div>
-        </div>-->
-    <br />
-    @*<div ag-grid="gridOptionsAG" class="ag-fresh" style="height: 500px;margin-bottom:20px"></div>*@
-    <span style="background-color: limegreen"></span>
-    <div ui-grid="gridOptionsUI" style="width:100%;height:500px"></div>
-</div>
+    <div ng-cloak ng-show="currencyList.length>0">
+        <br />
+        <uib-tabset active="0" ng-cloak>
+            <uib-tab index="0" ng-cloak>
+                <uib-tab-heading ng-cloak>
+                    <img src="~/images/bitcoin.png" /> BTC
+                </uib-tab-heading>
+                <div ui-grid="gridOptionsBTC" style="width:100%;height:500px;margin-top:12px"></div>
+            </uib-tab>
+            <uib-tab index="1" ng-click="tabSelected()">
+                <uib-tab-heading>
+                    <img src="~/images/eth.png" /> ETH
+                </uib-tab-heading>
+                <div ui-grid="gridOptionsETH" style="width:100%;height:500px;margin-top:12px"></div>
+            </uib-tab>
+            <uib-tab index="2">
+                <uib-tab-heading>
+                    <img src="~/images/monero.png" /> MONERO
+                </uib-tab-heading>
+                <div ui-grid="gridOptionsXMR" style="width:100%;height:500px;margin-top:12px"></div>
+            </uib-tab>
+            <uib-tab index="3">
+                <uib-tab-heading>
+                    <img src="~/images/usdt.png" /> USDT
+                </uib-tab-heading>
+                <div ui-grid="gridOptionsUSD" style="width:100%;height:500px;margin-top:12px"></div>
+            </uib-tab>
+            </uib-tabset>
+    </div>
 
 @section Scripts {
     <script src="~/App/app.js" asp-append-version="true"></script>

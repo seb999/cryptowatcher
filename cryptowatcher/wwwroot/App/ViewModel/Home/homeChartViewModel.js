@@ -10,7 +10,8 @@
 	$scope.chartData = [];
     $scope.chartType = 'area';
     $scope.isAutoRefrsh = true;
-	$scope.loaderVisibility = true;
+    $scope.loaderVisibility = true;
+    $scope.checkBoxParent = {};
 
 	$scope.indicatorRsi = {
         id: 'abc',
@@ -79,26 +80,8 @@
         }
     }
 
-// $scope.chartIndicators = [];
-// 	$scope.chartIndicators.push($scope.indicatorRsi);
-//    $scope.chartIndicators.push($scope.indicatorAtr);
-//      $scope.chartIndicators.push($scope.indicatorSma);
-//     $scope.chartIndicators.push($scope.indicatorEma);
-
-    //var columnDefUI = [
-    //    { headerName: "Ask Quantity", field: "askQuantity" },
-    //    { headerName: "Ask Price", field: "askPrice"},
-    //    { headerName: "Bid Price", field: "bidPrice"},
-    //    { headerName: "Bid Quantity", field: "bidQuantity"},
-    //];
-
-    //$scope.gridOptionsUI = {
-    //    data: null,
-    //    columnDefs: columnDefUI
-    //};
-
 	//Life start here : we load from API the data to display
-    $scope.getPoloniexChartData = function () {
+    $scope.loadChartData = function () {
 		$scope.loaderVisibility = true;
 		$scope.chartVolume = [];
 		$scope.chartValue = [];
@@ -114,7 +97,7 @@
             $log.error(error.message);
         });
     };
-    $scope.getPoloniexChartData();
+    $scope.loadChartData();
 
     $scope.getPoloniexOrder = function () {
         cryptoApiService.getPoloniexOrderData($scope.currencyName).then(function (response) {
@@ -150,13 +133,14 @@
 	};
 
 	$scope.showIndicator = function () {
-		debugger;
+        console.log($scope.checkBoxParent);
         $scope.chartIndicators = [];
-        if($scope.showRsi) $scope.chartIndicators.push($scope.indicatorRsi);
-        if($scope.showAtr) $scope.chartIndicators.push($scope.indicatorAtr);
-        if($scope.showSma) $scope.chartIndicators.push($scope.indicatorSma);
-        if($scope.showEma) $scope.chartIndicators.push($scope.indicatorEma);
-        $scope.getPoloniexChartData();
+        $scope.chartType = "candlestick";
+        if ($scope.checkBoxParent.showRsi) $scope.chartIndicators.push($scope.indicatorRsi);
+        if ($scope.checkBoxParent.showAtr) $scope.chartIndicators.push($scope.indicatorAtr);
+        if ($scope.checkBoxParent.showSma) $scope.chartIndicators.push($scope.indicatorSma);
+        if ($scope.checkBoxParent.showEma) $scope.chartIndicators.push($scope.indicatorEma);
+        $scope.loadChartData();
     };
 
 	//Command : display chart data
@@ -186,79 +170,7 @@
 			}
 		});
 	};
-
-
-	groupingUnits = [[
-		'day',                         // unit name
-		[1]                             // allowed multiples
-	]],
-
-	// $scope.chartConfig1 = {
-	// 		chart: {
-	// 			zoomType: 'x',
-	// 			spacingTop: 15,
-	// 			spacingBottom: 15,
-	// 			spacingLeft: 15,
-	// 			spacingRight: 15,
-				
-	// 		},
-	// 		chartType: 'stock',
-	// 		title: {
-	// 			text: ''
-	// 		},
-	// 		series: [],
-	// 		useHighStocks: true,
-	// 		loading: true,
-	// 		options: {
-	// 			rangeSelector: {
-	// 				enabled: true
-	// 			},
-	// 			navigator: {
-	// 				enabled: true
-	// 			},
-
-	// 			colors: ['#00A1E2', '#6769B5', '#3BC3A3', '#93959B', '#2D8F78', '#C3842F', '#005EA4'],
-	// 			tooltip: {
-	// 				pointFormat: '{series.name}: <b>{point.y}</b>'
-	// 			},
-	// 		},
-	// 		xAxis: {
-	// 			type: 'datetime',
-	// 			title: {
-	// 				text: 'Date'
-	// 			},
-	// 			minTickInterval: 5,
-	// 			minorTickInterval: 1
-	// 		},	   
-	// 		yAxis: [{
-	// 			labels: {
-	// 				align: 'right',
-	// 				x: -3
-	// 			},
-	// 			title: {
-	// 				text: ''
-	// 			},
-	// 			height: '65%',
-	// 			lineWidth: 2
-	// 		}, {
-	// 			labels: {
-	// 				align: 'right',
-	// 				x: -3
-	// 			},
-	// 			title: {
-	// 				text: 'Volume'
-	// 			},
-	// 			top: '70%',
-	// 			height: '30%',
-	// 			offset: 0,
-	// 			lineWidth: 2
-	// 		}],
-	// 		legend: {
-	// 			enabled: true
-	// 		},
-	// 	}
-	// $scope.chartConfig1.loading = true;
-
+	groupingUnits = [['day', [1]]],
 
     //------------------Navigation----------------------------------
     $scope.previousActivity = function () {

@@ -1,9 +1,0 @@
-export interface SimpleHttpRequestParams {
-    url: string;
-}
-export declare function simpleHttpRequest(params: SimpleHttpRequestParams): Promise;
-export declare class Promise {
-    private thenFunc;
-    then(func: (result: any) => void): void;
-    resolve(result: any): void;
-}
