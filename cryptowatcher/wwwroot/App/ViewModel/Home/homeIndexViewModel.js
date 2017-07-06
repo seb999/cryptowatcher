@@ -31,13 +31,12 @@
         if (gridId === 0) $scope.showGrid0 = true;
         if (gridId === 1) $scope.showGrid1 = true;
         if (gridId === 2) $scope.showGrid2 = true;
-        if (gridId === 3 && !$scope.showGrid3) {
-            $scope.showGrid3 = true;
-            $scope.gridOptionsUSD.columnDefs = gridColumn;
-        }
-        //$scope.gridOptionsETH = { columnDefs: gridColumn, data: currencyListETH };
-        //$scope.gridOptionsBTC = { columnDefs: gridColumn, data: currencyListBTC };
-        //$scope.gridOptionsXMR = { columnDefs: gridColumn, data: currencyListXMR };
+        if (gridId === 3) $scope.showGrid3 = true;
+           
+        $scope.gridOptionsUSD.columnDefs = gridColumn;
+        $scope.gridOptionsETH.columnDefs = gridColumn;
+        $scope.gridOptionsBTC.columnDefs = gridColumn;
+        $scope.gridOptionsXMR.columnDefs = gridColumn;
        
         
         //$timeout(function () {
