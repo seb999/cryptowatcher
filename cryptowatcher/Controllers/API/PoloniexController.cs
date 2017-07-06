@@ -24,8 +24,8 @@ namespace cryptowatcher.Controllers.API
 
         // GET: api/values
         [HttpGet]
-        [Route("{isIndicatorAdded}")]
-        public IEnumerable<PoloCurrencyTransfer> Get(bool isIndicatorAdded)
+        [Route("{currencyName?}")]
+        public IEnumerable<PoloCurrencyTransfer> Get(string currencyName = null)
         {
             List<PoloCurrencyTransfer> result = new List<PoloCurrencyTransfer>();
             string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
@@ -39,9 +39,9 @@ namespace cryptowatcher.Controllers.API
                     //For ecdc so reduce number of call in proxy
                     // if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS") continue;
                     //if (item.Key.Substring(0,3) != "BTC") continue;
-                    //if (item.Key.Substring(0, 3) != "ETH") continue;
+                    if (item.Key.Substring(0, 3) != currencyName && currencyName!=null) continue;
                     item.Value.Name = item.Key;
-                    if (isIndicatorAdded)
+                    if (currencyName !=null)
                     {
                         item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
                     }

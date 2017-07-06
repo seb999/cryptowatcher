@@ -2,9 +2,9 @@
 
     var cryptoApiService = {};
 
-    cryptoApiService.getPoloniexData = function (isIndicatorAdded) {
+    cryptoApiService.getPoloniexData = function (currencyName) {
         return $http({
-            url: "api/Poloniex/" + isIndicatorAdded,
+            url: "api/Poloniex/" + currencyName,
             method: "GET",
         })
     };

@@ -1,6 +1,15 @@
 ﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
     $scope.loaderVisibility = true;
-    $scope.currencyList = [];
+    var currencyList = [];
+    var currencyListBTC = [];
+    var currencyListETH = [];
+    var currencyListXMR = [];
+    var currencyListUSD = [];
+
+    $scope.showGrid0 = true;
+    $scope.showGrid1 = false;
+    $scope.showGrid2 = false;
+    $scope.showGrid3 = false;
 
     var gridColumn = [
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img src="{{grid.appScope.getTemplateUI(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
@@ -13,17 +22,30 @@
         { headerName: "High24hr", field: "high24hr" },
         { headerName: "Low24hr", field: "low24hr" },
         { field: 'rsi', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span ng-show="!grid.appScope.isLoadingRsi">{{ COL_FIELD }}</span><img src="{{grid.appScope.getRsiTemplateUI(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
-        { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
+        { headerName: " ", field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.openChart(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width:40 },
     ];
 
     //Command : reshape the grid 
-    $scope.tabSelected = function () {
-        $timeout(function () {
-            $scope.gridBTC.core.handleWindowResize();
-            $scope.gridETH.core.handleWindowResize();
-            $scope.gridXMR.core.handleWindowResize();
-            $scope.gridUSD.core.handleWindowResize();
-        }, 0);
+    $scope.tabSelected = function (gridId) {
+      
+        if (gridId === 0) $scope.showGrid0 = true;
+        if (gridId === 1) $scope.showGrid1 = true;
+        if (gridId === 2) $scope.showGrid2 = true;
+        if (gridId === 3 && !$scope.showGrid3) {
+            $scope.showGrid3 = true;
+            $scope.gridOptionsUSD.columnDefs = gridColumn;
+        }
+        //$scope.gridOptionsETH = { columnDefs: gridColumn, data: currencyListETH };
+        //$scope.gridOptionsBTC = { columnDefs: gridColumn, data: currencyListBTC };
+        //$scope.gridOptionsXMR = { columnDefs: gridColumn, data: currencyListXMR };
+       
+        
+        //$timeout(function () {
+        //    $scope.gridBTC.core.handleWindowResize();
+        //    $scope.gridETH.core.handleWindowResize();
+        //    $scope.gridXMR.core.handleWindowResize();
+        //    $scope.gridUSD.core.handleWindowResize();
+        //}, 1000);
     }
 
     $scope.gridOptionsBTC = {
@@ -37,9 +59,9 @@
     $scope.gridOptionsETH = {
         data: null,
         columnDefs: gridColumn,
-        onRegisterApi: function (gridETH) {
-            $scope.gridETH = gridETH;
-        }
+        //onRegisterApi: function (gridETH) {
+        //    $scope.gridETH = gridETH;
+        //}
     };
 
     $scope.gridOptionsXMR = {
@@ -77,43 +99,51 @@
 
     $scope.loadData = function (currencyType) {
         $scope.loaderVisibility = true;
-        cryptoApiService.getPoloniexData(false).then(function (response) {
+        //First pass we load all curency without the RSI indicator
+        cryptoApiService.getPoloniexData("").then(function (response) {
             $scope.loaderVisibility = false;
-            $scope.currencyList = response.data;
-            $scope.uploadGrid(response.data);
-        }, function (error) { $log.error(error.message); });
+            currencyList = response.data;
+            for (var i = 0; i < currencyList.length; i++) {
+                if (currencyList[i].name.substring(0, 3) === "ETH") currencyListETH.push(currencyList[i]);
+                if (currencyList[i].name.substring(0, 3) === "BTC") currencyListBTC.push(currencyList[i]);
+                if (currencyList[i].name.substring(0, 3) === "XMR") currencyListXMR.push(currencyList[i]);
+                if (currencyList[i].name.substring(0, 3) === "USD") currencyListUSD.push(currencyList[i]);
+            };
+            $scope.gridOptionsETH = { data: currencyListETH };
+            $scope.gridOptionsBTC = { data: currencyListBTC };
+            $scope.gridOptionsXMR = { data: currencyListXMR };
+            $scope.gridOptionsUSD = { data: currencyListUSD };
 
-        //Second pass to load the RSI behind the scene as it take 20 second
-        cryptoApiService.getPoloniexData(true).then(function (response) {
-            $scope.loaderVisibility = false;
-            $scope.uploadGrid(response.data);
+            $scope.loadDataWithRsi();
         }, function (error) { $log.error(error.message); });
     };
     $scope.loadData();
 
-    $scope.uploadGrid = function (currencyList) {
-        var currencyListBTC = [];
-        var currencyListETH = [];
-        var currencyListXMR = [];
-        var currencyListUSD = [];
-        for (var i = 0; i < currencyList.length; i++) {
-            if (currencyList[i].name.substring(0, 3) === "ETH") currencyListETH.push(currencyList[i]);
-            if (currencyList[i].name.substring(0, 3) === "BTC") currencyListBTC.push(currencyList[i]);
-            if (currencyList[i].name.substring(0, 3) === "XMR") currencyListXMR.push(currencyList[i]);
-            if (currencyList[i].name.substring(0, 3) === "USD") currencyListUSD.push(currencyList[i]);
-        };
-        $scope.gridOptionsETH = { data: currencyListETH };
-        $scope.gridOptionsBTC = { data: currencyListBTC };
-        $scope.gridOptionsXMR = { data: currencyListXMR };
-        $scope.gridOptionsUSD = { data: currencyListUSD }; 
-    }
+    //Second pass to load the RSI behind the scene as it take 20 second
+    $scope.loadDataWithRsi = function () {
+        cryptoApiService.getPoloniexData("USD").then(function (response) {
+            $scope.gridOptionsUSD = { data: response.data };
+        }, function (error) { $log.error(error.message); });
 
-   
+        //cryptoApiService.getPoloniexData("ETH").then(function (response) {
+        //    $scope.gridOptionsETH = { data: response.data };
+        //}, function (error) { $log.error(error.message); });
+
+        //cryptoApiService.getPoloniexData("BTC").then(function (response) {
+        //    $scope.gridOptionsBTC = { data: response.data };
+        //}, function (error) { $log.error(error.message); });
+
+        //cryptoApiService.getPoloniexData("XMR").then(function (response) {
+        //    $scope.gridOptionsXMR = { data: response.data };
+        //}, function (error) { $log.error(error.message); });
+    };
 
     //Command : open chart
     $scope.openChart = function (currencyName) {
-        //$scope.showChart = true;
-        $scope.currencyName = currencyName;
+        if (currencyName.substring(0, 3) === 'BTC') { currencyList = currencyListBTC };
+        if (currencyName.substring(0, 3) === 'XMR') { currencyList = currencyListXMR };
+        if (currencyName.substring(0, 3) === 'ETH') { currencyList = currencyListETH };
+        if (currencyName.substring(0, 3) === 'USD') { currencyList = currencyListUSD };
         $scope.chartType = 'line';
         //$scope.loadChartData();
 
@@ -125,10 +155,10 @@
             cache: false,
             resolve: {
                 currencyName: function () {
-                    return $scope.currencyName;
+                    return currencyName;
                 },
                 currencyList: function () {
-                    return $scope.currencyList;
+                    return currencyList;
                 }
             }
         });
