@@ -9,6 +9,7 @@ using TicTacTec.TA.Library;
 using cryptowatcher.Misc;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using cryptowatcher.Model;
 
 namespace cryptowatcher.Controllers.API
 {
@@ -21,6 +22,13 @@ namespace cryptowatcher.Controllers.API
         private Uri uriListOfCurrency = new Uri("https://poloniex.com/public?command=returnTicker");
         private Uri uriCurrency = new Uri("https://poloniex.com/public?command=returnChartData&currencyPair=");
         private Uri uriOrder = new Uri("https://poloniex.com/public?command=returnOrderBook&currencyPair=");
+
+        private readonly AppDbContext dbContext;
+
+        public PoloniexController([FromServices] AppDbContext appDbContext)
+        {
+            dbContext = appDbContext;
+        }
 
         // GET: api/values
         [HttpGet]
@@ -119,6 +127,46 @@ namespace cryptowatcher.Controllers.API
 
             return result;
 
+        }
+
+        private void SaveNewCurrency()
+        {
+            //List of currency in local db
+            List<Currency> localCurrencyList = dbContext.Currency.Select(p=>p).ToList();
+
+            //List of currency from Poloniex API
+            List<PoloCurrencyTransfer> currentCurrencyList = new List<PoloCurrencyTransfer>();
+            string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
+
+            if (poloniexApiData != "")
+            {
+                Dictionary<string, PoloCurrencyTransfer> myDico = JsonConvert.DeserializeObject<Dictionary<string, PoloCurrencyTransfer>>(poloniexApiData);
+
+                foreach (var item in myDico)
+                {    
+                    if(localCurrencyList.Where(p=>p.CurrencyId == item.Value.Id).Select(p=>p.Id).FirstOrDefault() == 0)
+                    {
+                        dbContext.Currency.Add(new Currency() { 
+                            CurrencyId = item.Value.Id , 
+                            CurrencyName = item.Key,
+                            AddDate = DateTime.Now});
+                    }
+                }
+                dbContext.SaveChanges();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetNewCurrencyList")]
+        public List<Currency> GetNewCurrencyList()
+        {
+            SaveNewCurrency();
+
+            //List new currency that are not older than 7 days 
+            List<Currency> localCurrencyList = 
+                dbContext.Currency.Where(p=>DateTime.Compare(p.AddDate.AddDays(7),DateTime.Now) >0 ).Select(p=>p).ToList();
+
+            return localCurrencyList;        
         }
 
         #region helper

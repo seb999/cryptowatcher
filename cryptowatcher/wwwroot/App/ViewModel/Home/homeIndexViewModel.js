@@ -1,5 +1,6 @@
 ﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
     $scope.loaderVisibility = true;
+    $scope.newCurrencyList = [];
     var currencyList = [];
     var currencyListBTC = [];
     var currencyListETH = [];
@@ -27,7 +28,6 @@
 
     //Command : reshape the grid 
     $scope.tabSelected = function (gridId) {
-      
         if (gridId === 0) $scope.showGrid0 = true;
         if (gridId === 1) $scope.showGrid1 = true;
         if (gridId === 2) $scope.showGrid2 = true;
@@ -96,6 +96,11 @@
         return "";
     }; 
 
+    //check if there are new currency and display 1 week an alert message
+    cryptoApiService.getNewCurrencyList().then(function (response) {
+        $scope.newCurrencyList = response.data;
+        }, function (error) { $log.error(error.message);});
+
     $scope.loadData = function (currencyType) {
         $scope.loaderVisibility = true;
         //First pass we load all curency without the RSI indicator
@@ -124,17 +129,17 @@
             $scope.gridOptionsUSD = { data: response.data };
         }, function (error) { $log.error(error.message); });
 
-        //cryptoApiService.getPoloniexData("ETH").then(function (response) {
-        //    $scope.gridOptionsETH = { data: response.data };
-        //}, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData("ETH").then(function (response) {
+           $scope.gridOptionsETH = { data: response.data };
+        }, function (error) { $log.error(error.message); });
 
-        //cryptoApiService.getPoloniexData("BTC").then(function (response) {
-        //    $scope.gridOptionsBTC = { data: response.data };
-        //}, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData("BTC").then(function (response) {
+           $scope.gridOptionsBTC = { data: response.data };
+        }, function (error) { $log.error(error.message); });
 
-        //cryptoApiService.getPoloniexData("XMR").then(function (response) {
-        //    $scope.gridOptionsXMR = { data: response.data };
-        //}, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData("XMR").then(function (response) {
+           $scope.gridOptionsXMR = { data: response.data };
+        }, function (error) { $log.error(error.message); });
     };
 
     //Command : open chart
