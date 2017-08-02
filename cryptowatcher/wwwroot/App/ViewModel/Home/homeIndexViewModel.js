@@ -118,7 +118,7 @@
             $scope.gridOptionsXMR = { data: currencyListXMR };
             $scope.gridOptionsUSD = { data: currencyListUSD };
 
-            //$scope.loadDataWithRsi();
+            $scope.loadDataWithRsi();
         }, function (error) { $log.error(error.message); });
     };
     $scope.loadData();
