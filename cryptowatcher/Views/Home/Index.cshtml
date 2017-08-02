@@ -19,14 +19,12 @@
             </button>
         </div>
 
-        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-info alert-dismissible col-md-11" role="alert" style="padding-top:5px !important;padding-bottom:5px !important">
+        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-info alert-dismissible col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong>Info, new currency available! </strong> 
-             <!-- <div class="row" ngCloak> -->
                 <span ng-repeat="item in newCurrencyList" ngCloak>
                     {{item.currencyName}};&nbsp;
                 </span>
-            <!-- </div>  -->
         </div>
 
     </div>

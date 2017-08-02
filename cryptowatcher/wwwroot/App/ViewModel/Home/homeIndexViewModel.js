@@ -97,9 +97,9 @@
     }; 
 
     //check if there are new currency and display 1 week an alert message
-    cryptoApiService.getNewCurrencyList().then(function (response) {
-        $scope.newCurrencyList = response.data;
-        }, function (error) { $log.error(error.message);});
+    // cryptoApiService.getNewCurrencyList().then(function (response) {
+    //     $scope.newCurrencyList = response.data;
+    //     }, function (error) { $log.error(error.message);});
 
     $scope.loadData = function (currencyType) {
         $scope.loaderVisibility = true;
@@ -118,7 +118,7 @@
             $scope.gridOptionsXMR = { data: currencyListXMR };
             $scope.gridOptionsUSD = { data: currencyListUSD };
 
-            $scope.loadDataWithRsi();
+            //$scope.loadDataWithRsi();
         }, function (error) { $log.error(error.message); });
     };
     $scope.loadData();

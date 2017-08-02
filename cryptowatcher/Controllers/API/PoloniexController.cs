@@ -129,44 +129,27 @@ namespace cryptowatcher.Controllers.API
 
         }
 
-        private void SaveNewCurrency()
-        {
-            //List of currency in local db
-            List<Currency> localCurrencyList = dbContext.Currency.Select(p=>p).ToList();
-
-            //List of currency from Poloniex API
-            List<PoloCurrencyTransfer> currentCurrencyList = new List<PoloCurrencyTransfer>();
-            string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
-
-            if (poloniexApiData != "")
-            {
-                Dictionary<string, PoloCurrencyTransfer> myDico = JsonConvert.DeserializeObject<Dictionary<string, PoloCurrencyTransfer>>(poloniexApiData);
-
-                foreach (var item in myDico)
-                {    
-                    if(localCurrencyList.Where(p=>p.CurrencyId == item.Value.Id).Select(p=>p.Id).FirstOrDefault() == 0)
-                    {
-                        dbContext.Currency.Add(new Currency() { 
-                            CurrencyId = item.Value.Id , 
-                            CurrencyName = item.Key,
-                            AddDate = DateTime.Now});
-                    }
-                }
-                dbContext.SaveChanges();
-            }
-        }
+        
 
         [HttpGet]
         [Route("GetNewCurrencyList")]
         public List<Currency> GetNewCurrencyList()
         {
-            SaveNewCurrency();
+            try
+            {
+                SaveNewCurrency();
 
-            //List new currency that are not older than 7 days 
-            List<Currency> localCurrencyList = 
-                dbContext.Currency.Where(p=>DateTime.Compare(p.AddDate.AddDays(7),DateTime.Now) >0 ).Select(p=>p).ToList();
+                //List new currency that are not older than 7 days 
+                List<Currency> localCurrencyList = 
+                    dbContext.Currency.Where(p=>DateTime.Compare(p.AddDate.AddDays(7),DateTime.Now) >0 ).Select(p=>p).ToList();
 
-            return localCurrencyList;        
+                return localCurrencyList; 
+            }
+            catch (System.Exception e)
+            {
+                //use Serilog to store error in file here
+                return new List<Currency>();
+            }
         }
 
         #region helper
@@ -194,9 +177,32 @@ namespace cryptowatcher.Controllers.API
             return 0;
         }
 
-        #endregion
+        private void SaveNewCurrency()
+        {
+            //List of currency in local db
+            List<Currency> localCurrencyList = dbContext.Currency.Select(p=>p).ToList();
 
-        #region Get data from Poloniex API
+            //List of currency from Poloniex API
+            List<PoloCurrencyTransfer> currentCurrencyList = new List<PoloCurrencyTransfer>();
+            string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
+
+            if (poloniexApiData != "")
+            {
+                Dictionary<string, PoloCurrencyTransfer> myDico = JsonConvert.DeserializeObject<Dictionary<string, PoloCurrencyTransfer>>(poloniexApiData);
+
+                foreach (var item in myDico)
+                {    
+                    if(localCurrencyList.Where(p=>p.CurrencyId == item.Value.Id).Select(p=>p.Id).FirstOrDefault() == 0)
+                    {
+                        dbContext.Currency.Add(new Currency() { 
+                            CurrencyId = item.Value.Id , 
+                            CurrencyName = item.Key,
+                            AddDate = DateTime.Now});
+                    }
+                }
+                dbContext.SaveChanges();
+            }
+        }
 
         private string GetPoloniexApiData(Uri ApiUri)
         {
