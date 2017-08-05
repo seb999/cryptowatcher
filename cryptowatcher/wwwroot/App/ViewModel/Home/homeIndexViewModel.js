@@ -1,6 +1,11 @@
 ﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
+  
     $scope.loaderVisibility = true;
     $scope.newCurrencyList = [];
+    $scope.isDetailTabOpen = false;
+    $scope.activeTab = 0;
+    $scope.currencyLogo = "images/bitcoin.png";
+
     var currencyList = [];
     var currencyListBTC = [];
     var currencyListETH = [];
@@ -37,14 +42,6 @@
         $scope.gridOptionsETH.columnDefs = gridColumn;
         $scope.gridOptionsBTC.columnDefs = gridColumn;
         $scope.gridOptionsXMR.columnDefs = gridColumn;
-       
-        
-        //$timeout(function () {
-        //    $scope.gridBTC.core.handleWindowResize();
-        //    $scope.gridETH.core.handleWindowResize();
-        //    $scope.gridXMR.core.handleWindowResize();
-        //    $scope.gridUSD.core.handleWindowResize();
-        //}, 1000);
     }
 
     $scope.gridOptionsBTC = {
@@ -58,9 +55,9 @@
     $scope.gridOptionsETH = {
         data: null,
         columnDefs: gridColumn,
-        //onRegisterApi: function (gridETH) {
-        //    $scope.gridETH = gridETH;
-        //}
+        onRegisterApi: function (gridETH) {
+            $scope.gridETH = gridETH;
+        }
     };
 
     $scope.gridOptionsXMR = {
@@ -97,9 +94,9 @@
     }; 
 
     //check if there are new currency and display 1 week an alert message
-    // cryptoApiService.getNewCurrencyList().then(function (response) {
-    //     $scope.newCurrencyList = response.data;
-    //     }, function (error) { $log.error(error.message);});
+    cryptoApiService.getNewCurrencyList().then(function (response) {
+        $scope.newCurrencyList = response.data;
+        }, function (error) { $log.error(error.message);});
 
     $scope.loadData = function (currencyType) {
         $scope.loaderVisibility = true;
@@ -144,32 +141,49 @@
 
     //Command : open chart
     $scope.openChart = function (currencyName) {
-        if (currencyName.substring(0, 3) === 'BTC') { currencyList = currencyListBTC };
-        if (currencyName.substring(0, 3) === 'XMR') { currencyList = currencyListXMR };
-        if (currencyName.substring(0, 3) === 'ETH') { currencyList = currencyListETH };
-        if (currencyName.substring(0, 3) === 'USD') { currencyList = currencyListUSD };
-        $scope.chartType = 'line';
-        //$scope.loadChartData();
+        $scope.isDetailTabOpen = true;
+        $scope.activeTab = 4;
+        $scope.currencyName = currencyName;
+        $scope.currencyLogo = $scope.getTemplateUI(currencyName);
+        $scope.$broadcast('someEvent', { currencyName: currencyName });
+        //if (currencyName.substring(0, 3) === 'BTC') { currencyList = currencyListBTC };
+        //if (currencyName.substring(0, 3) === 'XMR') { currencyList = currencyListXMR };
+        //if (currencyName.substring(0, 3) === 'ETH') { currencyList = currencyListETH };
+        //if (currencyName.substring(0, 3) === 'USD') { currencyList = currencyListUSD };
+        //$scope.chartType = 'line';
+        ////$scope.loadChartData();
 
-        var modalInstance = $uibModal.open({
-            templateUrl: 'App/View/Home/homeChartView.html?bust=' + Math.random().toString(36).slice(2),
-            controller: 'homeChartViewModel',
-            backdrop: 'static',
-            size: 'lg',
-            cache: false,
-            resolve: {
-                currencyName: function () {
-                    return currencyName;
-                },
-                currencyList: function () {
-                    return currencyList;
-                }
-            }
-        });
-        modalInstance.result.then(function () {
-            loadActivityList(activityIndex);
-        });
+        //var modalInstance = $uibModal.open({
+        //    templateUrl: 'App/View/Home/homeChartView.html?bust=' + Math.random().toString(36).slice(2),
+        //    controller: 'homeChartViewModel',
+        //    backdrop: 'static',
+        //    size: 'lg',
+        //    cache: false,
+        //    resolve: {
+        //        currencyName: function () {
+        //            return currencyName;
+        //        },
+        //        currencyList: function () {
+        //            return currencyList;
+        //        }
+        //    }
+        //});
+        //modalInstance.result.then(function () {
+        //    loadActivityList(activityIndex);
+        //});
     }; 
+
+    //Command : close detail tab
+    $scope.closeDetailTab = function () {
+        $scope.isDetailTabOpen = false;
+       
+
+        $timeout(function () {
+            $scope.activeTab = 0;
+        }, 100);
+       
+        
+    }
 
     //command : refresh data
     $scope.refreshData = function () {

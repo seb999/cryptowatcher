@@ -1,11 +1,6 @@
-﻿myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, currencyList, cryptoApiService, $uibModal) {
-    for (var i = 0; i < currencyList.length; i++) {
-        if (currencyList[i].name === currencyName) {
-            $scope.selectedIndexLine = i;
-        };
-    };
-
-	$scope.currencyName = currencyName; 
+﻿//myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, $uibModalInstance, currencyName, currencyList, cryptoApiService, $uibModal) {
+myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $timeout, cryptoApiService, $uibModal) {
+     	
 	$scope.chartVolume = [];
 	$scope.chartData = [];
     $scope.chartType = 'area';
@@ -80,34 +75,45 @@
         }
     }
 
-	//Life start here : we load from API the data to display
+    //we load from API the data to display
     $scope.loadChartData = function () {
-		$scope.loaderVisibility = true;
-		$scope.chartVolume = [];
-		$scope.chartValue = [];
+        $scope.loaderVisibility = true;
+        $scope.chartVolume = [];
+        $scope.chartValue = [];
         cryptoApiService.getPoloniexChartData($scope.currencyName).then(function (response) {
             $scope.loaderVisibility = false;
             for (var i = 0; i < response.data.length; i++) {
                 $scope.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
                 $scope.chartValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
             }
-            //$scope.chartConfig1.loading = false;
             $scope.displayChart();
         }, function (error) {
             $log.error(error.message);
         });
     };
-    $scope.loadChartData();
 
     $scope.getPoloniexOrder = function () {
         cryptoApiService.getPoloniexOrderData($scope.currencyName).then(function (response) {
             $scope.orderList = response.data;
-            //$scope.gridOptionsUI = { data: response.data };
         }, function (error) {
             $log.error(error.message);
         });
     };
-    $scope.getPoloniexOrder();
+
+    //Life start here : method called by parent controller and pass the currency to disp;lay
+    $scope.$on('someEvent', function (e, opt) {
+
+        $scope.currencyName = opt.currencyName;
+
+        //for (var i = 0; i < currencyList.length; i++) {
+        //    if (currencyList[i].name === $scope.currencyName) {
+        //        $scope.selectedIndexLine = i;
+        //    };
+        //};
+        $scope.getPoloniexOrder();
+        $scope.loadChartData();
+        $scope.autoRefreshPoloniexOrder();
+    });
 
     $scope.autoRefreshPoloniexOrder = function () {
         if ($scope.isAutoRefrsh)
@@ -118,19 +124,19 @@
                 }, 3000);
         }
     };
-    $scope.autoRefreshPoloniexOrder();
+   
 
 	//command  :close popup
-    $scope.close = function () {
-        $scope.isAutoRefrsh = false;
-		$uibModalInstance.dismiss('cancel');
-	};
+ //   $scope.close = function () {
+ //       $scope.isAutoRefrsh = false;
+	//	$uibModalInstance.dismiss('cancel');
+	//};
 
-	//Command : change chart type
-	$scope.changeChartType = function (chartType) {
-		$scope.chartType = chartType;
-		$scope.displayChart();
-	};
+	////Command : change chart type
+	//$scope.changeChartType = function (chartType) {
+	//	$scope.chartType = chartType;
+	//	$scope.displayChart();
+	//};
 
 	$scope.showIndicator = function () {
         console.log($scope.checkBoxParent);

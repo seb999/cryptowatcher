@@ -18,7 +18,11 @@
 
                 var chartOption = {
                     chart: {
-                        zoomType: 'x'
+                        zoomType: 'x',
+                        spacingTop: 15,
+                        spacingBottom: 15,
+                        spacingLeft: 15,
+                        spacingRight: 15,
                     },
                     loading: true,
                     tooltip: {

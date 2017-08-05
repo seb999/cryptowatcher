@@ -45,8 +45,9 @@ namespace cryptowatcher.Controllers.API
                 foreach (var item in myDico)
                 {
                     //For ecdc so reduce number of call in proxy
-                    // if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS") continue;
-                    //if (item.Key.Substring(0,3) != "BTC") continue;
+                    if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS" && item.Key != "BTC_BCH") continue;
+                   // if (item.Key.Substring(0,3) != "BTC") continue;
+
                     if (item.Key.Substring(0, 3) != currencyName && currencyName!=null) continue;
                     item.Value.Name = item.Key;
                     if (currencyName !=null)
@@ -141,7 +142,7 @@ namespace cryptowatcher.Controllers.API
 
                 //List new currency that are not older than 7 days 
                 List<Currency> localCurrencyList = 
-                    dbContext.Currency.Where(p=>DateTime.Compare(p.AddDate.AddDays(7),DateTime.Now) >0 ).Select(p=>p).ToList();
+                    dbContext.Currency.Where(p=>DateTime.Compare(p.DateAdded.AddDays(7),DateTime.Now) >0 ).Select(p=>p).ToList();
 
                 return localCurrencyList; 
             }
@@ -197,7 +198,7 @@ namespace cryptowatcher.Controllers.API
                         dbContext.Currency.Add(new Currency() { 
                             CurrencyId = item.Value.Id , 
                             CurrencyName = item.Key,
-                            AddDate = DateTime.Now});
+                            DateAdded = DateTime.Now});
                     }
                 }
                 dbContext.SaveChanges();

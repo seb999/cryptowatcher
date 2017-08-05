@@ -19,18 +19,19 @@
             </button>
         </div>
 
-        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-info alert-dismissible col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important">
+        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-success
+             col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>Info, new currency available! </strong> 
-                <span ng-repeat="item in newCurrencyList" ngCloak>
-                    {{item.currencyName}};&nbsp;
-                </span>
+            <strong>Info, new currency available! </strong>
+            <span ng-repeat="item in newCurrencyList" ngCloak>
+                {{item.currencyName}};&nbsp;
+            </span>
         </div>
 
     </div>
     <div class="mainDiv" style="display: none;">
         <br />
-        <uib-tabset active="0">
+        <uib-tabset active="activeTab">
             <uib-tab index="0" ng-click="tabSelected(0)">
                 <uib-tab-heading>
                     <img src="~/images/bitcoin.png" /> BTC
@@ -55,23 +56,129 @@
                 </uib-tab-heading>
                 <div ng-if="showGrid3" ui-grid="gridOptionsUSD" style="width:100%;height:500px;margin-top:12px"></div>
             </uib-tab>
-            </uib-tabset>
+            <uib-tab index="4" ng-show="isDetailTabOpen">
+                <uib-tab-heading>
+                    <img src="{{currencyLogo}}" /> {{currencyName}}&nbsp;
+                    <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="closeDetailTab();"><span aria-hidden="true">&times;</span></button>
+                </uib-tab-heading>
+
+                @*Nested controller for the chart*@
+                <div ng-controller="homeChartViewModel">
+                  
+                    @*Button navigation*@
+                    <div class="btn-group btn-group-xs" role="group" style="margin-top:5px">
+                        <button type="button" ng-disabled="previousButtonDisabled" class="btn btn-default" ng-click="previousActivity()"><i style="color:#00A1E2" uib-tooltip="Previous" class="glyphicon glyphicon-backward"></i></button>
+                        <button type="button" ng-disabled="nextButtonDisabled" class="btn btn-default" ng-click="nextActivity()"><i style="color:#00A1E2" uib-tooltip="Next" class="glyphicon glyphicon-forward"></i></button>
+                    </div>
+
+                    @*Orders table and chart*@
+                    <div class="row" style="margin-top:5px">
+                        
+                        @*Orders table*@
+                        <div class="col-md-4">
+                            <div class="panel panel-info">
+                                <div class="panel-heading" style="height:30px">
+                                    <h3 class="panel-title">Orders</h3>
+                                </div>
+
+                                <div class="progress" style="height:7px">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" style="width:40%">
+                                    </div>
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" style="width:60%">
+                                    </div>
+                                </div>
+
+                                <table class="table table-striped table-bordered table-hover table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-2">
+                                                Level
+                                            </th>
+                                            <th class="col-md-2">
+                                                Ask quantity
+                                            </th>
+                                            <th class="col-md-3">
+                                                Ask price
+                                            </th>
+                                            <th class="col-md-3">
+                                                Bid price
+                                            </th>
+                                            <th class="col-md-2">
+                                                Bid quantity
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="order in orderList">
+                                            <td>
+                                                {{$index}}
+                                            </td>
+                                            <td>
+                                                {{order.bidQuantity}}
+                                            </td>
+                                            <td>
+                                                {{order.bidPrice}}
+                                            </td>
+                                            <td>
+                                                {{order.askPrice}}
+                                            </td>
+                                            <td>
+                                                {{order.askQuantity}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                              
+                            </div>
+                        </div>
+
+                        @*Chart*@
+                        <div class="col-md-8">
+                            <div class="panel panel-info" >
+                                <div class="panel-heading" style="height:30px">
+                                    <h3 class="panel-title">Chart</h3>
+                                </div>
+
+                                <div class="row" style="margin-top:5px">
+                                    <select ng-model="chartType" ng-change="changeChartType(chartType);" style="margin-left:20px">
+                                        <option value="area">area</option>
+                                        <option value="line">line</option>
+                                        <option value="candlestick">candlestick</option>
+                                    </select>
+                                    <input type="checkbox" ng-change="showIndicator();" ng-model="checkBoxParent.showRsi" />Rsi
+                                    <input type="checkbox" ng-change="showIndicator();" ng-model="checkBoxParent.showAtr" />Atr
+                                    <input type="checkbox" ng-change="showIndicator();" ng-model="checkBoxParent.showSma" />Sma
+                                    <input type="checkbox" ng-change="showIndicator();" ng-model="checkBoxParent.showEma" />Ema
+                                </div>
+                                <div class="row">
+                                    <chart title="{{chartTitle}}" data="chartData" indicators="chartIndicators" loading="chartLoading" style="height:700px;margin-right:28px;margin-left:20px"></chart>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </uib-tab>
+        </uib-tabset>
     </div>
 
-@section Scripts {
-    <script src="~/App/app.js" asp-append-version="true"></script>
-    <script src="~/App/cryptoApiService.js" asp-append-version="true"></script>
-    <script src="~/App/chartDirective.js" asp-append-version="true"></script>
-    <script src="~/App/ViewModel/Home/homeIndexViewModel.js" asp-append-version="true"></script>
-    <script src="~/App/ViewModel/Home/homeChartViewModel.js" asp-append-version="true"></script>
-    <link href="~/css/loader.css" rel="stylesheet" />
-    <script language="javascript">
-        $(".overlay").show();
-        var target = document.getElementById('spinner')
-        var spinner = new Spinner(opts).spin(target);
+    @section Scripts {
+        <script src="~/App/app.js" asp-append-version="true"></script>
+        <script src="~/App/cryptoApiService.js" asp-append-version="true"></script>
+        <script src="~/App/chartDirective.js" asp-append-version="true"></script>
+        <script src="~/App/ViewModel/Home/homeIndexViewModel.js" asp-append-version="true"></script>
+        <script src="~/App/ViewModel/Home/homeChartViewModel.js" asp-append-version="true"></script>
+        <link href="~/css/loader.css" rel="stylesheet" />
+        <script language="javascript">
+            $(".overlay").show();
+            var target = document.getElementById('spinner')
+            var spinner = new Spinner(opts).spin(target);
 
-        $(document).ready(function () {
-            $(".mainDiv").show();
-        });
-    </script>
-}
+            $(document).ready(function () {
+                $(".mainDiv").show();
+            });
+        </script>
+    }

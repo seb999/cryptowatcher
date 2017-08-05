@@ -9,6 +9,6 @@ namespace cryptowatcher.Model
         public int Id { get; set; }
         public int CurrencyId { get; set; }
         public string CurrencyName { get; set; }
-        public DateTime AddDate { get; set; }
+        public DateTime DateAdded { get; set; }
     }
 }

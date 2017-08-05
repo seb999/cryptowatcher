@@ -20,7 +20,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.2" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.8-dmr" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2">
       <PrivateAssets>All</PrivateAssets>
