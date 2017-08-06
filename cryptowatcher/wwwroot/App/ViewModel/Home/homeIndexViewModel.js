@@ -17,6 +17,20 @@
     $scope.showGrid2 = false;
     $scope.showGrid3 = false;
 
+    // dynamically added tabs
+    $scope.currencyTabs = [];
+
+    /* Remove tab from dyanically added tabs */
+    $scope.removeTab = function(index){
+        $log.warn("Removing tab index "+index);
+
+        $scope.currencyTabs.splice(index,1);
+
+        $timeout(function () {
+            $scope.activeTab = 0;
+        }, 100);
+    }
+
     var gridColumn = [
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img src="{{grid.appScope.getTemplateUI(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
         { headerName: "Last", field: "last", width: 110},
@@ -33,6 +47,9 @@
 
     //Command : reshape the grid 
     $scope.tabSelected = function (gridId) {
+
+        console.log("Selected tab"+gridId);
+
         if (gridId === 0) $scope.showGrid0 = true;
         if (gridId === 1) $scope.showGrid1 = true;
         if (gridId === 2) $scope.showGrid2 = true;
@@ -142,10 +159,12 @@
     //Command : open chart
     $scope.openChart = function (currencyName) {
         $scope.isDetailTabOpen = true;
-        $scope.activeTab = 4;
         $scope.currencyName = currencyName;
         $scope.currencyLogo = $scope.getTemplateUI(currencyName);
         $scope.$broadcast('someEvent', { currencyName: currencyName });
+
+        $scope.currencyTabs.push({name:currencyName,logo:$scope.currencyLogo});
+        $scope.activeTab = $scope.currencyTabs.length + 3;
         //if (currencyName.substring(0, 3) === 'BTC') { currencyList = currencyListBTC };
         //if (currencyName.substring(0, 3) === 'XMR') { currencyList = currencyListXMR };
         //if (currencyName.substring(0, 3) === 'ETH') { currencyList = currencyListETH };

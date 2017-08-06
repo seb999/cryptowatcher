@@ -198,7 +198,7 @@ myApp.controller('homeChartViewModel', function ($scope, $window, $http, $log, $
         $scope.loadChartData();
         $scope.getPoloniexOrder();
         checkNavigationButton();
-        };
+    };
 
     checkNavigationButton = function () {
 
