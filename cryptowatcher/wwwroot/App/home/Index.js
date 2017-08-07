@@ -29,7 +29,7 @@
     // ##################################################################
 
     var gridColumn = [
-        { headerName: " ", field: 'name', enableFiltering: false, cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
+        { headerName: " ", field: 'name', enableFiltering: false,headerCellTemplate: '<div></div>', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
         { field: 'name', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img src="{{grid.appScope.getTemplateUI(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
         { headerName: "Last", field: "last", width: 110, enableFiltering: false },
         { headerName: "LowestAsk", field: "lowestAsk", width: 110, enableFiltering: false },
