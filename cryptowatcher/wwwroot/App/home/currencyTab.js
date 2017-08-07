@@ -8,7 +8,6 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     vm.currencyName = vm.name;
     $log.info("Creating dynamic tab for "+vm.name);
 
-
     vm.chartVolume = [];
 	vm.chartData = [];
     vm.chartType = 'area';
@@ -118,7 +117,12 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 }, 3000);
         }
     };
-   
+
+    //Command : change chart type
+    vm.changeChartType = function (chartType) {
+		vm.chartType = chartType;
+		vm.displayChart();
+	};
 
 	vm.showIndicator = function () {
         console.log(vm.checkBoxParent);
@@ -211,7 +215,6 @@ function currencyTab() {
         bindToController:true,
         controllerAs:'vm',
         controller:'currencyTabController',
-        templateUrl : "../App/currencyTab.html"
+        templateUrl : "../App/Home/currencyTab.html"
     };
-    
 };

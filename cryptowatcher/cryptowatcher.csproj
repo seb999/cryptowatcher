@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-  
+    <Content Include="wwwroot\App\home\currencyTab.html" />
+    <Content Include="wwwroot\App\home\currencyTab.js" />
+    <Content Include="wwwroot\App\home\homeIndexViewModel.js" />
+    <Content Include="wwwroot\App\home\Index.js" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />

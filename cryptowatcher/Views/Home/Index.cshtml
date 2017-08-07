@@ -20,10 +20,10 @@
         </div>
 
         <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-success
-             col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important">
+             col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important" ng-cloak>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong>Info, new currency available! </strong>
-            <span ng-repeat="item in newCurrencyList" ngCloak>
+            <span ng-repeat="item in newCurrencyList" ng-cloak>
                 {{item.currencyName}};&nbsp;
             </span>
         </div>
@@ -56,27 +56,28 @@
                 </uib-tab-heading>
                 <div ng-if="showGrid3" ui-grid="gridOptionsUSD" style="width:100%;height:500px;margin-top:12px"></div>
             </uib-tab>
-
+    
             <!-- DYNAMIC TABS-->
             <uib-tab ng-repeat="tab in currencyTabs" ng-click="tabSelected($index+4)" index="$index+4" >
                 <uib-tab-heading>
-                    <img src="{{tab.logo}}" />  {{tab.name}}&nbsp;
+                    <span class="glyphicon glyphicon-stats" style="padding:0px;margin:0px">  {{tab.name}}&nbsp;</span>
                     <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="removeTab($index);">
-                        <span aria-hidden="true"  ng-class="{red: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">&times;</span></button>
+                        <span aria-hidden="true"  ng-class="{red: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">&times;</span>
+                    </button>
                 </uib-tab-heading>
                 
-                <currency-tab name="{{tab.name}}"></currency-tab>
+                <currency-tab  name="{{tab.name}}"></currency-tab>
             </uib-tab>
         </uib-tabset>
     </div>
+</div>
 
     @section Scripts {
         <script src="~/App/app.js" asp-append-version="true"></script>
         <script src="~/App/cryptoApiService.js" asp-append-version="true"></script>
         <script src="~/App/chartDirective.js" asp-append-version="true"></script>
-        <script src="~/App/currencyTab.js" asp-append-version="true"></script>
-        <script src="~/App/ViewModel/Home/homeIndexViewModel.js" asp-append-version="true"></script>
-        <script src="~/App/ViewModel/Home/homeChartViewModel.js" asp-append-version="true"></script>
+        <script src="~/App/Home/currencyTab.js" asp-append-version="true"></script>
+        <script src="~/App/Home/Index.js" asp-append-version="true"></script>
         <link href="~/css/loader.css" rel="stylesheet" />
         <script language="javascript">
             $(".overlay").show();
