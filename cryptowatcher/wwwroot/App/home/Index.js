@@ -17,25 +17,16 @@
 
     // dynamically added tabs
     $scope.currencyTabs = [];
+    $scope.removeTab = removeTab;
+    $scope.addTab = addTab;
 
-    /* Remove tab from dyanically added tabs */
-    $scope.removeTab = function (index) {
-        $log.warn("Removing tab index " + index);
-        $scope.currencyTabs.splice(index, 1);
+    // utils
+    $scope.refreshData = refreshData;
 
-        $timeout(function () {
-            $scope.activeTab = 0;
-        }, 100);
-    };
-
-    //Command : add Tab
-    $scope.addTab = function (currencyName) {
-        $scope.currencyTabs.push({ name: currencyName, logo: $scope.currencyLogo });
-
-        $timeout(function () {
-            $scope.activeTab = $scope.currencyTabs.length + 3;
-        }, 350);
-    }; 
+    // event handler
+    $scope.tabSelected = tabSelected;
+    
+    // ##################################################################
 
     var gridColumn = [
         { headerName: " ", field: 'name', enableFiltering: false, cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
@@ -52,7 +43,7 @@
     ];
 
     //Command : reshape the grid 
-    $scope.tabSelected = function (gridId) {
+    function tabSelected(gridId) {
 
         console.log("Selected tab"+gridId);
 
@@ -155,8 +146,30 @@
         }, function (error) { $log.error(error.message); });
     };
 
-    //command : refresh data
-    $scope.refreshData = function () {
+
+    /* DYNAMIC TAB RELATED FUNCTIONS  */
+    /* Remove tab from list of dynamic tabs */
+    function removeTab(index) {
+        $log.warn("Removing tab index " + index);
+        $scope.currencyTabs.splice(index, 1);
+
+        $timeout(function () {
+            $scope.activeTab = 0;
+        }, 100);
+    };
+
+    /* Upon user click add new tab
+    TODO: don't add new tab if tab already exists*/
+    function addTab(currencyName) {
+        $scope.currencyTabs.push({ name: currencyName, logo: $scope.currencyLogo });
+
+        $timeout(function () {
+            $scope.activeTab = $scope.currencyTabs.length + 3;
+        }, 350);
+    }; 
+
+    /* DYNAMIC TAB RELATED FUNCTIONS  */
+    function refreshData() {
         $scope.loadData();
     };
 
