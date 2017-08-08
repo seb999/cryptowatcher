@@ -106,7 +106,9 @@ namespace cryptowatcher.Controllers.API
 
                         foreach (var order in orderList)
                         {
-                            result.Add(new PoloOrderTransfer() { AskPrice = order.ToObject<object[]>()[0].ToString(), AskQuantity = order.ToObject<object[]>()[1].ToString() });
+
+                            result.Add(new PoloOrderTransfer() { AskPrice = order.ToObject<object[]>()[0].ToString(), AskQuantity = order.ToObject<object[]>()[1].ToString()});
+
                         }
                     }
 

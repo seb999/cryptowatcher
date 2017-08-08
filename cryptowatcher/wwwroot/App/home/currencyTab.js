@@ -15,6 +15,18 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     vm.loaderVisibility = true;
     vm.checkBoxParent = {};
 
+    // utils
+    vm.loadChartData = loadChartData;
+    vm.displayChart = displayChart;
+    vm.getOrderData = getOrderData;
+    vm.changeChartType = changeChartType;
+    vm.showIndicator = showIndicator;
+    vm.drawAskBidChart = drawAskBidChart;
+
+    //Life start here
+    vm.getOrderData();
+    vm.loadChartData();
+
 	vm.indicatorRsi = {
         id: 'abc',
         type: 'rsi',
@@ -83,7 +95,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     }
 
     //we load from API the data to display
-    vm.loadChartData = function () {
+    function loadChartData () {
         vm.loaderVisibility = true;
         vm.chartVolume = [];
         vm.chartValue = [];
@@ -99,32 +111,35 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
         });
     };
 
-    vm.getPoloniexOrder = function () {
+    function getOrderData() {
         cryptoApiService.getPoloniexOrderData(vm.currencyName).then(function (response) {
             vm.orderList = response.data;
+            var askQuantityTotal=0;
+            var bidQuantityTotal=0;
+
+             for (var i = 0; i < vm.orderList.length; i++) {
+                askQuantityTotal = parseFloat(askQuantityTotal) + parseFloat(vm.orderList[i].askQuantity);
+                bidQuantityTotal = parseFloat(bidQuantityTotal) + parseFloat(vm.orderList[i].bidQuantity);
+            };
+            vm.drawAskBidChart(askQuantityTotal, bidQuantityTotal);
+
         }, function (error) {
             $log.error(error.message);
         });
     };
 
-
-    vm.autoRefreshPoloniexOrder = function () {
-        if (vm.isAutoRefrsh)
-        {
-            $timeout(function () {
-                vm.getPoloniexOrder();
-                vm.autoRefreshPoloniexOrder();
-                }, 3000);
-        }
+    function drawAskBidChart(askQuantityTotal, bidQuantityTotal){
+       vm.askPourcentStyle = {width: askQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%'};
+       vm.bidQuantityStyle = {width: bidQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%'};
     };
 
     //Command : change chart type
-    vm.changeChartType = function (chartType) {
+    function changeChartType(chartType) {
 		vm.chartType = chartType;
 		vm.displayChart();
 	};
 
-	vm.showIndicator = function () {
+	function showIndicator() {
         console.log(vm.checkBoxParent);
         vm.chartIndicators = [];
         vm.chartType = "candlestick";
@@ -136,7 +151,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     };
 
 	//Command : display chart data
-	vm.displayChart = function (currencyName) {
+	function displayChart(currencyName) {
 		//vm.chartConfig1.loading = false;
 
 		vm.chartTitle = vm.currencyName;
@@ -162,46 +177,8 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 			}
 		});
 	};
-	groupingUnits = [['day', [1]]],
+	groupingUnits = [['day', [1]]];
 
-    //------------------Navigation----------------------------------
-    vm.previousActivity = function () {
-
-        if (vm.selectedIndexLine - 1 >= 0) {
-            vm.selectedIndexLine--;
-        };
-        vm.currencyName = currencyList[vm.selectedIndexLine].name;
-        vm.loadChartData();
-        vm.getPoloniexOrder();
-        checkNavigationButton();
-    };
-
-    vm.nextActivity = function () {
-        if (vm.selectedIndexLine + 1 < currencyList.length) {
-            vm.selectedIndexLine++;
-        };
-        vm.currencyName = currencyList[vm.selectedIndexLine].name;
-        vm.loadChartData();
-        vm.getPoloniexOrder();
-        checkNavigationButton();
-    };
-
-    checkNavigationButton = function () {
-
-        vm.previousButtonDisabled = false;
-        vm.nextButtonDisabled = false;
-
-        if (vm.selectedIndexLine === 0)
-            vm.previousButtonDisabled = true;
-
-        if (vm.selectedIndexLine === currencyList.length - 1)
-            vm.nextButtonDisabled = true;
-    };
-
-    // load data for this currency div
-    vm.getPoloniexOrder();
-    vm.loadChartData();
-    vm.autoRefreshPoloniexOrder();
 };
 
 function currencyTab() {
