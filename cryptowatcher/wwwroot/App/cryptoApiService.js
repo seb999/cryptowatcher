@@ -9,9 +9,16 @@
         })
     };
 
-    cryptoApiService.getPoloniexChartData = function (currencyName) {
+    cryptoApiService.getPoloniexHistoryChartData = function (currencyName) {
         return $http({
-            url: "api/Poloniex/GetChartData/" + currencyName,
+            url: "api/Poloniex/GetHistoryChartData/" + currencyName,
+            method: "GET",
+        })
+    };
+
+    cryptoApiService.getPoloniexDayChartData = function (currencyName) {
+        return $http({
+            url: "api/Poloniex/GetDayChartData/" + currencyName,
             method: "GET",
         })
     };
@@ -26,6 +33,13 @@
     cryptoApiService.getNewCurrencyList = function () {
         return $http({
             url: "api/Poloniex/GetNewCurrencyList/",
+            method: "GET",
+        })
+    };
+
+    cryptoApiService.getPoloniexCotation = function (currencyName) {
+        return $http({
+            url: "api/Poloniex/GetCotation/" + currencyName,
             method: "GET",
         })
     };

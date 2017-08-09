@@ -65,8 +65,13 @@ namespace cryptowatcher.Controllers.API
             return result;
         }
 
+        /// <summary>
+        /// Get cotation for specific currency
+        /// </summary>
+        /// <param name="currencyName">The currency name</param>
+        /// <returns>PoloCurrencyTransfer</returns>
         [HttpGet]
-        [Route("GetCurrencyData/{currencyName?}")]
+        [Route("GetCotation/{currencyName?}")]
         public PoloCurrencyTransfer GetCurrencyData(string currencyName = null)
         {
             if(currencyName == null) return null;
@@ -97,14 +102,22 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("GetChartData/{currencyName}")]
-        public string GetChartData(string currencyName)
+        [Route("GetHistoryChartData/{currencyName}")]
+        public string GetHistoryChartData(string currencyName)
         {
             Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-365).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
+            return GetPoloniexApiData(new Uri(uri));
+        }
 
-           
+        [HttpGet]
+        [Route("GetDayChartData/{currencyName}")]
+        public string GetDayChartData(string currencyName)
+        {
+            Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-1).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            string uri = string.Format("{0}{1}&start={2}&end={3}&period=300", uriCurrency, currencyName, startDate, endDate);
             return GetPoloniexApiData(new Uri(uri));
         }
 

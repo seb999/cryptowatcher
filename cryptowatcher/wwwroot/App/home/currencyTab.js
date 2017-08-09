@@ -11,21 +11,28 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     vm.chartVolume = [];
 	vm.chartData = [];
     vm.chartType = 'area';
+    vm.chartDayType = 'line';
     vm.isAutoRefrsh = true;
     vm.loaderVisibility = true;
     vm.checkBoxParent = {};
 
     // utils
-    vm.loadChartData = loadChartData;
-    vm.displayChart = displayChart;
+    vm.loadHistoryChartData = loadHistoryChartData;
+    vm.displayHistoryChart = displayHistoryChart;
+    vm.loadDayChartData = loadDayChartData;
+    vm.displayDayChart = displayDayChart;
     vm.getOrderData = getOrderData;
     vm.changeChartType = changeChartType;
+    vm.changeChartDayType = changeChartDayType;
     vm.showIndicator = showIndicator;
     vm.drawAskBidChart = drawAskBidChart;
+    vm.getCurrencyCotation = getCurrencyCotation;
 
     //Life start here
     vm.getOrderData();
-    vm.loadChartData();
+    vm.loadHistoryChartData();
+    vm.loadDayChartData();
+    vm.getCurrencyCotation();
 
 	vm.indicatorRsi = {
         id: 'abc',
@@ -95,17 +102,41 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     }
 
     //we load from API the data to display
-    function loadChartData () {
+    function loadHistoryChartData () {
         vm.loaderVisibility = true;
         vm.chartVolume = [];
         vm.chartValue = [];
-        cryptoApiService.getPoloniexChartData(vm.currencyName).then(function (response) {
+        cryptoApiService.getPoloniexHistoryChartData(vm.currencyName).then(function (response) {
             vm.loaderVisibility = false;
             for (var i = 0; i < response.data.length; i++) {
                 vm.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
                 vm.chartValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
             }
-            vm.displayChart();
+            vm.displayHistoryChart();
+        }, function (error) {
+            $log.error(error.message);
+        });
+    };
+
+    //we load from API the data to display
+    function loadDayChartData() {
+        vm.chartDayVolume = [];
+        vm.chartDayValue = [];
+        cryptoApiService.getPoloniexDayChartData(vm.currencyName).then(function (response) {
+            for (var i = 0; i < response.data.length; i++) {
+                vm.chartDayVolume.push([response.data[i].date * 1000, response.data[i].volume]);
+                vm.chartDayValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
+            }
+            vm.displayDayChart();
+        }, function (error) {
+            $log.error(error.message);
+        });
+    };
+
+    //we load from API the data to display
+    function getCurrencyCotation() {
+        cryptoApiService.getPoloniexCotation(vm.currencyName).then(function (response) {
+            vm.currencyCotation = response.data;
         }, function (error) {
             $log.error(error.message);
         });
@@ -136,8 +167,13 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     //Command : change chart type
     function changeChartType(chartType) {
 		vm.chartType = chartType;
-		vm.displayChart();
-	};
+		vm.displayHistoryChart();
+    };
+
+    function changeChartDayType(chartDayType) {
+        vm.chartDayType = chartDayType;
+        vm.displayDayChart();
+    };
 
 	function showIndicator() {
         console.log(vm.checkBoxParent);
@@ -151,7 +187,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     };
 
 	//Command : display chart data
-	function displayChart(currencyName) {
+	function displayHistoryChart(currencyName) {
 		//vm.chartConfig1.loading = false;
 
 		vm.chartTitle = vm.currencyName;
@@ -177,7 +213,33 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 			}
 		});
 	};
-	groupingUnits = [['day', [1]]];
+    groupingUnits = [['day', [1]]];
+
+    //Command : display chart data
+    function displayDayChart(currencyName) {
+        vm.chartDayData = [];
+        vm.chartDayData.push({
+            id: 'abc',
+            name: vm.currencyName,
+            data: vm.chartDayValue,
+            type: vm.chartDayType,
+            yAxis: 0,
+            dataGrouping: {
+                units: groupingDayUnits
+            }
+        });
+
+        vm.chartDayData.push({
+            name: 'volume',
+            data: vm.chartDayVolume,
+            type: 'column',
+            yAxis: 1,
+            dataGrouping: {
+                units: groupingDayUnits
+            }
+        });
+    };
+    groupingDayUnits = [['hour', [1]]];
 
 };
 

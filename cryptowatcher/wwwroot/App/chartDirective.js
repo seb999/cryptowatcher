@@ -7,7 +7,9 @@
             title: '@',
             data: '=',
             indicators: '=',
-            loading: '='
+            loading: '=',
+            enablenavigator: '=',
+            enablerangeselector: '=',
         },
         link: function (scope, element, attrs) {
             var char;
@@ -15,7 +17,7 @@
                 var defaultOptions = {
                     chart: { renderTo: element[0] },
                 };
-
+                debugger;
                 var chartOption = {
                     chart: {
                         zoomType: 'x',
@@ -31,18 +33,17 @@
                     title: {
                         text: scope.title
                     },
-                    options: {
-                        rangeSelector: {
-                            enabled: true
-                        },
-                        navigator: {
-                            enabled: true
-                        },
-                        colors: ['#00A1E2', '#6769B5', '#3BC3A3', '#93959B', '#2D8F78', '#C3842F', '#005EA4'],
-                        tooltip: {
-                            pointFormat: '{series.name}: <b>{point.y}</b>'
-                        },
+                    navigator: {
+                        enabled: scope.enablenavigator
                     },
+                    rangeSelector: {
+                        enabled: scope.enablerangeselector
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    colors: ['#00A1E2', '#6769B5', '#3BC3A3', '#93959B', '#2D8F78', '#C3842F', '#005EA4'],
+                    
                     indicators: scope.indicators,
                     xAxis: {
                         type: 'datetime',
@@ -92,6 +93,9 @@
                 process();
             });
             scope.$watch("indicators", function (loading) {
+                process();
+            });
+            scope.$watch("enableRangeSelector", function (loading) {
                 process();
             });
             scope.$watch("loading", function (loading) {
