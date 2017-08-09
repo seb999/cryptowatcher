@@ -21,6 +21,7 @@
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
+            "requireExactSource": false,
             "launchBrowser": {
                 "enabled": true,
                 "args": "${auto-detect-url}",

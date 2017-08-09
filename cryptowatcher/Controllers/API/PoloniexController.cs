@@ -65,6 +65,33 @@ namespace cryptowatcher.Controllers.API
             return result;
         }
 
+        [HttpGet]
+        [Route("GetCurrencyData/{currencyName?}")]
+        public PoloCurrencyTransfer GetCurrencyData(string currencyName = null)
+        {
+            if(currencyName == null) return null;
+            
+            List<PoloCurrencyTransfer> result = new List<PoloCurrencyTransfer>();
+            string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
+
+            if (poloniexApiData != "")
+            {
+                Dictionary<string, PoloCurrencyTransfer> myDico = JsonConvert.DeserializeObject<Dictionary<string, PoloCurrencyTransfer>>(poloniexApiData);
+
+                foreach (var item in myDico)
+                {
+                    if (item.Key == currencyName)
+                    {
+                        item.Value.Name = item.Key;
+                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
+                        return item.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Get data for an example of chart
         /// </summary>
@@ -130,8 +157,6 @@ namespace cryptowatcher.Controllers.API
             return result;
 
         }
-
-        
 
         [HttpGet]
         [Route("GetNewCurrencyList")]
