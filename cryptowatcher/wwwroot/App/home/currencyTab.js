@@ -2,10 +2,25 @@ myApp
     .controller("currencyTabController", currencyTabController)
     .directive("currencyTab", currencyTab);
 
+function currencyTab() {
+    return {
+        require: 'ngModel',
+        restrict:'E',
+        scope:{
+            name:'@'
+        },
+        bindToController:true,
+        controllerAs:'vm',
+        controller:'currencyTabController',
+        templateUrl : "App/home/currencyTab.html"
+    };
+};
+
 function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 
     var vm = this;
     vm.currencyName = vm.name;
+    $log.info(vm);
     $log.info("Creating dynamic tab for "+vm.name);
 
     vm.chartVolume = [];
@@ -16,7 +31,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     vm.loaderVisibility = true;
     vm.checkBoxParent = {};
 
-    // utils
+    // // utils
     vm.loadHistoryChartData = loadHistoryChartData;
     vm.displayHistoryChart = displayHistoryChart;
     vm.loadDayChartData = loadDayChartData;
@@ -243,17 +258,3 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 
 };
 
-function currencyTab() {
-    return {
-        require: 'ngModel',
-        restrict:'E',
-        scope:{
-            name:'@'
-        },
-
-        bindToController:true,
-        controllerAs:'vm',
-        controller:'currencyTabController',
-        templateUrl : "../App/Home/currencyTab.html"
-    };
-};

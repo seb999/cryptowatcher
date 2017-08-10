@@ -17,7 +17,6 @@
                 var defaultOptions = {
                     chart: { renderTo: element[0] },
                 };
-                debugger;
                 var chartOption = {
                     chart: {
                         zoomType: 'x',

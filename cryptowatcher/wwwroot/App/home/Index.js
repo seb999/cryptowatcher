@@ -124,8 +124,8 @@
             };
             $scope.gridOptionsETH = { data: currencyListETH, columnDefs: gridColumn };
             $scope.gridOptionsBTC = { data: currencyListBTC, columnDefs: gridColumn };
-            $scope.gridOptionsXMR = { data: currencyListXMR };
-            $scope.gridOptionsUSD = { data: currencyListUSD };
+            $scope.gridOptionsXMR = { data: currencyListXMR, columnDefs: gridColumn };
+            $scope.gridOptionsUSD = { data: currencyListUSD, columnDefs: gridColumn };
 
             $scope.loadDataWithRsi();
         }, function (error) { $log.error(error.message); });

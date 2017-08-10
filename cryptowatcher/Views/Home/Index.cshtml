@@ -60,13 +60,13 @@
             <!-- DYNAMIC TABS-->
             <uib-tab ng-repeat="tab in currencyTabs" ng-click="tabSelected($index+4)" index="$index+4" >
                 <uib-tab-heading>
-                    <span class="glyphicon glyphicon-stats" style="padding:0px;margin:0px">  {{tab.name}}&nbsp;</span>
+                    <span class="glyphicon glyphicon-stats" style="padding:0px;margin:0px"> {{tab.name}}&nbsp;</span>
                     <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="removeTab($index);">
                         <span aria-hidden="true"  ng-class="{red: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">&times;</span>
                     </button>
                 </uib-tab-heading>
                 
-                <currency-tab  name="{{tab.name}}"></currency-tab>
+                <currency-tab name="{{tab.name}}"></currency-tab>
             </uib-tab>
         </uib-tabset>
     </div>
@@ -76,8 +76,8 @@
         <script src="~/App/app.js" asp-append-version="true"></script>
         <script src="~/App/cryptoApiService.js" asp-append-version="true"></script>
         <script src="~/App/chartDirective.js" asp-append-version="true"></script>
-        <script src="~/App/Home/currencyTab.js" asp-append-version="true"></script>
-        <script src="~/App/Home/Index.js" asp-append-version="true"></script>
+        <script src="~/App/home/currencyTab.js" asp-append-version="true"></script>
+        <script src="~/App/home/Index.js" asp-append-version="true"></script>
         <link href="~/css/loader.css" rel="stylesheet" />
         <script language="javascript">
             $(".overlay").show();
