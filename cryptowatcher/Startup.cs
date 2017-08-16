@@ -66,7 +66,7 @@ namespace cryptowatcher
 
                 routes.MapRoute(
                    name: "default",
-                   template: "{controller=Home}/{action=Index}");
+                   template: "{controller}/{action}");
 
                 routes.MapRoute(
                     name: "dashboard",

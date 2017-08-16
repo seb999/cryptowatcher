@@ -31,13 +31,13 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- <ItemGroup>
     <None Update="MyDLLTest.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TA-Lib-Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>
