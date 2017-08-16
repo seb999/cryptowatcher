@@ -87,17 +87,17 @@
     };
 
     function getTableLogo(value) {
-        if (value.substring(0, 3) === 'BTC') { return "images/bitcoin.png" };
-        if (value.substring(0, 3) === 'XMR') { return "images/monero.png" };
-        if (value.substring(0, 3) === 'ETH') { return "images/eth.png" };
-        if (value.substring(0, 3) === 'USD') { return "images/usdt.png" };
+        if (value.substring(0, 3) === 'BTC') { return "../images/bitcoin.png" };
+        if (value.substring(0, 3) === 'XMR') { return "../images/monero.png" };
+        if (value.substring(0, 3) === 'ETH') { return "../images/eth.png" };
+        if (value.substring(0, 3) === 'USD') { return "../images/usdt.png" };
         return "";
     };
 
     function getTableRsi(valueRsi) {
         if (valueRsi === 0) {
             $scope.isLoadingRsi = true;
-            return "images/loader.gif"
+            return "../images/loader.gif"
         };
         $scope.isLoadingRsi = false;
         return "";
