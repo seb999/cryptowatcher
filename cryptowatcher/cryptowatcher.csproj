@@ -5,17 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!--<Content Include="wwwroot\lib\bootstrap\dist\css\bootstrap.css" />
-    <Content Include="wwwroot\lib\bootstrap\dist\css\bootstrap.min.css" />
-    <Content Include="wwwroot\lib\bootstrap\dist\css\bootstrapOld.css" />
-    <Content Include="wwwroot\lib\bootstrap\dist\css\bootstrapOld.css.map" />
-    <Content Include="wwwroot\lib\bootstrap\dist\css\bootstrapOld.min.css" />
-    <Content Include="wwwroot\lib\bootstrap\dist\css\bootstrapOld.min.css.map" />-->
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
     <!--<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />-->

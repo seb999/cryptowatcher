@@ -14,17 +14,9 @@ namespace cryptowatcher.Controllers
         }
 
         
-
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Home()
-        {
-            ViewData["Message"] = "Welcome to Cryptowatcher dashboard";
 
             return View();
         }
