@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using cryptowatcher.Model;
-using MySQL.Data.EntityFrameworkCore.Extensions;
+//using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace cryptowatcher
 {
@@ -34,7 +34,7 @@ namespace cryptowatcher
             //   options.UseSqlite(Configuration.GetConnectionString("cryptoConnection")));
 
               services.AddDbContext<AppDbContext>(options =>
-              options.UseMySQL(Configuration.GetConnectionString("cryptoConnection")));
+              options.UseMySql(Configuration.GetConnectionString("cryptoConnection")));
 
             // Add framework services.
             services.AddMvc();

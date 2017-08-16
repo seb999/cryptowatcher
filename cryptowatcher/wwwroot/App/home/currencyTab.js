@@ -183,7 +183,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
         if (vm.checkBoxParent.showAtr) vm.chartIndicators.push(vm.indicatorAtr);
         if (vm.checkBoxParent.showSma) vm.chartIndicators.push(vm.indicatorSma);
         if (vm.checkBoxParent.showEma) vm.chartIndicators.push(vm.indicatorEma);
-        vm.loadChartData();
+        vm.loadHistoryChartData();
     };
 
 	//Command : display chart data
