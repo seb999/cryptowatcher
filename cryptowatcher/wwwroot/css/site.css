@@ -48,3 +48,9 @@ textarea {
 .panel {
     overflow: auto;
 }
+
+.nav-tabs > li > a {
+    background-color: #f8f5f0;
+    border-color: #dfd7ca;
+    color: #98978b;
+}
