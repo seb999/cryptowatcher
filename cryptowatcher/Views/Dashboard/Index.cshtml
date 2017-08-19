@@ -61,7 +61,7 @@
             <uib-tab ng-repeat="tab in currencyTabs" ng-click="tabSelected($index+4)" index="$index+4" >
                 <uib-tab-heading>
                     <span class="glyphicon glyphicon-stats" style="padding:0px;margin:0px">  {{tab.name}}&nbsp;</span>
-                    <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="removeTab($index);">
+                    <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="removeTab($index);" style="color: dimgray">
                         <span aria-hidden="true"  ng-class="{red: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">&times;</span>
                     </button>
                 </uib-tab-heading>

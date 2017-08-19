@@ -33,7 +33,7 @@ namespace cryptowatcher
             // services.AddDbContext<AppDbContext>(options =>
             //   options.UseSqlite(Configuration.GetConnectionString("cryptoConnection")));
 
-              services.AddDbContext<AppDbContext>(options =>
+              services.AddDbContextPool<AppDbContext>(options =>
               options.UseMySql(Configuration.GetConnectionString("cryptoConnection")));
 
             // Add framework services.
@@ -66,11 +66,11 @@ namespace cryptowatcher
 
                 routes.MapRoute(
                    name: "default",
-                   template: "{controller}/{action}");
+                   template: "{controller=Home}/{action=Index}");
 
-                routes.MapRoute(
-                    name: "dashboard",
-                    template: "{controller=Dashboard}/{action=Index}");
+                // routes.MapRoute(
+                //     name: "dashboard",
+                //     template: "{controller=Dashboard}/{action=Index}");
 
 
             });

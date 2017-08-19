@@ -9,35 +9,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Cryptowatcher.TA-LIb-Core" Version="1.0.0" />
-    <!--<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />-->
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />-->
-    <!--<PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.8-dmr" />-->
-    
-     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0-preview3*" />
-   
-    <!--<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2">
-       
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.1">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>-->
+     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0-rc-*" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
-  <!-- <ItemGroup>
-    <None Update="MyDLLTest.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TA-Lib-Core.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup> -->
 
 </Project>

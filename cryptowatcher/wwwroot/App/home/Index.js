@@ -38,7 +38,7 @@
     // ##################################################################
 
     var gridColumn = [
-        { headerName: " ", field: 'name', enableFiltering: false,headerCellTemplate: '<div></div>', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
+        { headerName: " ", field: 'name', enableFiltering: false,headerCellTemplate: '<div></div>', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
         { headerName: "Name", field: 'name', headerCellTemplate: '<div style="margin-top:5px; margin-left:5px;">Name</div>',cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img ng-src="{{grid.appScope.getTableLogo(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
         { headerName: "Last", field: "last", width: 110, enableFiltering: false },
         { headerName: "LowestAsk", field: "lowestAsk", width: 110, enableFiltering: false },
@@ -87,17 +87,17 @@
     };
 
     function getTableLogo(value) {
-        if (value.substring(0, 3) === 'BTC') { return "../images/bitcoin.png" };
-        if (value.substring(0, 3) === 'XMR') { return "../images/monero.png" };
-        if (value.substring(0, 3) === 'ETH') { return "../images/eth.png" };
-        if (value.substring(0, 3) === 'USD') { return "../images/usdt.png" };
+        if (value.substring(0, 3) === 'BTC') { return "images/bitcoin.png" };
+        if (value.substring(0, 3) === 'XMR') { return "images/monero.png" };
+        if (value.substring(0, 3) === 'ETH') { return "images/eth.png" };
+        if (value.substring(0, 3) === 'USD') { return "images/usdt.png" };
         return "";
     };
 
     function getTableRsi(valueRsi) {
         if (valueRsi === 0) {
             $scope.isLoadingRsi = true;
-            return "../images/loader.gif"
+            return "images/loader.gif"
         };
         $scope.isLoadingRsi = false;
         return "";
