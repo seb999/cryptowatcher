@@ -254,6 +254,6 @@ function currencyTab() {
         bindToController:true,
         controllerAs:'vm',
         controller:'currencyTabController',
-        templateUrl : "../App/Home/currencyTab.html"
+        templateUrl : "App/home/currencyTab.html"
     };
 };
