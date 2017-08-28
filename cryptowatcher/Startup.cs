@@ -62,17 +62,15 @@ namespace cryptowatcher
             app.UseMvc(routes =>
             {
 
-               
-
-                routes.MapRoute(
-                   name: "default",
-                   template: "{controller}/{action=Index}");
-
+               //FOr production
                 // routes.MapRoute(
-                //     name: "dashboard",
-                //     template: "{controller=Dashboard}/{action=Index}");
+                //    name: "default",
+                //    template: "{controller}/{action=Index}");
 
-
+                //for dev
+                routes.MapRoute(
+                    name: "dashboard",
+                    template: "{controller=Dashboard}/{action=Index}");
             });
         }
     }
