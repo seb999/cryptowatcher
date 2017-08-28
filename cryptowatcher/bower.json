@@ -6,7 +6,7 @@
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
     "jquery-validation-unobtrusive": "3.2.6",
-    "angular": "1.6.4",
+    "angular": "1.6.5",
     "angular-bootstrap": "2.5.0",
     "angular-ui-grid": "4.0.4",
     "highcharts": "5.0.12",
