@@ -24,6 +24,11 @@
                                 <table class="table table-condensed" style="margin-bottom:0px">
                                     <tbody>
                                         <tr>
+                                            <td class="active col-md-6"><b>% change (24h)</b></td>
+                                            <td ng-if="vm.currencyCotation.change24hr >0"><h4 style="color:green">{{vm.currencyCotation.change24hr}}</h4></td>
+                                            <td ng-if="vm.currencyCotation.change24hr <=0"><h4 style="color:red">{{vm.currencyCotation.change24hr}}</h4></td>
+                                        </tr>
+                                        <tr>
                                             <td class="active col-md-6">Last</td>
                                             <td>{{vm.currencyCotation.last}}</td>
                                         </tr>

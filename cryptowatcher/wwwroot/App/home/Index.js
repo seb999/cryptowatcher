@@ -27,6 +27,8 @@
     $scope.refreshData = refreshData;
     $scope.getTableLogo = getTableLogo;
     $scope.getTableRsi = getTableRsi;
+    $scope.get24hChange = get24hChange;
+    $scope.get24hColor = get24hColor;
 
     // event handler
     $scope.tabSelected = tabSelected;
@@ -38,17 +40,17 @@
     // ##################################################################
 
     var gridColumn = [
-        { headerName: " ", field: 'name', enableFiltering: false,headerCellTemplate: '<div></div>', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
-        { headerName: "Name", field: 'name', headerCellTemplate: '<div style="margin-top:5px; margin-left:5px;">Name</div>',cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img ng-src="{{grid.appScope.getTableLogo(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>'},
+        { headerName: " ", field: 'name', enableFiltering: false, headerCellTemplate: '<div></div>', cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span class="btn-label"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body = "true" ng-click="grid.appScope.addTab(COL_FIELD)"><i class="glyphicon glyphicon-stats"></i></span></div > ', width: 40 },
+        { headerName: "Name", field: 'name', displayName: "name", cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><img ng-src="{{grid.appScope.getTableLogo(COL_FIELD)}}" alt=""/>{{ COL_FIELD }}</div>', width: 200},
         { headerName: "Last", field: "last", width: 110, enableFiltering: false },
-        { headerName: "LowestAsk", field: "lowestAsk", width: 110, enableFiltering: false },
-        { headerName: "HighestBid", field: "highestBid", width: 110, enableFiltering: false},
-        { headerName: "PercentChange", field: "percentChange", width: 110, enableFiltering: false },
-        { headerName: "BaseVolume", field: "baseVolume", width: 110, enableFiltering: false },
+        { headerName: "LowestAsk", field: "lowestAsk", enableFiltering: false },
+        { headerName: "HighestBid", field: "highestBid", enableFiltering: false},  
+        { headerName: "BaseVolume", field: "baseVolume", enableFiltering: false },
         { headerName: "QuoteVolume", field: "quoteVolume", enableFiltering: false },
         { headerName: "High24hr", field: "high24hr", enableFiltering: false },
         { headerName: "Low24hr", field: "low24hr", enableFiltering: false },
-        { headerName: "Rsi", field: 'rsi', enableFiltering: false, cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span ng-show="!grid.appScope.isLoadingRsi">{{ COL_FIELD }}</span><img ng-src="{{grid.appScope.getTableRsi(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>' },
+        { headerName: "PercentChange", field: "percentChange", displayName: "% change (24h)", enableFiltering: false, cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px; color:{{grid.appScope.get24hColor(COL_FIELD)}}"><span>{{grid.appScope.get24hChange(COL_FIELD)}} %</span></div>'},
+        { headerName: "Rsi", field: 'rsi', enableFiltering: false, cellTemplate: '<div ng-binding ng-scope" style="margin-left:5px"><span ng-show="!grid.appScope.isLoadingRsi">{{ COL_FIELD }}</span><img ng-src="{{grid.appScope.getTableRsi(COL_FIELD)}}" alt="" width= "30" ng-show="grid.appScope.isLoadingRsi"/></div>', width: 60},
     ];
 
     $scope.world = function() { return 'images/bitcoin.png'; };
@@ -102,6 +104,16 @@
         $scope.isLoadingRsi = false;
         return "";
     }; 
+
+    function get24hChange(value) {
+        return (value * 100).toFixed(2);
+    }
+
+    function get24hColor(value) {
+        if (value > 0) return "green";
+        if (value < 0) return "red";
+        if (value === 0) return "black";
+    }
 
     //check if there are new currency and display 1 week an alert message
     function searchNewCurrency(currencyType) {

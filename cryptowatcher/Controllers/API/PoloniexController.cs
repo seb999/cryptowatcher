@@ -45,7 +45,7 @@ namespace cryptowatcher.Controllers.API
                 foreach (var item in myDico)
                 {
                     //For ecdc so reduce number of call in proxy
-                    //if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS" && item.Key != "BTC_BCH" && item.Key != "ETH_LSK" && item.Key != "ETH_REP") continue;
+                    if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS" && item.Key != "USDT_ETH" && item.Key != "USDT_BTC" && item.Key != "BTC_BCH" && item.Key != "ETH_LSK" && item.Key != "ETH_REP") continue;
 
                     if (item.Key.Substring(0, 3) != currencyName && currencyName!=null) continue;
                     item.Value.Name = item.Key;
@@ -55,7 +55,7 @@ namespace cryptowatcher.Controllers.API
                     }
                     else
                     {
-                        item.Value.RSI = 0.0;
+                        item.Value.RSI = 0;
                     };
                             
                     result.Add(item.Value);
@@ -89,6 +89,7 @@ namespace cryptowatcher.Controllers.API
                     {
                         item.Value.Name = item.Key;
                         item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
+                        item.Value.Change24hr = double.Parse(item.Value.PercentChange)*100;
                         return item.Value;
                     }
                 }

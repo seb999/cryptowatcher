@@ -130,16 +130,18 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                     vm.chartDayVolume.push([response.data[i].date * 1000, response.data[i].volume]);
                     vm.chartDayValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
                 }
+                debugger;
                 vm.displayDayChart();
             }, function (error) {
                 $log.error(error.message);
             });
         };
     
-        //we load from API the data to display
+        //we load from API Cotation data to display
         function getCurrencyCotation() {
             cryptoApiService.getPoloniexCotation(vm.currencyName).then(function (response) {
                 vm.currencyCotation = response.data;
+                vm.currencyCotation.change24hr = vm.currencyCotation.change24hr.toFixed(2);
             }, function (error) {
                 $log.error(error.message);
             });

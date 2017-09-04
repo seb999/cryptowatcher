@@ -1,7 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    font-size:12px;
+    font-size:14px;
 }
 
 /* Wrapping element */
@@ -49,8 +49,18 @@ textarea {
     overflow: auto;
 }
 
+/*Style thead TABs*/
 .nav-tabs > li > a {
     background-color: #f8f5f0;
     border-color: #dfd7ca;
     color: #98978b;
+}
+
+.navbar .brand, .navbar .nav > li > a {
+    font-weight: 400;
+    font-size:15px;
+}
+
+.uib-tooltip {
+    z-index: 1240;
 }
