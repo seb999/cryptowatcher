@@ -1,7 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    font-size:14px;
+    font-size: 14px;
 }
 
 /* Wrapping element */
@@ -37,8 +37,29 @@ textarea {
     }
 }
 
-.red{
-    color:red;
+@media (min-width: 768px) {
+    .custom-container {
+        padding-right: 15px !important;
+        padding-left: 15px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .custom-container {
+        padding-right: 75px !important;
+        padding-left: 75px !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .custom-container {
+        padding-right: 100px !important;
+        padding-left: 100px !important;
+    }
+}
+
+.red {
+    color: red;
 }
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -58,7 +79,7 @@ textarea {
 
 .navbar .brand, .navbar .nav > li > a {
     font-weight: 400;
-    font-size:15px;
+    font-size: 15px;
 }
 
 .uib-tooltip {

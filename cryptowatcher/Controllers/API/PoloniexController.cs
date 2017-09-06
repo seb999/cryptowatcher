@@ -55,7 +55,7 @@ namespace cryptowatcher.Controllers.API
                     }
                     else
                     {
-                        item.Value.RSI = 0;
+                        item.Value.RSI = null;
                     };
                             
                     result.Add(item.Value);
@@ -247,17 +247,24 @@ namespace cryptowatcher.Controllers.API
 
         private string GetPoloniexApiData(Uri ApiUri)
         {
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = ApiUri;
-
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var response = client.GetAsync("").Result;
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    return response.Content.ReadAsStringAsync().Result;
+                    client.BaseAddress = ApiUri;
+
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var response = client.GetAsync("").Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return response.Content.ReadAsStringAsync().Result;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return "";
             }
 
             return "";

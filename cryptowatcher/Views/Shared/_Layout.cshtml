@@ -13,7 +13,7 @@
         <link rel="styleSheet" href="~/lib/highcharts-ng/dist/highcharts-ng.css" />
     </environment>
     <environment names="Staging,Production">
-         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-grid/4.0.4/ui-grid.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highcharts-ng/1.1.0/highcharts-ng.css" asp-append-version="true" />
@@ -23,7 +23,7 @@
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
+        <div class="custom-container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -46,7 +46,9 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - Cryptowatcher</p>
+            <div class="custom-container body-content">
+                <p>&copy; 2017 - Cryptowatcher</p>
+            </div>
         </footer>
     </div>
 
@@ -57,7 +59,7 @@
 
         @*include specific for angular pages*@
         <!-- <script src="~/lib/Angular/angular.min.js"></script> -->
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js" asp-append-version="true"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js" asp-append-version="true"></script>
         @*angular UI Bootrap*@
         <script src="~/lib/angular-bootstrap/ui-bootstrap.min.js"></script>
         <script src="~/lib/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>

@@ -14,6 +14,6 @@
         public string High24hr { get; set; }
         public string Low24hr { get; set; }
         public double Change24hr { get; set; }
-        public double RSI { get; set; }
+        public double? RSI { get; set; }
     }
 }

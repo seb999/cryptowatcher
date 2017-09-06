@@ -16,7 +16,7 @@
                                 <div style="float:left"><h3 class="panel-title">Cotation</h3></div>
                                 <div style="float:right;margin-top:-6px !important">
                                     <button type="button" ng-click="vm.getCurrencyCotation();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh" ></i></span>
+                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
                                     </button>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@
                                 <div style="float:left"><h3 class="panel-title">Chart 24H</h3></div>
                                 <div style="float:right;margin-top:-6px !important">
                                     <button type="button" ng-click="vm.loadDayChartData();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh" ></i></span>
+                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
                                     </button>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                                 <div style="float:left"><h3 class="panel-title">Orders</h3></div>
                                 <div style="float:right;margin-top:-6px !important">
                                     <button type="button" ng-click="vm.getOrderData();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh" ></i></span>
+                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
                                     </button>
                                 </div>
                             </div>
@@ -102,49 +102,7 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <table class="table table-striped table-bordered table-hover table-condensed" style="margin-bottom:0px">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-md-1">
-                                                Level
-                                            </th>
-                                            <th class="col-md-3">
-                                                Ask quantity
-                                            </th>
-                                            <th class="col-md-2">
-                                                Ask price
-                                            </th>
-                                            <th class="col-md-2">
-                                                Bid price
-                                            </th>
-                                            <th class="col-md-3">
-                                                Bid quantity
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <tr ng-repeat="order in vm.orderList">
-                                            <td>
-                                                {{$index}}
-                                            </td>
-                                            <td>
-                                                {{order.bidQuantity}}
-                                            </td>
-                                            <td>
-                                                {{order.bidPrice}}
-                                            </td>
-                                            <td>
-                                                {{order.askPrice}}
-                                            </td>
-                                            <td>
-                                                {{order.askQuantity}}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <div ui-grid="vm.gridOptionsOrder" style="width:100%;height:350px;margin-top:1px"></div>
                         </div>
                     </div>
                 </div>
@@ -167,7 +125,7 @@
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showSma" />Sma
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showEma" />Ema
                     </div>
-                        <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" loading="vm.chartLoading" style="height:700px;margin-right:5px;margin-left:5px"></chart>
+                    <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" loading="vm.chartLoading" style="height:700px;margin-right:5px;margin-left:5px"></chart>
                 </div>
             </div>
         </div>

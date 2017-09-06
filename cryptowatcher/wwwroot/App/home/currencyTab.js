@@ -5,20 +5,20 @@ myApp
 function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 
     var vm = this;
-    
-    this.$onInit = function(){
+
+    this.$onInit = function () {
 
         vm.currencyName = vm.name;
-        $log.info("Creating dynamic tab for "+vm.name);
-    
+        $log.info("Creating dynamic tab for " + vm.name);
+
         vm.chartVolume = [];
         vm.chartData = [];
-        vm.chartType = 'area';
+        vm.chartType = 'candlestick';
         vm.chartDayType = 'line';
         vm.isAutoRefrsh = true;
         vm.loaderVisibility = true;
         vm.checkBoxParent = {};
-    
+
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
         vm.displayHistoryChart = displayHistoryChart;
@@ -30,13 +30,25 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
         vm.showIndicator = showIndicator;
         vm.drawAskBidChart = drawAskBidChart;
         vm.getCurrencyCotation = getCurrencyCotation;
-    
+
         //Life start here
         vm.getOrderData();
         vm.loadHistoryChartData();
         vm.loadDayChartData();
         vm.getCurrencyCotation();
-    
+
+        var gridColumn = [
+            { headerName: "Ask quantity", field: "bidQuantity", enableFiltering: false },
+            { headerName: "Ask price", field: "bidPrice", enableFiltering: false },
+            { headerName: "Bid price", field: "askPrice", enableFiltering: false },
+            { headerName: "Bid quantity", field: "askQuantity", enableFiltering: false },
+        ];
+
+        vm.gridOptionsOrder = {
+            data: null,
+            columnDefs: gridColumn,
+        };
+
         vm.indicatorRsi = {
             id: 'abc',
             type: 'rsi',
@@ -62,7 +74,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 },
             }
         };
-    
+
         vm.indicatorAtr = {
             id: 'abc',
             type: 'atr',
@@ -81,7 +93,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 }
             }
         }
-        
+
         vm.indicatorSma = {
             id: 'abc',
             type: 'sma',
@@ -89,8 +101,8 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 period: 14
             }
         }
-        
-        vm.indicatorEma =  {
+
+        vm.indicatorEma = {
             id: 'abc',
             type: 'ema',
             params: {
@@ -103,9 +115,9 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 dashstyle: 'solid',
             }
         }
-    
+
         //we load from API the data to display
-        function loadHistoryChartData () {
+        function loadHistoryChartData() {
             vm.loaderVisibility = true;
             vm.chartVolume = [];
             vm.chartValue = [];
@@ -120,7 +132,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 $log.error(error.message);
             });
         };
-    
+
         //we load from API the data to display
         function loadDayChartData() {
             vm.chartDayVolume = [];
@@ -130,13 +142,12 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                     vm.chartDayVolume.push([response.data[i].date * 1000, response.data[i].volume]);
                     vm.chartDayValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
                 }
-                debugger;
                 vm.displayDayChart();
             }, function (error) {
                 $log.error(error.message);
             });
         };
-    
+
         //we load from API Cotation data to display
         function getCurrencyCotation() {
             cryptoApiService.getPoloniexCotation(vm.currencyName).then(function (response) {
@@ -146,40 +157,43 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                 $log.error(error.message);
             });
         };
-    
+
         function getOrderData() {
             cryptoApiService.getPoloniexOrderData(vm.currencyName).then(function (response) {
                 vm.orderList = response.data;
-                var askQuantityTotal=0;
-                var bidQuantityTotal=0;
-    
-                 for (var i = 0; i < vm.orderList.length; i++) {
+
+                vm.gridOptionsOrder = { data: response.data, columnDefs: gridColumn };
+
+                var askQuantityTotal = 0;
+                var bidQuantityTotal = 0;
+
+                for (var i = 0; i < vm.orderList.length; i++) {
                     askQuantityTotal = parseFloat(askQuantityTotal) + parseFloat(vm.orderList[i].askQuantity);
                     bidQuantityTotal = parseFloat(bidQuantityTotal) + parseFloat(vm.orderList[i].bidQuantity);
                 };
                 vm.drawAskBidChart(askQuantityTotal, bidQuantityTotal);
-    
+
             }, function (error) {
                 $log.error(error.message);
             });
         };
-    
-        function drawAskBidChart(askQuantityTotal, bidQuantityTotal){
-           vm.askPourcentStyle = {width: askQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%'};
-           vm.bidQuantityStyle = {width: bidQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%'};
+
+        function drawAskBidChart(askQuantityTotal, bidQuantityTotal) {
+            vm.askPourcentStyle = { width: askQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%' };
+            vm.bidQuantityStyle = { width: bidQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%' };
         };
-    
+
         //Command : change chart type
         function changeChartType(chartType) {
             vm.chartType = chartType;
             vm.displayHistoryChart();
         };
-    
+
         function changeChartDayType(chartDayType) {
             vm.chartDayType = chartDayType;
             vm.displayDayChart();
         };
-    
+
         function showIndicator() {
             console.log(vm.checkBoxParent);
             vm.chartIndicators = [];
@@ -190,11 +204,11 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
             if (vm.checkBoxParent.showEma) vm.chartIndicators.push(vm.indicatorEma);
             vm.loadHistoryChartData();
         };
-    
+
         //Command : display chart data
         function displayHistoryChart(currencyName) {
             //vm.chartConfig1.loading = false;
-    
+
             vm.chartTitle = vm.currencyName;
             vm.chartData = [];
             vm.chartData.push({
@@ -207,7 +221,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                     units: groupingUnits
                 }
             });
-    
+
             vm.chartData.push({
                 name: 'volume',
                 data: vm.chartVolume,
@@ -219,7 +233,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
             });
         };
         groupingUnits = [['day', [1]]];
-    
+
         //Command : display chart data
         function displayDayChart(currencyName) {
             vm.chartDayData = [];
@@ -233,7 +247,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
                     units: groupingDayUnits
                 }
             });
-    
+
             vm.chartDayData.push({
                 name: 'volume',
                 data: vm.chartDayVolume,
@@ -248,7 +262,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
     };
 
     // Prior to v1.5, we need to call onInit manually
-    if(angular.version.major === 1 && angular.version.minor <5){
+    if (angular.version.major === 1 && angular.version.minor < 5) {
         this.$onInit();
     }
 
@@ -257,14 +271,14 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 function currencyTab() {
     return {
         require: 'ngModel',
-        restrict:'E',
-        scope:{
-            name:'@'
+        restrict: 'E',
+        scope: {
+            name: '@'
         },
 
-        bindToController:true,
-        controllerAs:'vm',
-        controller:'currencyTabController',
-        templateUrl : "App/home/currencyTab.html"
+        bindToController: true,
+        controllerAs: 'vm',
+        controller: 'currencyTabController',
+        templateUrl: "App/home/currencyTab.html"
     };
 };
