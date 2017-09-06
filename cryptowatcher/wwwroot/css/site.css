@@ -46,15 +46,15 @@ textarea {
 
 @media (min-width: 992px) {
     .custom-container {
-        padding-right: 75px !important;
-        padding-left: 75px !important;
+        padding-right: 30px !important;
+        padding-left: 30px !important;
     }
 }
 
 @media (min-width: 1200px) {
     .custom-container {
-        padding-right: 100px !important;
-        padding-left: 100px !important;
+        padding-right: 90px !important;
+        padding-left: 90px !important;
     }
 }
 

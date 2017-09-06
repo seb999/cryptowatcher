@@ -19,21 +19,12 @@
     $scope.refreshData = refreshData;
     $scope.get24hChange = get24hChange;
     $scope.get24hColor = get24hColor;
-    //$scope.filterTable = filterTable;
 
     // Life start here!!!
     $scope.searchNewCurrency();
     $scope.loadData();
 
     // ##################################################################
-
-    $scope.filterTable = function () {
-        debugger;
-        if ($scope.selectedToken !== "") {
-            $scope.f.name = $scope.selectedToken;
-            // $scope.selectedToken = "";
-        }
-    }
 
     function get24hChange(value) {
         return (value * 100).toFixed(2);
