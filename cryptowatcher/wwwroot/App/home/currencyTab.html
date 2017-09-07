@@ -25,8 +25,8 @@
                                     <tbody>
                                         <tr>
                                             <td class="active col-md-6"><b>% change (24h)</b></td>
-                                            <td ng-if="vm.currencyCotation.change24hr >0"><h4 style="color:green">{{vm.currencyCotation.change24hr}}</h4></td>
-                                            <td ng-if="vm.currencyCotation.change24hr <=0"><h4 style="color:red">{{vm.currencyCotation.change24hr}}</h4></td>
+                                            <td ng-if="vm.currencyCotation.change24hr >0"><div style="color:green;background-color:{{vm.highlightChange}};width:50px"><h4>{{vm.currencyCotation.change24hr}}</h4></div></td>
+                                            <td ng-if="vm.currencyCotation.change24hr <=0"><div style="color:red;background-color:{{vm.highlightChange}};width:50px"><h4 style="color:red">{{vm.currencyCotation.change24hr}}</h4></div></td>
                                         </tr>
                                         <tr>
                                             <td class="active col-md-6">Last</td>

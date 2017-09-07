@@ -2,7 +2,7 @@ myApp
     .controller("currencyTabController", currencyTabController)
     .directive("currencyTab", currencyTab);
 
-function currencyTabController($scope, $log, $timeout, cryptoApiService) {
+function currencyTabController($scope, $log, $timeout, $interval, cryptoApiService) {
 
     var vm = this;
 
@@ -18,6 +18,7 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
         vm.isAutoRefrsh = true;
         vm.loaderVisibility = true;
         vm.checkBoxParent = {};
+        vm.currencyCotation = {};
 
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
@@ -30,12 +31,20 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
         vm.showIndicator = showIndicator;
         vm.drawAskBidChart = drawAskBidChart;
         vm.getCurrencyCotation = getCurrencyCotation;
+        vm.autoUpdate = autoUpdate;
 
         //Life start here
         vm.getOrderData();
         vm.loadHistoryChartData();
         vm.loadDayChartData();
         vm.getCurrencyCotation();
+        vm.autoUpdate();
+
+        function autoUpdate() {
+            $interval(getCurrencyCotation, 3000);
+            $interval(getOrderData, 5000);
+            $interval(loadDayChartData, 30000);
+        }
 
         var gridColumn = [
             { headerName: "Ask quantity", field: "bidQuantity", enableFiltering: false },
@@ -150,7 +159,15 @@ function currencyTabController($scope, $log, $timeout, cryptoApiService) {
 
         //we load from API Cotation data to display
         function getCurrencyCotation() {
+        
             cryptoApiService.getPoloniexCotation(vm.currencyName).then(function (response) {
+
+                if (vm.currencyCotation.change24hr != response.data.change24hr.toFixed(2)) {
+                    vm.highlightChange = "lightgray";
+                    $timeout(function () {
+                        vm.highlightChange = "";
+                    }, 600);
+                }
                 vm.currencyCotation = response.data;
                 vm.currencyCotation.change24hr = vm.currencyCotation.change24hr.toFixed(2);
             }, function (error) {
