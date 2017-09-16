@@ -63,14 +63,14 @@ namespace cryptowatcher
             {
 
                //FOr production
-                routes.MapRoute(
-                   name: "default",
-                   template: "{controller}/{action=Index}");
+                // routes.MapRoute(
+                //    name: "default",
+                //    template: "{controller}/{action=Index}");
 
                 //for dev
-                // routes.MapRoute(
-                //     name: "dashboard",
-                //     template: "{controller=Dashboard}/{action=Index}");
+                routes.MapRoute(
+                    name: "dashboard",
+                    template: "{controller=Dashboard}/{action=Index}");
             });
         }
     }

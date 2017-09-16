@@ -177,17 +177,20 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
 
         function getOrderData() {
             cryptoApiService.getPoloniexOrderData(vm.currencyName).then(function (response) {
-                vm.orderList = response.data;
-
-                vm.gridOptionsOrder = { data: response.data, columnDefs: gridColumn };
-
                 var askQuantityTotal = 0;
                 var bidQuantityTotal = 0;
-
-                for (var i = 0; i < vm.orderList.length; i++) {
+                
+                vm.orderList = response.data;
+                for (var i = 0; i < vm.orderList.length; i++) {            
                     askQuantityTotal = parseFloat(askQuantityTotal) + parseFloat(vm.orderList[i].askQuantity);
                     bidQuantityTotal = parseFloat(bidQuantityTotal) + parseFloat(vm.orderList[i].bidQuantity);
+                    if(parseFloat(vm.orderList[i].bidPrice)> 0.001)vm.orderList[i].bidPrice = parseFloat(vm.orderList[i].bidPrice).toFixed(4);
+                    if(parseFloat(vm.orderList[i].askPrice)> 0.001)vm.orderList[i].askPrice = parseFloat(vm.orderList[i].askPrice).toFixed(4);
+                    vm.orderList[i].bidQuantity = parseFloat(vm.orderList[i].bidQuantity).toFixed(4);
+                    vm.orderList[i].askQuantity = parseFloat(vm.orderList[i].askQuantity).toFixed(4);
                 };
+
+                vm.gridOptionsOrder = { data: vm.orderList, columnDefs: gridColumn };
                 vm.drawAskBidChart(askQuantityTotal, bidQuantityTotal);
 
             }, function (error) {
