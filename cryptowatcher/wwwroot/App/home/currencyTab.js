@@ -169,7 +169,13 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
                     }, 600);
                 }
                 vm.currencyCotation = response.data;
-                vm.currencyCotation.change24hr = vm.currencyCotation.change24hr.toFixed(2);
+                if(parseFloat(response.data.last)> 0.001)vm.currencyCotation.last = parseFloat(response.data.last).toFixed(2);        
+                if(parseFloat(response.data.quoteVolume)> 0.00001)vm.currencyCotation.quoteVolume = parseFloat(response.data.quoteVolume).toFixed(0);        
+                if(parseFloat(response.data.high24hr)> 0.001)vm.currencyCotation.high24hr = parseFloat(response.data.high24hr).toFixed(2);        
+                if(parseFloat(response.data.low24hr)> 0.001)vm.currencyCotation.low24hr = parseFloat(response.data.low24hr).toFixed(2);        
+                if(parseFloat(response.data.baseVolume)> 0.001)vm.currencyCotation.baseVolume = parseFloat(response.data.baseVolume).toFixed(0);        
+                vm.currencyCotation.change24hr =response.data.change24hr.toFixed(2);
+
             }, function (error) {
                 $log.error(error.message);
             });

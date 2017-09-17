@@ -54,6 +54,17 @@
             $scope.currencyListUSD = [];
             currencyList = response.data;
             for (var i = 0; i < currencyList.length; i++) {
+     
+                roundList(currencyList);
+
+                // if(parseFloat(currencyList[i].last)> 0.001)currencyList[i].last = parseFloat(currencyList[i].last).toFixed(4);        
+                // if(parseFloat(currencyList[i].lowestAsk)> 0.001)currencyList[i].lowestAsk = parseFloat(currencyList[i].lowestAsk).toFixed(4);        
+                // if(parseFloat(currencyList[i].highestBid)> 0.001)currencyList[i].highestBid = parseFloat(currencyList[i].highestBid).toFixed(4);        
+                // if(parseFloat(currencyList[i].high24hr)> 0.001)currencyList[i].high24hr = parseFloat(currencyList[i].high24hr).toFixed(4);        
+                // if(parseFloat(currencyList[i].low24hr)> 0.001)currencyList[i].low24hr = parseFloat(currencyList[i].low24hr).toFixed(4);        
+                // if(parseFloat(currencyList[i].baseVolume)> 0.001)currencyList[i].baseVolume = parseFloat(currencyList[i].baseVolume).toFixed(4);        
+                // if(parseFloat(currencyList[i].quoteVolume)> 0.001)currencyList[i].quoteVolume = parseFloat(currencyList[i].quoteVolume).toFixed(4);        
+            
                 if (currencyList[i].name.substring(0, 3) === "ETH") $scope.currencyListETH.push(currencyList[i]);
                 if (currencyList[i].name.substring(0, 3) === "BTC") $scope.currencyListBTC.push(currencyList[i]);
                 if (currencyList[i].name.substring(0, 3) === "XMR") $scope.currencyListXMR.push(currencyList[i]);
@@ -66,21 +77,45 @@
     //Second pass to load the RSI behind the scene as it take 20 second
     function loadDataWithRsi() {
         cryptoApiService.getPoloniexData("USD").then(function (response) {
-            $scope.currencyListUSD = response.data;
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListUSD = currencyList;
         }, function (error) { $log.error(error.message); });
 
         cryptoApiService.getPoloniexData("ETH").then(function (response) {
-            $scope.currencyListETH = response.data;
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListETH = currencyList;
         }, function (error) { $log.error(error.message); });
 
         cryptoApiService.getPoloniexData("BTC").then(function (response) {
-            $scope.currencyListBTC = response.data;
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListBTC = currencyList;
         }, function (error) { $log.error(error.message); });
 
         cryptoApiService.getPoloniexData("XMR").then(function (response) {
-            $scope.currencyListXMR = response.data;
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListXMR = currencyList;
         }, function (error) { $log.error(error.message); });
+
+
+       
     };
+
+    function roundList(theList) {
+        for (var i = 0; i < theList.length; i++) {
+            if(parseFloat(theList[i].last)> 0.001)theList[i].last = parseFloat(theList[i].last).toFixed(4);        
+            if(parseFloat(theList[i].lowestAsk)> 0.001)theList[i].lowestAsk = parseFloat(theList[i].lowestAsk).toFixed(4);        
+            if(parseFloat(theList[i].highestBid)> 0.001)theList[i].highestBid = parseFloat(theList[i].highestBid).toFixed(4);        
+            if(parseFloat(theList[i].high24hr)> 0.001)theList[i].high24hr = parseFloat(theList[i].high24hr).toFixed(4);        
+            if(parseFloat(theList[i].low24hr)> 0.001)theList[i].low24hr = parseFloat(theList[i].low24hr).toFixed(4);        
+            if(parseFloat(theList[i].baseVolume)> 0.001)theList[i].baseVolume = parseFloat(theList[i].baseVolume).toFixed(0);        
+        if(parseFloat(theList[i].quoteVolume)> 0.001)theList[i].quoteVolume = parseFloat(theList[i].quoteVolume).toFixed(0);    
+        }    
+
+    }
 
 
     /* DYNAMIC TAB RELATED FUNCTIONS  */

@@ -9,15 +9,14 @@
     <div ng-show="loaderVisibility" class="overlay"></div>
     <div ng-show="loaderVisibility" id="spinner"></div>
 
-    <div class="row" style="margin-right:10px">
+    <div class="row">
         <div class="col-md-1">
             <button type="button" class="btn btn-labeled btn-success btn-sm" ng-click="refreshData();">
                 <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span> Refresh
             </button>
         </div>
 
-        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-warning
-             col-md-11" role="alert" style="margin-bottom:0px; padding-top:5px !important;padding-bottom:5px !important" ng-cloak>
+        <div ng-show="newCurrencyList.length > 0" class="ng-hide alert alert-warning col-md-10" role="alert" style="margin-left:15px;margin-bottom:0px; padding-top:5px !important;padding-bottom:6px !important" ng-cloak>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong>Info, new currency available! </strong>
             <span ng-repeat="item in newCurrencyList" ng-cloak>

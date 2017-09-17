@@ -6206,11 +6206,18 @@ a.thumbnail.active {
         color: #e6e6e6;
     }
 
-.alert-info {
+/* .alert-info {
     background-color: #3498db;
     border-color: #3498db;
     color: #ffffff;
-}
+} */
+
+.alert-info {
+    color: #31708f !important;
+    background-color: #d9edf7 !important;
+    border-color: #bce8f1 !important;
+} 
+
 
     .alert-info hr {
         border-top-color: #258cd1;
