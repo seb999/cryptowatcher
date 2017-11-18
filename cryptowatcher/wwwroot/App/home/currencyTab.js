@@ -6,8 +6,25 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
 
     var vm = this;
 
-    this.$onInit = function () {
+    var stopInternal1;
+    var stopInternal2;
+    var stopInternal3;
 
+    $scope.$on('$destroy', function() {
+        $log.warn("clear viewModel from memory ");
+
+        $interval.cancel(stopInternal1);
+        $interval.cancel(stopInternal2);
+        $interval.cancel(stopInternal3);
+        vm.chartVolume = [];
+        vm.chartData = [];
+        vm.isAutoRefrsh = false;
+        vm.checkBoxParent = {};
+        vm.currencyCotation = {};
+    });
+
+    this.$onInit = function () {
+        $log.warn("OnInit called");
         vm.currencyName = vm.name;
         $log.info("Creating dynamic tab for " + vm.name);
 
@@ -41,9 +58,11 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.autoUpdate();
 
         function autoUpdate() {
-            $interval(getCurrencyCotation, 3000);
-            $interval(getOrderData, 5000);
-            $interval(loadDayChartData, 30000);
+            if(vm.isAutoRefrsh){
+                stopInternal1 = $interval(getCurrencyCotation, 3000);
+                stopInternal2 = $interval(getOrderData, 3000);
+                stopInternal3 = $interval(loadDayChartData, 20000);
+            }
         }
 
         var gridColumn = [

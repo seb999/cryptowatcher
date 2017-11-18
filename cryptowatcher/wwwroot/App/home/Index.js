@@ -57,14 +57,6 @@
      
                 roundList(currencyList);
 
-                // if(parseFloat(currencyList[i].last)> 0.001)currencyList[i].last = parseFloat(currencyList[i].last).toFixed(4);        
-                // if(parseFloat(currencyList[i].lowestAsk)> 0.001)currencyList[i].lowestAsk = parseFloat(currencyList[i].lowestAsk).toFixed(4);        
-                // if(parseFloat(currencyList[i].highestBid)> 0.001)currencyList[i].highestBid = parseFloat(currencyList[i].highestBid).toFixed(4);        
-                // if(parseFloat(currencyList[i].high24hr)> 0.001)currencyList[i].high24hr = parseFloat(currencyList[i].high24hr).toFixed(4);        
-                // if(parseFloat(currencyList[i].low24hr)> 0.001)currencyList[i].low24hr = parseFloat(currencyList[i].low24hr).toFixed(4);        
-                // if(parseFloat(currencyList[i].baseVolume)> 0.001)currencyList[i].baseVolume = parseFloat(currencyList[i].baseVolume).toFixed(4);        
-                // if(parseFloat(currencyList[i].quoteVolume)> 0.001)currencyList[i].quoteVolume = parseFloat(currencyList[i].quoteVolume).toFixed(4);        
-            
                 if (currencyList[i].name.substring(0, 3) === "ETH") $scope.currencyListETH.push(currencyList[i]);
                 if (currencyList[i].name.substring(0, 3) === "BTC") $scope.currencyListBTC.push(currencyList[i]);
                 if (currencyList[i].name.substring(0, 3) === "XMR") $scope.currencyListXMR.push(currencyList[i]);
@@ -99,9 +91,6 @@
             roundList(currencyList);
             $scope.currencyListXMR = currencyList;
         }, function (error) { $log.error(error.message); });
-
-
-       
     };
 
     function roundList(theList) {

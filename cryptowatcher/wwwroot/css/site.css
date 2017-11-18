@@ -2,6 +2,7 @@
     padding-top: 50px;
     padding-bottom: 20px;
     font-size: 14px;
+    font-family: Times, Times New Roman, serif
 }
 
 /* Wrapping element */
@@ -79,7 +80,7 @@ textarea {
 
 .navbar .brand, .navbar .nav > li > a {
     font-weight: 400;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .uib-tooltip {
