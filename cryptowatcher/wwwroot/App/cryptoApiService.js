@@ -9,9 +9,9 @@
         })
     };
 
-    cryptoApiService.getPoloniexHistoryChartData = function (currencyName) {
+    cryptoApiService.getPoloniexHistoryChartData = function (currencyName, numberOfYear) {
         return $http({
-            url: "api/Poloniex/GetHistoryChartData/" + currencyName,
+            url: "api/Poloniex/GetHistoryChartData/" + currencyName + "/" + numberOfYear,
             method: "GET",
         })
     };

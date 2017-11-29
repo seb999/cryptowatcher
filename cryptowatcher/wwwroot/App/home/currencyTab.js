@@ -36,6 +36,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.loaderVisibility = true;
         vm.checkBoxParent = {};
         vm.currencyCotation = {};
+        vm.chartPeriod = "1";
 
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
@@ -44,6 +45,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.displayDayChart = displayDayChart;
         vm.getOrderData = getOrderData;
         vm.changeChartType = changeChartType;
+        vm.changeChartPeriod = changeChartPeriod;
         vm.changeChartDayType = changeChartDayType;
         vm.showIndicator = showIndicator;
         vm.drawAskBidChart = drawAskBidChart;
@@ -149,7 +151,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             vm.loaderVisibility = true;
             vm.chartVolume = [];
             vm.chartValue = [];
-            cryptoApiService.getPoloniexHistoryChartData(vm.currencyName).then(function (response) {
+            cryptoApiService.getPoloniexHistoryChartData(vm.currencyName, vm.chartPeriod).then(function (response) {
                 vm.loaderVisibility = false;
                 for (var i = 0; i < response.data.length; i++) {
                     vm.chartVolume.push([response.data[i].date * 1000, response.data[i].volume]);
@@ -232,6 +234,11 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         function changeChartType(chartType) {
             vm.chartType = chartType;
             vm.displayHistoryChart();
+        };
+
+        function changeChartPeriod(numberOfYear) {
+            vm.chartPeriod = numberOfYear;
+            vm.loadHistoryChartData();
         };
 
         function changeChartDayType(chartDayType) {

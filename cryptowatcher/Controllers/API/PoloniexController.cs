@@ -103,11 +103,11 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("GetHistoryChartData/{currencyName}")]
-        public string GetHistoryChartData(string currencyName)
+        [Route("GetHistoryChartData/{currencyName}/{numberOfYear}")]
+        public string GetHistoryChartData(string currencyName, int numberOfYear)
         {
             Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-365).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-numberOfYear*365).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
             return GetPoloniexApiData(new Uri(uri));
         }
