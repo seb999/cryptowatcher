@@ -129,7 +129,7 @@
                     <img class="hidden-xs" src="~/images/eth.png" /> ETH
                 </uib-tab-heading>
 
-                <table class="table table-striped table-bordered" style="margin-top:20px">
+                <table class="table table-striped table-bordered" style="margin-top:7px">
                     <thead>
                         <tr class="headerTable">
                             <th></th>
@@ -218,7 +218,7 @@
                     <img class="hidden-xs" src="~/images/monero.png" /> MONERO
                 </uib-tab-heading>
 
-                <table class="table table-striped table-bordered" style="margin-top:20px">
+                <table class="table table-striped table-bordered" style="margin-top:7px">
                     <thead>
                         <tr class="headerTable">
                             <th></th>
@@ -309,7 +309,7 @@
                     <img class="hidden-xs" src="~/images/usdt.png" /> USDT
                 </uib-tab-heading>
 
-                <table class="table table-striped table-bordered" style="margin-top:20px">
+                <table class="table table-striped table-bordered" style="margin-top:7px">
                     <thead>
                         <tr class="headerTable">
                             <th></th>
@@ -398,7 +398,7 @@
             <!-- DYNAMIC TABS-->
             <uib-tab ng-repeat="tab in currencyTabs" index="$index+4">
                 <uib-tab-heading>
-                    <span class="glyphicon glyphicon-stats" style="padding:0px;margin:0px">  {{tab.name}}&nbsp;</span>
+                    <span style="padding:0px;margin:0px;"><i style="color:dodgerblue" class="fa fa-bar-chart" aria-hidden="true"></i>  {{tab.name}}&nbsp;</span>
                     <button type="button" uib-tooltip="Close tab" class="close" data-dismiss="alert" aria-label="Close" ng-click="removeTab($index);" style="color: dimgray">
                         <span aria-hidden="true" ng-class="{red: hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">&times;</span>
                     </button>

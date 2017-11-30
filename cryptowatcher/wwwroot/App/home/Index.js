@@ -87,23 +87,23 @@
             $scope.currencyListUSD = currencyList;
         }, function (error) { $log.error(error.message); });
 
-        // cryptoApiService.getPoloniexData("ETH").then(function (response) {
-        //     currencyList = response.data;
-        //     roundList(currencyList);
-        //     $scope.currencyListETH = currencyList;
-        // }, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData($scope.rsiPeriod, "ETH").then(function (response) {
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListETH = currencyList;
+        }, function (error) { $log.error(error.message); });
 
-        // cryptoApiService.getPoloniexData("BTC").then(function (response) {
-        //     currencyList = response.data;
-        //     roundList(currencyList);
-        //     $scope.currencyListBTC = currencyList;
-        // }, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData($scope.rsiPeriod, "BTC").then(function (response) {
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListBTC = currencyList;
+        }, function (error) { $log.error(error.message); });
 
-        // cryptoApiService.getPoloniexData("XMR").then(function (response) {
-        //     currencyList = response.data;
-        //     roundList(currencyList);
-        //     $scope.currencyListXMR = currencyList;
-        // }, function (error) { $log.error(error.message); });
+        cryptoApiService.getPoloniexData($scope.rsiPeriod, "XMR").then(function (response) {
+            currencyList = response.data;
+            roundList(currencyList);
+            $scope.currencyListXMR = currencyList;
+        }, function (error) { $log.error(error.message); });
     };
 
     function roundList(theList) {

@@ -86,7 +86,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             type: 'rsi',
             lineWidth: 1,
             params: {
-                period: vm.rsiPeriod,
+                period: parseInt(vm.rsiPeriod),
                 overbought: 70,
                 oversold: 30
             },
@@ -244,7 +244,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
 
         function changeRsiPeriod() {
             getCurrencyCotation();
-            vm.indicatorRsi.params.period = vm.rsiPeriod;
+            vm.indicatorRsi.params.period = parseInt(vm.rsiPeriod);
             showIndicator();
         };
 
