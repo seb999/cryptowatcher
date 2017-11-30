@@ -32,8 +32,8 @@ namespace cryptowatcher.Controllers.API
 
         // GET: api/values
         [HttpGet]
-        [Route("{currencyName?}")]
-        public IEnumerable<PoloCurrencyTransfer> Get(string currencyName = null)
+        [Route("{rsiPeriod}/{currencyName?}")]
+        public IEnumerable<PoloCurrencyTransfer> Get(int rsiPeriod, string currencyName = null)
         {
             List<PoloCurrencyTransfer> result = new List<PoloCurrencyTransfer>();
             string poloniexApiData = GetPoloniexApiData(uriListOfCurrency);
@@ -51,7 +51,7 @@ namespace cryptowatcher.Controllers.API
                     item.Value.Name = item.Key;
                     if (currencyName !=null)
                     {
-                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
+                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString(), rsiPeriod);
                     }
                     else
                     {
@@ -71,8 +71,8 @@ namespace cryptowatcher.Controllers.API
         /// <param name="currencyName">The currency name</param>
         /// <returns>PoloCurrencyTransfer</returns>
         [HttpGet]
-        [Route("GetCotation/{currencyName?}")]
-        public PoloCurrencyTransfer GetCurrencyData(string currencyName = null)
+        [Route("GetCotation/{rsiPeriod}/{currencyName?}")]
+        public PoloCurrencyTransfer GetCurrencyData(int rsiPeriod, string currencyName = null)
         {
             if(currencyName == null) return null;
             
@@ -88,7 +88,7 @@ namespace cryptowatcher.Controllers.API
                     if (item.Key == currencyName)
                     {
                         item.Value.Name = item.Key;
-                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString());
+                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString(), rsiPeriod);
                         item.Value.Change24hr = double.Parse(item.Value.PercentChange)*100;
                         return item.Value;
                     }
@@ -200,10 +200,10 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         /// <param name="currencyName">The currency name</param>
         /// <returns>The RSI</returns>
-        private double GetCurrencyRSI(string currencyName)
+        private double GetCurrencyRSI(string currencyName, int rsiPeriod)
         {
             Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-14).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-rsiPeriod).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
 
             string poloniexApiData = GetPoloniexApiData(new Uri(uri));
@@ -211,7 +211,7 @@ namespace cryptowatcher.Controllers.API
             if(poloniexApiData!="")
             {
                 List<PoloQuoteTransfer> quotationList = JsonConvert.DeserializeObject<List<PoloQuoteTransfer>>(poloniexApiData);
-                return IndicatorHelper.CalculateRsi(14, quotationList.Select(p => p.Close).ToArray());
+                return IndicatorHelper.CalculateRsi(rsiPeriod, quotationList.Select(p => p.Close).ToArray());
 
             }
 

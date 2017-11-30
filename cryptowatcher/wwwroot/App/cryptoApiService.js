@@ -2,9 +2,9 @@
 
     var cryptoApiService = {};
 
-    cryptoApiService.getPoloniexData = function (currencyName) {
+    cryptoApiService.getPoloniexData = function (rsiPeriod, currencyName) {
         return $http({
-            url: "api/Poloniex/" + currencyName,
+            url: "api/Poloniex/" + rsiPeriod + "/" +  currencyName,
             method: "GET",
         })
     };
@@ -37,9 +37,9 @@
         })
     };
 
-    cryptoApiService.getPoloniexCotation = function (currencyName) {
+    cryptoApiService.getPoloniexCotation = function (rsiPeriod, currencyName) {
         return $http({
-            url: "api/Poloniex/GetCotation/" + currencyName,
+            url: "api/Poloniex/GetCotation/" + rsiPeriod + "/" + currencyName,
             method: "GET",
         })
     };

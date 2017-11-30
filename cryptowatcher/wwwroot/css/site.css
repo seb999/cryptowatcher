@@ -87,3 +87,8 @@ textarea {
     z-index: 1240;
 }
 
+.headerTable th{
+    background-color:rgb(219, 234, 253);
+      padding:3px !important;
+}
+

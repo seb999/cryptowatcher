@@ -27,7 +27,8 @@
                     },
                     loading: true,
                     tooltip: {
-                        enabledIndicators: true
+                        enabledIndicators: true,
+                       
                     },
                     title: {
                         text: scope.title
@@ -45,6 +46,7 @@
                     
                     indicators: scope.indicators,
                     xAxis: {
+                        crosshair: true,
                         type: 'datetime',
                         title: {
                             text: 'Date'
@@ -53,6 +55,7 @@
                         minorTickInterval: 1
                     },
                     yAxis: [{
+                        crosshair: true,
                         labels: {
                             align: 'right',
                             x: -3

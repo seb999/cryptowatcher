@@ -31,12 +31,13 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.chartVolume = [];
         vm.chartData = [];
         vm.chartType = 'candlestick';
-        vm.chartDayType = 'line';
+        vm.chartDayType = 'candlestick';
         vm.isAutoRefrsh = true;
         vm.loaderVisibility = true;
         vm.checkBoxParent = {};
         vm.currencyCotation = {};
         vm.chartPeriod = "1";
+        vm.rsiPeriod = "14";
 
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
@@ -46,6 +47,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.getOrderData = getOrderData;
         vm.changeChartType = changeChartType;
         vm.changeChartPeriod = changeChartPeriod;
+        vm.changeRsiPeriod = changeRsiPeriod;
         vm.changeChartDayType = changeChartDayType;
         vm.showIndicator = showIndicator;
         vm.drawAskBidChart = drawAskBidChart;
@@ -84,7 +86,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             type: 'rsi',
             lineWidth: 1,
             params: {
-                period: 14,
+                period: vm.rsiPeriod,
                 overbought: 70,
                 oversold: 30
             },
@@ -180,8 +182,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
 
         //we load from API Cotation data to display
         function getCurrencyCotation() {
-        
-            cryptoApiService.getPoloniexCotation(vm.currencyName).then(function (response) {
+            cryptoApiService.getPoloniexCotation(vm.rsiPeriod, vm.currencyName).then(function (response) {
 
                 if (vm.currencyCotation.change24hr != response.data.change24hr.toFixed(2)) {
                     vm.highlightChange = "lightgray";
@@ -241,6 +242,12 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             vm.loadHistoryChartData();
         };
 
+        function changeRsiPeriod() {
+            getCurrencyCotation();
+            vm.indicatorRsi.params.period = vm.rsiPeriod;
+            showIndicator();
+        };
+
         function changeChartDayType(chartDayType) {
             vm.chartDayType = chartDayType;
             vm.displayDayChart();
@@ -250,6 +257,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             console.log(vm.checkBoxParent);
             vm.chartIndicators = [];
             vm.chartType = "candlestick";
+            console.log(vm.indicatorRsi);
             if (vm.checkBoxParent.showRsi) vm.chartIndicators.push(vm.indicatorRsi);
             if (vm.checkBoxParent.showAtr) vm.chartIndicators.push(vm.indicatorAtr);
             if (vm.checkBoxParent.showSma) vm.chartIndicators.push(vm.indicatorSma);
