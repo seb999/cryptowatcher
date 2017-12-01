@@ -7,6 +7,7 @@
             title: '@',
             data: '=',
             indicators: '=',
+            yAxis: '=',
             loading: '=',
             enablenavigator: '=',
             enablerangeselector: '=',
@@ -74,10 +75,22 @@
                             text: 'Volume'
                         },
                         top: '70%',
-                        height: '30%',
+                        height: '15%',
                         offset: 0,
                         lineWidth: 2
-                    }],
+                        }, {
+                        labels: {
+                            align: 'right',
+                            x: -3
+                        },
+                        title: {
+                            text: 'macd'
+                        },
+                        top: '85%',
+                        height: '15%',
+                        offset: 0,
+                        lineWidth: 2
+                        }],
                     legend: {
                         enabled: true
                     },
@@ -95,6 +108,9 @@
                 process();
             });
             scope.$watch("indicators", function (loading) {
+                process();
+            });
+            scope.$watch("yAxis", function (loading) {
                 process();
             });
             scope.$watch("enableRangeSelector", function (loading) {

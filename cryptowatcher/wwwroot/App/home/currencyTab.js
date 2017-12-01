@@ -10,6 +10,8 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
     var stopInternal2;
     var stopInternal3;
 
+  
+
     $scope.$on('$destroy', function() {
         $log.warn("clear viewModel from memory ");
 
@@ -54,6 +56,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.getCurrencyCotation = getCurrencyCotation;
         vm.autoUpdate = autoUpdate;
 
+
         //Life start here
         vm.getOrderData();
         vm.loadHistoryChartData();
@@ -81,6 +84,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             columnDefs: gridColumn,
         };
 
+        //###############Indicators to push to chart directive#####################
         vm.indicatorRsi = {
             id: 'abc',
             type: 'rsi',
@@ -148,6 +152,9 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             }
         }
 
+       
+
+        //##############Load chart data / display chart#############################
         //we load from API the data to display
         function loadHistoryChartData() {
             vm.loaderVisibility = true;
@@ -180,11 +187,81 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             });
         };
 
+        //Command : display chart data
+        function displayHistoryChart(currencyName) {
+            //vm.chartConfig1.loading = false;
+
+            vm.chartTitle = vm.currencyName;
+            vm.chartData = [];
+            vm.chartData.push({
+                id: 'abc',
+                name: vm.currencyName,
+                data: vm.chartValue,
+                type: vm.chartType,
+                yAxis: 0,
+                dataGrouping: {
+                    units: groupingUnits
+                }
+            });
+
+            vm.chartData.push({
+                name: 'volume',
+                data: vm.chartVolume,
+                type: 'column',
+                yAxis: 1,
+                dataGrouping: {
+                    units: groupingUnits
+                }
+            });
+
+            //vm.chartData.push({
+            //    type: 'macd',
+            //    linkedTo: 'abc',
+            //    yAxis: 2,
+            //    params: {
+            //        shortPeriod: 12,
+            //        longPeriod: 26,
+            //        signalPeriod: 9,
+            //        period: 26
+            //    }
+            //});
+
+
+        };
+        groupingUnits = [['day', [1]]];
+
+        //Command : display chart data
+        function displayDayChart(currencyName) {
+            vm.chartDayData = [];
+            vm.chartDayData.push({
+                id: 'abc',
+                name: vm.currencyName,
+                data: vm.chartDayValue,
+                type: vm.chartDayType,
+                yAxis: 0,
+                dataGrouping: {
+                    units: groupingDayUnits
+                }
+            });
+
+            vm.chartDayData.push({
+                name: 'volume',
+                data: vm.chartDayVolume,
+                type: 'column',
+                yAxis: 1,
+                dataGrouping: {
+                    units: groupingDayUnits
+                }
+            });
+        };
+        groupingDayUnits = [['hour', [1]]];
+
+        //############Load cotation data and order book##############################
         //we load from API Cotation data to display
         function getCurrencyCotation() {
             cryptoApiService.getPoloniexCotation(vm.rsiPeriod, vm.currencyName).then(function (response) {
 
-                if (vm.currencyCotation.change24hr != response.data.change24hr.toFixed(2)) {
+                if (vm.currencyCotation.change24hr !== response.data.change24hr.toFixed(2)) {
                     vm.highlightChange = "lightgray";
                     $timeout(function () {
                         vm.highlightChange = "";
@@ -231,6 +308,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             vm.bidQuantityStyle = { width: bidQuantityTotal / (askQuantityTotal + bidQuantityTotal) * 100 + '%' };
         };
 
+        //#############Event managers#############################################
         //Command : change chart type
         function changeChartType(chartType) {
             vm.chartType = chartType;
@@ -254,71 +332,15 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         };
 
         function showIndicator() {
-            console.log(vm.checkBoxParent);
             vm.chartIndicators = [];
             vm.chartType = "candlestick";
-            console.log(vm.indicatorRsi);
+            if (vm.checkBoxParent.showMacd) vm.indicatorMacd = vm.indicatorMacd;
             if (vm.checkBoxParent.showRsi) vm.chartIndicators.push(vm.indicatorRsi);
             if (vm.checkBoxParent.showAtr) vm.chartIndicators.push(vm.indicatorAtr);
             if (vm.checkBoxParent.showSma) vm.chartIndicators.push(vm.indicatorSma);
             if (vm.checkBoxParent.showEma) vm.chartIndicators.push(vm.indicatorEma);
             vm.loadHistoryChartData();
         };
-
-        //Command : display chart data
-        function displayHistoryChart(currencyName) {
-            //vm.chartConfig1.loading = false;
-
-            vm.chartTitle = vm.currencyName;
-            vm.chartData = [];
-            vm.chartData.push({
-                id: 'abc',
-                name: vm.currencyName,
-                data: vm.chartValue,
-                type: vm.chartType,
-                yAxis: 0,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
-
-            vm.chartData.push({
-                name: 'volume',
-                data: vm.chartVolume,
-                type: 'column',
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            });
-        };
-        groupingUnits = [['day', [1]]];
-
-        //Command : display chart data
-        function displayDayChart(currencyName) {
-            vm.chartDayData = [];
-            vm.chartDayData.push({
-                id: 'abc',
-                name: vm.currencyName,
-                data: vm.chartDayValue,
-                type: vm.chartDayType,
-                yAxis: 0,
-                dataGrouping: {
-                    units: groupingDayUnits
-                }
-            });
-
-            vm.chartDayData.push({
-                name: 'volume',
-                data: vm.chartDayVolume,
-                type: 'column',
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingDayUnits
-                }
-            });
-        };
-        groupingDayUnits = [['hour', [1]]];
     };
 
     // Prior to v1.5, we need to call onInit manually
