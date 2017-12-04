@@ -26,6 +26,8 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
     });
 
     this.$onInit = function () {
+
+        console.log(vm.isMacdVisible);
         $log.warn("OnInit called");
         vm.currencyName = vm.name;
         $log.info("Creating dynamic tab for " + vm.name);
@@ -40,6 +42,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.currencyCotation = {};
         vm.chartPeriod = "1";
         vm.rsiPeriod = "14";
+        vm.isMacdVisible = false;
 
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
@@ -56,6 +59,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.getCurrencyCotation = getCurrencyCotation;
         vm.autoUpdate = autoUpdate;
 
+       
 
         //Life start here
         vm.getOrderData();
@@ -152,7 +156,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             }
         }
 
-       
+     
 
         //##############Load chart data / display chart#############################
         //we load from API the data to display
@@ -190,7 +194,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         //Command : display chart data
         function displayHistoryChart(currencyName) {
             //vm.chartConfig1.loading = false;
-
+            console.log(vm.isMacdVisible);
             vm.chartTitle = vm.currencyName;
             vm.chartData = [];
             vm.chartData.push({
@@ -214,19 +218,23 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
                 }
             });
 
-            //vm.chartData.push({
-            //    type: 'macd',
-            //    linkedTo: 'abc',
-            //    yAxis: 2,
-            //    params: {
-            //        shortPeriod: 12,
-            //        longPeriod: 26,
-            //        signalPeriod: 9,
-            //        period: 26
-            //    }
-            //});
-
-
+            if (vm.checkBoxParent.showMacd) {
+                vm.chartData.push({
+                    name: 'macd',
+                    type: 'macd',
+                    linkedTo: 'abc',
+                    yAxis: 2,
+                    params: {
+                        shortPeriod: 12,
+                        longPeriod: 26,
+                        signalPeriod: 9,
+                        period: 26
+                    },
+                    dataGrouping: {
+                        units: groupingUnits
+                    }
+                });
+            }
         };
         groupingUnits = [['day', [1]]];
 
@@ -253,6 +261,8 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
                     units: groupingDayUnits
                 }
             });
+
+           
         };
         groupingDayUnits = [['hour', [1]]];
 
@@ -332,9 +342,13 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         };
 
         function showIndicator() {
+            
             vm.chartIndicators = [];
             vm.chartType = "candlestick";
-            if (vm.checkBoxParent.showMacd) vm.indicatorMacd = vm.indicatorMacd;
+            if (vm.checkBoxParent.showMacd) {
+                vm.isMacdVisible =!vm.isMacdVisible;
+             
+            }
             if (vm.checkBoxParent.showRsi) vm.chartIndicators.push(vm.indicatorRsi);
             if (vm.checkBoxParent.showAtr) vm.chartIndicators.push(vm.indicatorAtr);
             if (vm.checkBoxParent.showSma) vm.chartIndicators.push(vm.indicatorSma);

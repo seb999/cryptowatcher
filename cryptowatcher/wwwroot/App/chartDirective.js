@@ -7,7 +7,8 @@
             title: '@',
             data: '=',
             indicators: '=',
-            yAxis: '=',
+            ismacdvisible: '=',
+            macdheight: '=',
             loading: '=',
             enablenavigator: '=',
             enablerangeselector: '=',
@@ -64,8 +65,8 @@
                         title: {
                             text: '',
                         },
-                        height: '65%',
-                        lineWidth: 2
+                        height: '68%',
+                        lineWidth: 2,
                     }, {
                         labels: {
                             align: 'right',
@@ -87,9 +88,10 @@
                             text: 'macd'
                         },
                         top: '85%',
-                        height: '15%',
+                        height:'15%',
                         offset: 0,
-                        lineWidth: 2
+                        lineWidth: 2,
+                        visible: scope.ismacvisible
                         }],
                     legend: {
                         enabled: true
@@ -110,9 +112,13 @@
             scope.$watch("indicators", function (loading) {
                 process();
             });
-            scope.$watch("yAxis", function (loading) {
+            scope.$watch("ismacdvisible", function (loading) {
                 process();
             });
+            scope.$watch("macdheight", function (loading) {
+                process();
+            });
+            
             scope.$watch("enableRangeSelector", function (loading) {
                 process();
             });

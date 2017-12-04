@@ -76,7 +76,7 @@
                                         <option value="candlestick">candlestick</option>
                                     </select>
                                 </div>
-                                <chart title="" data="vm.chartDayData" enablerangeselector="false" enablenavigator="false" indicators="" yAxis="vm.yAxis" loading="vm.chartLoading" style="height:350px;margin-right:5px;margin-left:5px"></chart>
+                                <chart title="" data="vm.chartDayData" enablerangeselector="false" enablenavigator="false" macdheight="12" indicators="" ismacdvisible="vm.isMacdVisible" loading="vm.chartLoading" style="height:350px;margin-right:5px;margin-left:5px"></chart>
                             </div>
                         </div>
                     </div>
@@ -146,7 +146,8 @@
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showEma" />Ema
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showMacd" />Macd
                     </div>
-                    <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" yAxis="vm.yAxis" loading="vm.chartLoading" style="height:700px;margin-right:5px;margin-left:5px"></chart>
+                    {{vm.isMacdVisible}}
+                    <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" ismacdvisible="vm.isMacdVisible" loading="vm.chartLoading" macdheight="100" style="height:700px;margin-right:5px;margin-left:5px"></chart>
                 </div>
             </div>
         </div>
