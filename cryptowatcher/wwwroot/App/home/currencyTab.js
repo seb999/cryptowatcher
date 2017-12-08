@@ -43,6 +43,7 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         vm.chartPeriod = "1";
         vm.rsiPeriod = "14";
         vm.isMacdVisible = false;
+        vm.volumeHeight = '30%';
 
         // utils
         vm.loadHistoryChartData = loadHistoryChartData;
@@ -342,12 +343,19 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         };
 
         function showIndicator() {
-            
+            vm.loaderVisibility = true;
             vm.chartIndicators = [];
             vm.chartType = "candlestick";
             if (vm.checkBoxParent.showMacd) {
                 vm.isMacdVisible =!vm.isMacdVisible;
+                vm.volumeHeight = '15%';
+                vm.macdHeight = '15%';
              
+            }
+            else{
+                vm.volumeHeight = '30%';
+                vm.macdHeight = '0%';
+                vm.isMacdVisible =!vm.isMacdVisible;
             }
             if (vm.checkBoxParent.showRsi) vm.chartIndicators.push(vm.indicatorRsi);
             if (vm.checkBoxParent.showAtr) vm.chartIndicators.push(vm.indicatorAtr);

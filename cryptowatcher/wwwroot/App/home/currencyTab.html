@@ -9,47 +9,54 @@
 
             <div class="col-md-5" style="padding-right: 10px;padding-left:10px">
                 <div class="row">
-                    <div class="col-md-5" style="padding-right: 10px;padding-left:10px">
+                    <div class="col-md-12" style="padding-right: 10px;padding-left:10px">
                         <div class="panel panel-primary">
                             <div class="panel-heading" style="height:35px">
 
-                                <div style="float:left"><h3 class="panel-title">Cotation</h3></div>
-                                <div style="float:right;margin-top:-6px !important">
+                                <div style="float:left;margin-top:-4px !important">
+                                    <button ng-click="isCollapsed = !isCollapsed" type="button" data-toggle="collapse" href="#cotation" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': !isCollapsed, 'fa fa-chevron-circle-up': isCollapsed}" aria-hidden="true"></i></span>
+                                    </button>
+                                </div>       
+                                <div style="float:left">                             
+                                    <h3 class="panel-title">Cotation</h3>
+                                </div>
+                                <div style="float:right;margin-top:-4px !important">
                                     <button type="button" ng-click="vm.getCurrencyCotation();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
+                                        <span class="btn-label"><i class="fa fa-refresh" aria-hidden="true"></i></span>
                                     </button>
                                 </div>
                             </div>
-                            <div>
+                            <div id="cotation" class="panel-collapse collapse in" role="tabpanel">
                                 <table class="table table-condensed" style="margin-bottom:0px">
                                     <tbody>
                                         <tr>
-                                            <td class="active col-md-6"><b>% change (24h)</b></td>
+                                            <td class="active col-md-4"><b>% change (24h)</b></td>
                                             <td ng-if="vm.currencyCotation.change24hr >0"><div style="color:green;background-color:{{vm.highlightChange}};width:50px"><h4>{{vm.currencyCotation.change24hr}}</h4></div></td>
                                             <td ng-if="vm.currencyCotation.change24hr <=0"><div style="color:red;background-color:{{vm.highlightChange}};width:50px"><h4 style="color:red">{{vm.currencyCotation.change24hr}}</h4></div></td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">Last</td>
+                                            <td class="active col-md-4">Last</td>
                                             <td>{{vm.currencyCotation.last}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">Base volume</td>
+                                            <td class="active col-md-4">Base volume</td>
                                             <td>{{vm.currencyCotation.baseVolume| number}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">Quote volume</td>
+                                            <td class="active col-md-4">Quote volume</td>
                                             <td>{{vm.currencyCotation.quoteVolume| number}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">Higher 24 hours</td>
+                                            <td class="active col-md-4">Higher 24 hours</td>
                                             <td>{{vm.currencyCotation.high24hr}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">lower 24 hours</td>
+                                            <td class="active col-md-4">lower 24 hours</td>
                                             <td>{{vm.currencyCotation.low24hr}}</td>
                                         </tr>
                                         <tr>
-                                            <td class="active col-md-6">RSI</td>
+                                            <td class="active col-md-4">RSI</td>
                                             <td>{{vm.currencyCotation.rsi}}</td>
                                         </tr>
                                     </tbody>
@@ -57,44 +64,57 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-7" style="padding-right: 10px;padding-left:10px">
-                        <div class="panel panel-primary" style="overflow:hidden">
-                            <div class="panel-heading" style="height:35px">
-
-                                <div style="float:left"><h3 class="panel-title">Chart 24H</h3></div>
-                                <div style="float:right;margin-top:-6px !important">
-                                    <button type="button" ng-click="vm.loadDayChartData();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="row" style="margin-top:5px;margin-right:0px">
-                                    <select ng-model="vm.chartDayType" ng-change="vm.changeChartDayType(vm.chartDayType);" style="margin-left:20px">
-                                        <option value="line">line</option>
-                                        <option value="candlestick">candlestick</option>
-                                    </select>
-                                </div>
-                                <chart title="" data="vm.chartDayData" enablerangeselector="false" enablenavigator="false" macdheight="12" indicators="" ismacdvisible="vm.isMacdVisible" loading="vm.chartLoading" style="height:350px;margin-right:5px;margin-left:5px"></chart>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
+                <div class="row">
+                    <div class="col-md-12" style="padding-right: 10px;padding-left:10px">
+                            <div class="panel panel-primary" style="overflow:hidden">
+                                <div class="panel-heading" style="height:35px">
+    
+                                    <div style="float:left;margin-top:-4px !important">
+                                        <button ng-click="vm.isCollapsedChart = !vm.isCollapsedChart" type="button" data-toggle="collapse" href="#chart24" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': vm.isCollapsedChart, 'fa fa-chevron-circle-up': !vm.isCollapsedChart}" aria-hidden="true"></i></span>
+                                        </button>
+                                    </div>   
+                                    <div style="float:left"><h3 class="panel-title">Chart 24H</h3></div>
+                                    <div style="float:right;margin-top:-6px !important">
+                                        <button type="button" ng-click="vm.loadDayChartData();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i class="fa fa-refresh" aria-hidden="true"></i></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="chart24" class="panel-collapse collapse in" role="tabpanel">
+                                    <div class="row" style="margin-top:5px;margin-right:0px">
+                                        <select ng-model="vm.chartDayType" ng-change="vm.changeChartDayType(vm.chartDayType);" style="margin-left:20px">
+                                            <option value="line">line</option>
+                                            <option value="candlestick">candlestick</option>
+                                        </select>
+                                    </div>
+                                    <chart title="" data="vm.chartDayData" enablerangeselector="false" enablenavigator="false" macdheight="'0%'" volumeheight="'30%'" indicators="" ismacdvisible="false" loading="vm.chartLoading" style="height:350px;margin-right:5px;margin-left:5px"></chart>
+                                </div>
+                            </div>
+                        </div>
+    
+                </div>
                 <div class="row">
                     <div class="col-md-12" style="padding-right: 10px;padding-left:10px">
                         <div class="panel panel-primary" style="overflow:hidden">
                             <div class="panel-heading" style="height:35px">
 
+                                <div style="float:left;margin-top:-4px !important">
+                                    <button ng-click="vm.isCollapsedOrders = !vm.isCollapsedOrders" type="button" data-toggle="collapse" href="#orders" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': vm.isCollapsedOrders, 'fa fa-chevron-circle-up': !vm.isCollapsedOrders}" aria-hidden="true"></i></span>
+                                    </button>
+                                </div>       
                                 <div style="float:left"><h3 class="panel-title">Orders</h3></div>
                                 <div style="float:right;margin-top:-6px !important">
                                     <button type="button" ng-click="vm.getOrderData();" uib-tooltip="refresh data" class="btn btn-labeled btn-primary btn-xs">
-                                        <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>
+                                        <span class="btn-label"><i class="fa fa-refresh" aria-hidden="true"></i></span>
                                     </button>
                                 </div>
                             </div>
+
+                            <div id="orders" class="panel-collapse collapse" role="tabpanel">
                             <div class="progress" style="height:5px">
                                 <div class="progress-bar progress-bar-success" role="progressbar" ng-style="vm.askPourcentStyle">
                                 </div>
@@ -103,6 +123,7 @@
                             </div>
 
                             <div ui-grid="vm.gridOptionsOrder" style="width:100%;height:350px;margin-top:1px"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -146,8 +167,7 @@
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showEma" />Ema
                         <input type="checkbox" ng-change="vm.showIndicator();" ng-model="vm.checkBoxParent.showMacd" />Macd
                     </div>
-                    {{vm.isMacdVisible}}
-                    <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" ismacdvisible="vm.isMacdVisible" loading="vm.chartLoading" macdheight="100" style="height:700px;margin-right:5px;margin-left:5px"></chart>
+                    <chart title="" data="vm.chartData" enablenavigator="true" enablerangeselector="true" indicators="vm.chartIndicators" ismacdvisible="vm.isMacdVisible" loading="vm.chartLoading" macdheight="vm.macdHeight" volumeheight="vm.volumeHeight" style="height:700px;margin-right:5px;margin-left:5px"></chart>
                 </div>
             </div>
         </div>

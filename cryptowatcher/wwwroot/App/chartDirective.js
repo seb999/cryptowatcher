@@ -9,12 +9,14 @@
             indicators: '=',
             ismacdvisible: '=',
             macdheight: '=',
+            volumeheight: '=',
             loading: '=',
             enablenavigator: '=',
             enablerangeselector: '=',
         },
         link: function (scope, element, attrs) {
             var char;
+           
             var process = function () {
                 var defaultOptions = {
                     chart: { renderTo: element[0] },
@@ -76,7 +78,7 @@
                             text: 'Volume'
                         },
                         top: '70%',
-                        height: '15%',
+                        height: scope.volumeheight,
                         offset: 0,
                         lineWidth: 2
                         }, {
@@ -88,10 +90,10 @@
                             text: 'macd'
                         },
                         top: '85%',
-                        height:'15%',
+                        height: scope.macdheight,
                         offset: 0,
                         lineWidth: 2,
-                        visible: scope.ismacvisible
+                        visible: scope.ismacdvisible
                         }],
                     legend: {
                         enabled: true
@@ -120,7 +122,9 @@
             });
             
             scope.$watch("enableRangeSelector", function (loading) {
+                
                 process();
+               
             });
             scope.$watch("loading", function (loading) {
                 if (!char) {
