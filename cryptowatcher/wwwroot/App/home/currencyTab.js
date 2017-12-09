@@ -268,7 +268,6 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
         groupingDayUnits = [['hour', [1]]];
 
         //############Load cotation data and order book##############################
-        //we load from API Cotation data to display
         function getCurrencyCotation() {
             cryptoApiService.getPoloniexCotation(vm.rsiPeriod, vm.currencyName).then(function (response) {
 
@@ -295,6 +294,8 @@ function currencyTabController($scope, $log, $timeout, $interval, cryptoApiServi
             cryptoApiService.getPoloniexOrderData(vm.currencyName).then(function (response) {
                 var askQuantityTotal = 0;
                 var bidQuantityTotal = 0;
+
+                console.log("reload");
                 
                 vm.orderList = response.data;
                 for (var i = 0; i < vm.orderList.length; i++) {            
