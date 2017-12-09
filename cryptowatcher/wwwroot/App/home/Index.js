@@ -1,4 +1,4 @@
-﻿myApp.controller('homeController', function ($scope, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
+﻿myApp.controller('homeController', function ($scope,$templateCache, $log, $http, $window, $timeout, $uibModal, cryptoApiService) {
 
     $scope.loaderVisibility = true;
     $scope.newCurrencyList = [];
