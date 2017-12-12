@@ -2,10 +2,10 @@ myApp
     .controller("currencyTabController", currencyTabController)
     .directive("currencyTab", currencyTab);
 
-function currencyTabController($scope,$templateCache, $log, $timeout, $interval, cryptoApiService) {
+function currencyTabController($scope, $log, $timeout, $interval, cryptoApiService) {
 
     //clear angular cashing
-    $templateCache.removeAll();
+    //$templateCache.removeAll();
     var vm = this;
 
     var stopInternal1;

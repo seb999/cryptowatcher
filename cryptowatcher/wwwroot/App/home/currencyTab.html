@@ -13,8 +13,8 @@
                             <div class="panel-heading" style="height:35px">
 
                                 <div style="float:left;margin-top:-4px !important">
-                                    <button ng-click="isCollapsed = !isCollapsed" type="button" data-toggle="collapse" href="#cotation" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
-                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': !isCollapsed, 'fa fa-chevron-circle-up': isCollapsed}" aria-hidden="true"></i></span>
+                                    <button ng-click="vm.isCollapsed = !vm.isCollapsed" type="button" data-toggle="collapse" href="#cotation" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': !vm.isCollapsed, 'fa fa-chevron-circle-up': vm.isCollapsed}" aria-hidden="true"></i></span>
                                     </button>
                                 </div>       
                                 <div style="float:left">                             
@@ -71,8 +71,8 @@
                                 <div class="panel-heading" style="height:35px">
     
                                     <div style="float:left;margin-top:-4px !important">
-                                        <button ng-click="isCollapsedChart = !isCollapsedChart" type="button" data-toggle="collapse" href="#chart24" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
-                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': !isCollapsedChart, 'fa fa-chevron-circle-up': isCollapsedChart}" aria-hidden="true"></i></span>
+                                        <button ng-click="vm.isCollapsedChart = !vm.isCollapsedChart" type="button" data-toggle="collapse" href="#chart24" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': !vm.isCollapsedChart, 'fa fa-chevron-circle-up': vm.isCollapsedChart}" aria-hidden="true"></i></span>
                                         </button>
                                     </div>   
                                     <div style="float:left"><h3 class="panel-title">Chart 24H</h3></div>
@@ -101,8 +101,8 @@
                             <div class="panel-heading" style="height:35px">
 
                                 <div style="float:left;margin-top:-4px !important">
-                                    <button ng-click="isCollapsedOrders = !isCollapsedOrders; vm.getOrderData()" type="button" data-toggle="collapse" href="#orders" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
-                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': isCollapsedOrders, 'fa fa-chevron-circle-up': !isCollapsedOrders}" aria-hidden="true"></i></span>
+                                    <button ng-click="isCollapsedOrders = !vm.isCollapsedOrders; vm.getOrderData()" type="button" data-toggle="collapse" href="#orders" uib-tooltip="toggle" class="btn btn-labeled btn-primary btn-xs">
+                                            <span class="btn-label"><i ng-class="{'fa fa-chevron-circle-down': vm.isCollapsedOrders, 'fa fa-chevron-circle-up': !vm.isCollapsedOrders}" aria-hidden="true"></i></span>
                                     </button>
                                 </div>       
                                 <div style="float:left"><h3 class="panel-title">Orders</h3></div>
@@ -121,7 +121,7 @@
                                     </div>
                                 </div>
 
-                                <div ng-if="isCollapsedOrders" ui-grid="vm.gridOptionsOrder" style="width:100%;height:350px;margin-top:1px"></div>
+                                <div  ui-grid="vm.gridOptionsOrder" style="width:100%;height:350px;margin-top:1px"></div>
                                 </div>
                         </div>
                     </div>

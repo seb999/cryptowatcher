@@ -5,6 +5,17 @@
 
     <h3>Poloniex dashboard</h3>
 
+@*Popover template for the grid*@
+    <script type="text/ng-template" id="myPopoverTemplate.html">
+        <div style="hidden;">
+            <chart title="" data="dynamicPopover.chartDayData" enablerangeselector="false" enablenavigator="false" macdheight="'0%'" volumeheight="'20%'" indicators="" ismacdvisible="false" loading="chartLoading" style="width:250px;height:300px;margin-right:5px;margin-left:5px"></chart>
+             <button type="button" class="btn btn-labeled btn-success btn-sm" ng-click="addTab(dynamicPopover.currencyName)">
+                <span class="btn-label"><i class="fa fa-bar-chart" aria-hidden="true"></i></span> Show currency
+            </button>
+
+        </div>
+    </script>
+
     @*Loader*@
     <div ng-show="loaderVisibility" class="overlay"></div>
     <div ng-show="loaderVisibility" id="spinner"></div>
@@ -98,14 +109,22 @@
                                 </div>
                                 <span ng-cloak ng-show="sortType == 'rsi' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'rsi' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
-                            </div>
+                            @*</div>*@
                             </th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr ng-repeat="currency in currencyListBTC| orderBy:sortType:sortReverse| filter : f" ng-cloak>
-                            <td style="cursor:pointer" ng-click="addTab(currency.name)"><div style="margin-left:5px"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true" ><i class="fa fa-bar-chart" aria-hidden="true"></i></span></div></td>
+                            <td class="hidden-lg" style="cursor:pointer" ng-click="addTab(currency.name)">
+                                <div style="margin-left:5px"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true" ><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td class="hidden-sm hidden-xs" style="cursor:pointer">
+                                <a  tabindex="0" value="" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{currency.name}}" popover-placement="right" popover-trigger="'outsideClick'" style="cursor:pointer" ng-click="openPopover(currency.name);">
+                                    <span class="btn-label" style="color:dodgerblue;"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </a>
+                            </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
@@ -195,7 +214,16 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="currency in currencyListETH| orderBy:sortType:sortReverse" ng-cloak>
-                            <td style="cursor:pointer" ng-click="addTab(currency.name)"><div style="margin-left:5px"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true" ><i class="fa fa-bar-chart" aria-hidden="true"></i></span></div></td>
+                            <td class="hidden-lg" style="cursor:pointer" ng-click="addTab(currency.name)">
+                                <div style="margin-left:5px">
+                                    <span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td class="hidden-sm hidden-xs" style="cursor:pointer">
+                                <a tabindex="0" value="" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{currency.name}}" popover-placement="right" popover-trigger="'outsideClick'" style="cursor:pointer" ng-click="openPopover(currency.name);">
+                                    <span class="btn-label" style="color:dodgerblue;"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </a>
+                            </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
@@ -285,7 +313,16 @@
 
                     <tbody>
                         <tr ng-repeat="currency in currencyListXMR| orderBy:sortType:sortReverse" ng-cloak>
-                            <td style="cursor:pointer" ng-click="addTab(currency.name)"><div style="margin-left:5px"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true" ><i class="fa fa-bar-chart" aria-hidden="true"></i></span></div></td>
+                            <td class="hidden-lg" style="cursor:pointer" ng-click="addTab(currency.name)">
+                                <div style="margin-left:5px">
+                                    <span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td class="hidden-sm hidden-xs" style="cursor:pointer">
+                                <a tabindex="0" value="" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{currency.name}}" popover-placement="right" popover-trigger="'outsideClick'" style="cursor:pointer" ng-click="openPopover(currency.name);">
+                                    <span class="btn-label" style="color:dodgerblue;"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </a>
+                            </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
@@ -376,7 +413,17 @@
 
                     <tbody>
                         <tr ng-repeat="currency in currencyListUSD| orderBy:sortType:sortReverse" ng-cloak>
-                            <td style="cursor:pointer" ng-click="addTab(currency.name)"><div style="margin-left:5px"><span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true" ><i class="fa fa-bar-chart" aria-hidden="true"></i></span></div></td>
+                           
+                            <td class="hidden-lg" style="cursor:pointer" ng-click="addTab(currency.name)">
+                                <div style="margin-left:5px">
+                                    <span class="btn-label" style="color:dodgerblue;cursor:pointer" uib-tooltip="Chart" uib-tooltip-placement="left" tooltip-append-to-body="true"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td class="hidden-sm hidden-xs" style="cursor:pointer">
+                                <a tabindex="0" value="" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{currency.name}}" popover-placement="right" popover-trigger="'outsideClick'" style="cursor:pointer" ng-click="openPopover(currency.name);">
+                                    <span class="btn-label" style="color:dodgerblue;"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                </a>
+                            </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>

@@ -23,12 +23,70 @@
     $scope.get24hColor = get24hColor;
     $scope.changeRsiPeriod = changeRsiPeriod;
     $scope.resetRsiData = resetRsiData;
+    $scope.loadDayChartData = loadDayChartData;
+    $scope.displayDayChart = displayDayChart;
+    $scope.openPopover = openPopover;
 
     // Life start here!!!
     $scope.searchNewCurrency();
     $scope.loadData();
 
     // ##################################################################
+// ----------------------Popover------------------------
+    $scope.dynamicPopover = {
+        templateUrl: 'myPopoverTemplate.html',
+    };
+
+    //Open a popover and show the procurement bullet chart
+    function openPopover (currency) {
+        $scope.loaderPopoverVisibility = true;
+        $scope.loadDayChartData(currency);
+    }
+
+    function loadDayChartData(currency) {
+        $scope.chartDayVolume = [];
+        $scope.chartDayValue = [];
+        cryptoApiService.getPoloniexDayChartData(currency).then(function (response) {
+            for (var i = 0; i < response.data.length; i++) {
+                $scope.chartDayVolume.push([response.data[i].date * 1000, response.data[i].volume]);
+                $scope.chartDayValue.push([response.data[i].date * 1000, response.data[i].open, response.data[i].high, response.data[i].low, response.data[i].close]);
+            }
+            $scope.displayDayChart(currency);
+        }, function (error) {
+            $log.error(error.message);
+        });
+    };
+
+    function displayDayChart(currency) {
+        $scope.chartDayData = [];
+        $scope.chartDayData.push({
+            id: 'abc',
+            name: currency,
+            data: $scope.chartDayValue,
+            type: 'candlestick',
+            yAxis: 0,
+            dataGrouping: {
+                units: groupingDayUnits
+            }
+        });
+
+        $scope.chartDayData.push({
+            name: 'volume',
+            data: $scope.chartDayVolume,
+            type: 'column',
+            yAxis: 1,
+            dataGrouping: {
+                units: groupingDayUnits
+            }
+        }); 
+        
+        $scope.dynamicPopover = {
+            chartDayData:  $scope.chartDayData,
+            templateUrl: 'myPopoverTemplate.html',
+            currencyName: currency,
+        };
+    };
+    groupingDayUnits = [['hour', [1]]];
 
     function changeRsiPeriod(rsiPeriod){
         $scope.rsiPeriod = rsiPeriod;
