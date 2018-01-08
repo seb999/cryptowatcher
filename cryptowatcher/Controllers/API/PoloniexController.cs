@@ -23,6 +23,8 @@ namespace cryptowatcher.Controllers.API
         private Uri uriCurrency = new Uri("https://poloniex.com/public?command=returnChartData&currencyPair=");
         private Uri uriOrder = new Uri("https://poloniex.com/public?command=returnOrderBook&currencyPair=");
 
+        private Uri uriKucoin = new Uri("https://api.kucoin.com/v1/market/open/coins");
+
         private readonly AppDbContext dbContext;
 
         public PoloniexController([FromServices] AppDbContext appDbContext)
@@ -220,6 +222,12 @@ namespace cryptowatcher.Controllers.API
 
         private void SaveNewCurrency()
         {
+            string zuCOinData = GetPoloniexApiData(uriKucoin);
+            ZuCoinTransfer zuCoinResult = JsonConvert.DeserializeObject<ZuCoinTransfer>(zuCOinData);
+
+            Console.WriteLine(zuCoinResult.Data.Select(p=>p.Name).ToList());
+           
+
             //List of currency in local db
             List<Currency> localCurrencyList = dbContext.Currency.Select(p=>p).ToList();
 
