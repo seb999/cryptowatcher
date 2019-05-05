@@ -10,5 +10,6 @@ namespace cryptowatcher.Model
         }
 
         public virtual DbSet<Currency> Currency { get; set; }
+        public virtual DbSet<AIModel> AIModel { get; set; }
     }
 }

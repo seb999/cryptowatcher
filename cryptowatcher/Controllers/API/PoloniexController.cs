@@ -46,14 +46,15 @@ namespace cryptowatcher.Controllers.API
 
                 foreach (var item in myDico)
                 {
-                    //For ecdc so reduce number of call in proxy
+                    //For debugging reduce number of call in proxy
                     //if (item.Key != "BTC_BCN" && item.Key != "BTC_BTS" && item.Key != "USDT_ETH" && item.Key != "USDT_BTC" && item.Key != "BTC_BCH" && item.Key != "ETH_LSK" && item.Key != "ETH_REP") continue;
 
                     if (item.Key.Substring(0, 3) != currencyName && currencyName!=null) continue;
                     item.Value.Name = item.Key;
                     if (currencyName !=null)
                     {
-                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString(), rsiPeriod);
+                        item.Value.RSI = (double)GetRSI(item.Key.ToString(), rsiPeriod);
+                        item.Value.MACD = (double)GetMACD(item.Key.ToString());
                     }
                     else
                     {
@@ -90,7 +91,8 @@ namespace cryptowatcher.Controllers.API
                     if (item.Key == currencyName)
                     {
                         item.Value.Name = item.Key;
-                        item.Value.RSI = (double)GetCurrencyRSI(item.Key.ToString(), rsiPeriod);
+                        item.Value.RSI = (double)GetRSI(item.Key.ToString(), rsiPeriod);
+                        item.Value.MACD = (double)GetMACD(item.Key.ToString());
                         item.Value.Change24hr = double.Parse(item.Value.PercentChange)*100;
                         return item.Value;
                     }
@@ -202,18 +204,34 @@ namespace cryptowatcher.Controllers.API
         /// </summary>
         /// <param name="currencyName">The currency name</param>
         /// <returns>The RSI</returns>
-        private double GetCurrencyRSI(string currencyName, int rsiPeriod)
+        private double GetRSI(string currencyName, int rsiPeriod)
         {
             Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-rsiPeriod).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            string uri = string.Format("{0}{1}&start={2}&end={3}&period=14400", uriCurrency, currencyName, startDate, endDate);
-
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-14).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            string uri = string.Format("{0}{1}&start={2}&end={3}&period=86400", uriCurrency, currencyName, startDate, endDate);
             string poloniexApiData = GetPoloniexApiData(new Uri(uri));
             
             if(poloniexApiData!="")
             {
                 List<PoloQuoteTransfer> quotationList = JsonConvert.DeserializeObject<List<PoloQuoteTransfer>>(poloniexApiData);
-                return IndicatorHelper.CalculateRsi(rsiPeriod, quotationList.Select(p => p.Close).ToArray());
+                return IndicatorHelper.CalculateRsi(rsiPeriod, quotationList);
+
+            }
+
+            return 0;
+        }
+
+        private double GetMACD(string currencyName)
+        {
+            Int32 endDate = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Int32 startDate = (Int32)(DateTime.UtcNow.AddDays(-50).Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            string uri = string.Format("{0}{1}&start={2}&end={3}&period=86400", uriCurrency, currencyName, startDate, endDate);
+            string poloniexApiData = GetPoloniexApiData(new Uri(uri));
+            
+            if(poloniexApiData!="")
+            {
+                List<PoloQuoteTransfer> quotationList = JsonConvert.DeserializeObject<List<PoloQuoteTransfer>>(poloniexApiData);
+                return IndicatorHelper.CalculateMacd(quotationList);
 
             }
 
@@ -222,10 +240,10 @@ namespace cryptowatcher.Controllers.API
 
         private void SaveNewCurrency()
         {
-            string zuCOinData = GetPoloniexApiData(uriKucoin);
-            ZuCoinTransfer zuCoinResult = JsonConvert.DeserializeObject<ZuCoinTransfer>(zuCOinData);
+            //string zuCOinData = GetPoloniexApiData(uriKucoin);
+            //ZuCoinTransfer zuCoinResult = JsonConvert.DeserializeObject<ZuCoinTransfer>(zuCOinData);
 
-            Console.WriteLine(zuCoinResult.Data.Select(p=>p.Name).ToList());
+            //Console.WriteLine(zuCoinResult.Data.Select(p=>p.Name).ToList());
            
 
             //List of currency in local db

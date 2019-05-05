@@ -62,7 +62,7 @@
                                 <span ng-cloak ng-show="sortType == 'last' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'last' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
-                            <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
+                            <!-- <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
                                 LowestAsk
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
@@ -71,7 +71,7 @@
                                 HighestBid
                                 <span ng-cloak ng-show="sortType == 'highestBid' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'highestBid' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
-                            </th>
+                            </th> -->
                             <th class="hidden-sm hidden-xs" ng-click="sortType ='baseVolume'; sortReverse = !sortReverse" style="cursor:pointer">
                                 BaseVolume
                                 <span ng-cloak ng-show="sortType == 'baseVolume' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
@@ -127,8 +127,8 @@
                             </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td>
+                            <!-- <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
+                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td> -->
                             <td class="hidden-sm hidden-xs">{{currency.baseVolume| number}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.quoteVolume| number}}</td>
                             <td class="hidden-xs">{{currency.high24hr}}</td>
@@ -162,7 +162,7 @@
                                 <span ng-cloak ng-show="sortType == 'last' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'last' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
-                            <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
+                            <!-- <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
                                 LowestAsk
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
@@ -171,7 +171,7 @@
                                 HighestBid
                                 <span ng-cloak ng-show="sortType == 'highestBid' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'highestBid' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
-                            </th>
+                            </th> -->
                             <th class="hidden-sm hidden-xs" ng-click="sortType ='baseVolume'; sortReverse = !sortReverse" style="cursor:pointer">
                                 BaseVolume
                                 <span ng-cloak ng-show="sortType == 'baseVolume' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
@@ -226,8 +226,8 @@
                             </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td>
+                            <!-- <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
+                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td> -->
                             <td class="hidden-sm hidden-xs">{{currency.baseVolume| number}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.quoteVolume| number}}</td>
                             <td class="hidden-xs">{{currency.high24hr}}</td>
@@ -260,7 +260,7 @@
                                 <span ng-cloak ng-show="sortType == 'last' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'last' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
-                            <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
+                            <!-- <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
                                 LowestAsk
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
@@ -269,7 +269,7 @@
                                 HighestBid
                                 <span ng-cloak ng-show="sortType == 'highestBid' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'highestBid' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
-                            </th>
+                            </th> -->
                             <th class="hidden-sm hidden-xs" ng-click="sortType ='baseVolume'; sortReverse = !sortReverse" style="cursor:pointer">
                                 BaseVolume
                                 <span ng-cloak ng-show="sortType == 'baseVolume' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
@@ -308,6 +308,11 @@
                                 <span ng-cloak ng-show="sortType == 'rsi' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'rsi' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
+                            <th ng-click="sortType ='macd'; sortReverse = !sortReverse" style="cursor:pointer">
+                                MACD
+                                <span ng-cloak ng-show="sortType == 'macd' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
+                                <span ng-cloak ng-show="sortType == 'macd' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
+                            </th>
                         </tr>
                     </thead>
 
@@ -325,8 +330,8 @@
                             </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td>
+                            <!-- <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
+                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td> -->
                             <td class="hidden-sm hidden-xs">{{currency.baseVolume| number}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.quoteVolume| number}}</td>
                             <td class="hidden-xs">{{currency.high24hr}}</td>
@@ -335,6 +340,10 @@
                             <td ng-if="currency.rsi >0">{{currency.rsi}}</td>
                             <td ng-if="currency.rsi == 0">--</td>
                             <td ng-if="currency.rsi == null" style="padding:0px"><img src="~/images/loader.gif" width="30" style="margin-right:10px;margin-left:10px" /></td>
+                            <td ng-if="currency.macd >0">{{currency.macd}}</td>
+                            <td ng-if="currency.macd == 0">--</td>
+                            <td ng-if="currency.macd == null" style="padding:0px"><img src="~/images/loader.gif" width="30" style="margin-right:10px;margin-left:10px" /></td>
+ 
                          </tr>
                     </tbody>
                 </table>
@@ -360,7 +369,7 @@
                                 <span ng-cloak ng-show="sortType == 'last' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'last' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
-                            <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
+                            <!-- <th class="hidden-sm hidden-xs" ng-click="sortType ='lowestAsk'; sortReverse = !sortReverse" style="cursor:pointer">
                                 LowestAsk
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'lowestAsk' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
@@ -369,7 +378,7 @@
                                 HighestBid
                                 <span ng-cloak ng-show="sortType == 'highestBid' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'highestBid' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
-                            </th>
+                            </th> -->
                             <th class="hidden-sm hidden-xs" ng-click="sortType ='baseVolume'; sortReverse = !sortReverse" style="cursor:pointer">
                                 BaseVolume
                                 <span ng-cloak ng-show="sortType == 'baseVolume' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
@@ -408,6 +417,11 @@
                                 <span ng-cloak ng-show="sortType == 'rsi' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
                                 <span ng-cloak ng-show="sortType == 'rsi' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
                             </th>
+                             <th ng-click="sortType ='macd'; sortReverse = !sortReverse" style="cursor:pointer">
+                                MACD
+                                <span ng-cloak ng-show="sortType == 'macd' && sortReverse" class="glyphicon glyphicon-triangle-bottom"></span>
+                                <span ng-cloak ng-show="sortType == 'macd' && !sortReverse" class="glyphicon glyphicon-triangle-top"></span>
+                            </th>
                         </tr>
                     </thead>
 
@@ -426,8 +440,8 @@
                             </td>
                             <td><img src="~/images/bitcoin.png" class="hidden-xs" /> {{currency.name}}</td>
                             <td>{{currency.last}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
-                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td>
+                            <!-- <td class="hidden-sm hidden-xs">{{currency.lowestAsk}}</td>
+                            <td class="hidden-sm hidden-xs">{{currency.highestBid}}</td> -->
                             <td class="hidden-sm hidden-xs">{{currency.baseVolume| number}}</td>
                             <td class="hidden-sm hidden-xs">{{currency.quoteVolume| number}}</td>
                             <td class="hidden-xs">{{currency.high24hr}}</td>
@@ -436,6 +450,10 @@
                             <td ng-if="currency.rsi >0">{{currency.rsi}}</td>
                             <td ng-if="currency.rsi == 0">--</td>
                             <td ng-if="currency.rsi == null" style="padding:0px"><img src="~/images/loader.gif" width="30" style="margin-right:10px;margin-left:10px" /></td>
+                             <td ng-if="currency.macd >0">{{currency.macd}}</td>
+                            <td ng-if="currency.macd == 0">--</td>
+                            <td ng-if="currency.macd == null" style="padding:0px"><img src="~/images/loader.gif" width="30" style="margin-right:10px;margin-left:10px" /></td>
+                        
                        </tr>
                     </tbody>
                 </table>
